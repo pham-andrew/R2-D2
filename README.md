@@ -1,6 +1,6 @@
 # SDI-Capstone-Group-5
 
-<img src="./docs/icon.png" alt="icon.png" width="40%"/>
+<img src="./docs/icon.png" alt="icon.png" width="30%"/>
 
 ## Table of Contents
 
@@ -31,7 +31,7 @@ The server handles requests sent to it by the client. SQL is used to send querie
 
 The PostgreSQL database is set-up with data validation and cascading. Foreign and primary key relationships dynamically alter table data based on user changes and inputs.
 
-![Here is a link to the Miro board](https://miro.com/app/board/o9J_l5ZAx5k=/) which contains the following:
+[Here is a link to the Miro board](https://miro.com/app/board/o9J_l5ZAx5k=/) which contains the following:
 
 1. Entity Relationship Diagrams
 2. User Stories
