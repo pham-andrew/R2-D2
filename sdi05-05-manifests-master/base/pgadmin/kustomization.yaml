@@ -1,0 +1,26 @@
+#apiVersion: kustomize.config.k8s.io/v1alpha1
+#kind: Component
+
+commonLabels:
+  micro-svc: pgadmin4
+  authentication: istio-auth
+
+# Generator options
+generatorOptions:
+  disableNameSuffixHash: true
+
+# List of PostgreSQL servers to auto load
+configMapGenerator:
+- name: pgadmin-servers
+  files:
+    - servers-template.json
+- name: pgadmin-files
+  literals:
+    - PGADMIN_SERVER_JSON_FILE="/etc/pgadmin4/servers.json"
+    - PGPASSFILE="/etc/pgadmin4/pgpass"
+    - WTF_CSRF_HEADERS="['X-pgA-CSRFToken', 'X-CSRFToken', 'X-CSRF-Token']"
+
+# Load the service and deployment
+resources:
+  - deployment.yaml
+  - service.yaml

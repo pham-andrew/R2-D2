@@ -1,0 +1,7 @@
+{
+    "video": true,
+    "env": {
+        "baseUrl":"https://react-world.staging.apps.il2.dsop.io/",
+        "pageLoadTimeout": 120000
+    }
+} 
