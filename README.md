@@ -1,6 +1,6 @@
-# SDI-Capstone-Group-5
+# R2D2 - Rapid Routing & Decision Dashboard
 
-<img src="./docs/icon.png" alt="icon.png" width="30%"/>
+<img src="./docs/icon.png" alt="icon.png" width="40%"/>
 
 ## Table of Contents
 
@@ -13,46 +13,45 @@
 
 ## Overview
 
-This application was made for the USSF SDI Cohort #2 capstone project for group #05. This
+R2D2 was made for the USSF SDI Cohort #2 capstone project for group #05. This
 
 - Database: built in PostgreSQL
 - Client: built in ReactJS
 - Server: built using Express
 - Repository: [GitHub](https://github.com/pham-andrew/SDI-Capstone-Group-5)
 - Deployment: [PlatformONE](https://sdi05-05.staging.dso.mil/)
+- Project Board: [Miro](https://miro.com/app/board/o9J_l5ZAx5k=/)
 
 ## Description
 
-This full-stack PERN application features a minimalistic client-facing interface scripted in ReactJS, an ExpressJS server with an API and client HTTP request handler, and a PostgreSQL database.
+This full-stack PERN application features a ReactJS client-facing interface, an ExpressJS server with Knex and Pooling calls to the database, and a PostgreSQL database.
 
 The client contains conditional rendering, protected routes, and modular dialog components for user input and notification.
 
-The server handles requests sent to it by the client. SQL is used to send queries to the database and manipulate data from the resulting queries. The user passwords are protected with secure hashing and salting functionality. Cookies with a randomized token are used to persist login for approximately 1-day.
+The server handles requests sent to it by the client and forwards them to the database. SQL is used to send queries to the database and manipulate data from the resulting queries so that the server can send the right data to the client-side display. User passwords are protected with secure hashing and salting functionality. Cookies with a randomized token are used to persist login for approximately 1-day.
 
 The PostgreSQL database is set-up with data validation and cascading. Foreign and primary key relationships dynamically alter table data based on user changes and inputs.
 
 [Here is a link to the Miro board](https://miro.com/app/board/o9J_l5ZAx5k=/) which contains the following:
 
-1. Entity Relationship Diagrams
-2. User Stories
+1. Problem Statement
+2. Definitions
 3. Use Cases
-4. Definitions
+4. Wireframes
+5. Entity Relationship Diagrams
+6. Kanban Board
+   - To Do
+   - In Progress
+   - Done
+   - Wishlist
 
 ## Installation
 
 The installation options below are ordered from least configurable to most configurable.
 
-### Heroku
+### PlatformONE
 
-1. To use the application hosted on Heroku, please click or paste the following URL in your browser: https://shop-till-you-drop.herokuapp.com/.
-
-### Docker
-
-1. Go to the config folder and modify the .env.example file using the [format in this README](#Environment-Variables) and the format in the provided .env.example file. Delete the ".example" extension from the .env filename before running the application. Run setup.sh after you are done making modifications.
-
-2. Run `docker-compose --env-file ./config/.env up --build` and using your browser, proceed to the address and port for the client as specified in your .env file (e.g. http://localhost:3000).
-
-3. To access the API, proceed to the address and port for the server as specified in your .env file (e.g. http://localhost:3001/api).
+1. To use the application hosted on Heroku, please click or paste the following URL in your browser: https://sdi05-05.staging.dso.mil/.
 
 ### Source Code
 
