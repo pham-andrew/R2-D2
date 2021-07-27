@@ -131,7 +131,8 @@ const App = () => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+        <img src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/docs/icon.png" style={{position: 'fixed', top: '10px', height:'45px', paddingRight:'10px'}}></img>
+        <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title} style={{position: 'fixed', left: '325px'}}>
           R2D2
         </Typography>
         </Toolbar>
