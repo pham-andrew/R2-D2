@@ -13,7 +13,7 @@
 
 ## Overview
 
-R2D2 was made for the USSF SDI Cohort #2 capstone project for group #05. This
+R2D2 was made for the USSF SDI Cohort #2 capstone project for group #05. This application has the following components and applicable links:
 
 - Database: built in PostgreSQL
 - UI: built in ReactJS
