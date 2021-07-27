@@ -1,6 +1,6 @@
 # R2D2 - Rapid Routing & Decision Dashboard
 
-<img src="./docs/icon.png" alt="icon.png" width="40%"/>
+<img src="./docs/icon.png" alt="favicon.png" width="40%"/>
 
 ## Table of Contents
 
