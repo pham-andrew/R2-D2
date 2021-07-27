@@ -20,6 +20,8 @@ import AssignmentReturnedIcon from '@material-ui/icons/AssignmentReturned';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
 
 const drawerWidth = 240;
 
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
   toolbar: {
-    paddingRight: 24,
+    paddingRight: 24, // keep right padding when drawer closed
   },
   toolbarIcon: {
     display: 'flex',
@@ -101,7 +103,8 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
-}));  
+}));
+
 
 const App = () => {
   const classes = useStyles();
@@ -116,8 +119,8 @@ const App = () => {
       setDrawerOpen(false);
   };
 
-  return (
-    <>
+  const nav = <>
+    <div className={classes.root}>
       <AppBar position="absolute" className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
         <IconButton
@@ -148,37 +151,37 @@ const App = () => {
           <Divider />
             <List>
               <div>
-                <ListItem button>
+                <ListItem button onClick={()=>setPage("create")}>
                 <ListItemIcon>
                   <NoteIcon />
                 </ListItemIcon>
                 <ListItemText primary="Create Template" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={()=>setPage("initial")}>
                 <ListItemIcon>
                   <AssignmentReturnedIcon />
                 </ListItemIcon>
                 <ListItemText primary="Initial Routing" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={()=>setPage("dashboard")}>
                 <ListItemIcon>
                   <DashboardIcon />
                 </ListItemIcon>
                 <ListItemText primary="Routing Dashboard" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={()=>setPage("archive")}>
                 <ListItemIcon>
                   <ArchiveIcon />
                 </ListItemIcon>
                 <ListItemText primary="Archive" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={()=>setPage("profile")}>
                 <ListItemIcon>
                   <AccountBoxIcon />
                 </ListItemIcon>
                 <ListItemText primary="Profile" />
                 </ListItem>
-                <ListItem button>
+                <ListItem button onClick={()=>setPage("admin")}>
                 <ListItemIcon>
                   <SupervisorAccountIcon />
                 </ListItemIcon>
@@ -188,7 +191,111 @@ const App = () => {
             </List>
           <Divider />
       </Drawer>
-    </>
+    </div>
+  </>
+
+  if(page==='create')
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Paper className={classes.paper}>
+              Create
+            </Paper>
+          </Container>
+        </main>
+      </div>
+    )
+
+  if(page==='routing')
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Paper className={classes.paper}>
+              Initial Routing
+            </Paper>
+          </Container>
+        </main>
+      </div>
+    )
+
+  if(page==='dashboard')
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Paper className={classes.paper}>
+              Dashboard
+            </Paper>
+          </Container>
+        </main>
+      </div>
+    )
+  
+  if(page==='archive')
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Paper className={classes.paper}>
+              Archive
+            </Paper>
+          </Container>
+        </main>
+      </div>
+    )
+  
+  if(page==='profile')
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Paper className={classes.paper}>
+              Profile
+            </Paper>
+          </Container>
+        </main>
+      </div>
+    )
+
+  if(page==='admin')
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Paper className={classes.paper}>
+              Admin
+            </Paper>
+          </Container>
+        </main>
+      </div>
+    )
+  
+  return (
+    <div className={classes.root}>
+      {nav}
+      <main className={classes.content}>
+        <div className={classes.appBarSpacer} />
+        <Container maxWidth="lg" className={classes.container}>
+          <Paper className={classes.paper}>
+            Homepage
+          </Paper>
+        </Container>
+      </main>
+    </div>
   )
 };
 
