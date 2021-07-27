@@ -22,6 +22,8 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Badge from '@material-ui/core/Badge';
 
 const drawerWidth = 240;
 
@@ -133,8 +135,13 @@ const App = () => {
         </IconButton>
         <img src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/docs/icon.png" style={{position: 'flex', top: '10px', height:'45px', paddingRight: "10px"}}></img>
         <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-          Rapid Routing and Document Decision
+          Rapid Routing and Decision Dashboard
         </Typography>
+        <IconButton color="inherit">
+          <Badge color="secondary">
+           <ExitToAppIcon />
+          </Badge>
+        </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer
