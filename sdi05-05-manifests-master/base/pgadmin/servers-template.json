@@ -1,0 +1,22 @@
+{
+    "Servers": {
+        "1": {
+            "Username": "{{PG_USER}}",
+            "Group": "Servers", 
+            "Name": "{{APP_NAME}} DEV",
+            "PassFile": "/etc/pgadmin4/pgpass",
+            "SSLCert": "/etc/.postgresql/postgresql.crt", 
+            "SSLKey": "/etc/.postgresql/postgresql.key", 
+            "UseSSHTunnel": 0, 
+            "TunnelPort": "22", 
+            "SSLCompression": 0, 
+            "Host": "{{PG_HOST}}", 
+            "Timeout": 10, 
+            "MaintenanceDB": "{{PG_DATABASE}}",
+            "DBRestriction": "{{PG_DATABASE}}",
+            "SSLMode": "prefer", 
+            "Port": 5432, 
+            "TunnelAuthentication": 0
+        }
+    }
+}
