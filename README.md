@@ -24,7 +24,7 @@ R2D2 was made for the USSF SDI Cohort #2 capstone project for group #05. This
 
 ## Description
 
-This full-stack PERN application features a ReactJS ui-facing interface, an ExpressJS API with Knex and Pooling calls to the database, and a PostgreSQL database.
+This full-stack PERN application features a ReactJS UI, an ExpressJS API with Knex and Pooling calls to the database, and a PostgreSQL database.
 
 The UI contains conditional rendering, protected routes, and modular dialog components for user input and notification.
 
