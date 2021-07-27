@@ -133,7 +133,7 @@ const App = () => {
         </IconButton>
         <img src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/docs/icon.png" style={{position: 'flex', top: '10px', height:'45px', paddingRight: "10px"}}></img>
         <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-          R2D2
+          Rapid Routing and Document Decision
         </Typography>
         </Toolbar>
       </AppBar>
