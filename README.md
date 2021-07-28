@@ -19,9 +19,9 @@ The Rapid Routing and Decision-making Dashboard (R2D2) is a unit-centric task-fl
 2.  Hundreds of thousands of long email chains of questionable standardization and accountability, or even worse,
 3.  Pen and paper processes
 
-All of these methods significantly reduce both the velocity and efficacy of the decision-making loopm and provide little to no interconnectivity or modularity for a digitally-oriented force.
+All of these methods significantly reduce both the velocity and efficacy of the decision-making loop and provide little to no interconnectivity or modularity for a digitally-oriented force.
 
-R2D2 is built by those of us who experienced the pain of using all of those systems. Out team's instantiation of a task-flow management system fills in the gaps of those other systems and provides the foundation for improvements such as: intra-unit customizability, inter-unit task-flow hooks, Active Directory or LDAP-based data injection, and operational metrics generation.
+R2D2 is built by those of us who experienced the pain of using the existing systems. Out team's instantiation of a task-flow management system fills in the gaps left by those systems and provides the foundation for future improvements such as: more intra-unit customizability, inter-unit task-flow hooks, Active Directory or LDAP-based data injection, and operational metrics generation.
 
 ## Description
 
