@@ -6,22 +6,24 @@
 
 1.  [Overview](#Overview)
 2.  [Description](#Description)
-3.  [Usage](#Usage)
-4.  [Installation](#Installation)
-5.  [Libraries](#Libraries)
+3.  [Usage and Installation](#Usage-and-Installation)
+4.  [Libraries](#Libraries)
+5.  [Team](#Team)
 6.  [License](#License)
 
 ## Overview
 
-The Rapid Routing and Decision-making Dashboard (R2D2) is a unit-centric task-flow management system that enables accountable and informed decision-making at all levels in the CoC. Most of today's task-flows involve one of the following:
+The Rapid Routing and Decision-making Dashboard (R2D2) is a unit-centric task-flow management system that enables accountable and informed decision-making at all levels in the CoC. 
 
-1.  Disaggregated, unintuitive, and/or expensive enterprise work flows (e.g. Sharepoint, TMT, TopVue, LeaveWeb),
-2.  Hundreds of thousands of long email chains of questionable standardization and accountability, or even worse,
+Most of today's task-flows involve one of the following:
+
+1.  Disaggregated, unintuitive, and/or expensive enterprise work flows (e.g. Sharepoint, TMT, TopVue, LeaveWeb), or
+2.  Hundreds of thousands of long email chains of questionable standardization and accountability, or
 3.  Pen and paper processes
 
 All of these methods significantly reduce both the velocity and efficacy of the decision-making loop and provide little to no interconnectivity or modularity for a digitally-oriented force.
 
-R2D2 is built by those of us who experienced the pain of using the existing systems. Out team's instantiation of a task-flow management system fills in the gaps left by those systems and provides the foundation for future improvements such as: more intra-unit customizability, inter-unit task-flow hooks, Active Directory or LDAP-based data injection, and operational metrics generation.
+R2D2 is built by those of us who have experienced the pain of using the existing systems and wanted something better. Our team's instantiation of task-flow management fills in the gaps left by those systems and provides a solid foundation for future improvements such as: more intra-unit customizability, inter-unit task-flow hooks, Active Directory or LDAP-based data injection, and operational metrics generation.
 
 ## Description
 
@@ -36,25 +38,22 @@ Below is a breakdown of the stack:
 
 Below is a list of applicable links:
 
-- Project Board: [Miro](https://miro.com/app/board/o9J_l5ZAx5k=/)
 - Repository: [GitHub](https://github.com/pham-andrew/SDI-Capstone-Group-5)
 - Deployment: [PlatformONE](https://sdi05-05.staging.dso.mil/)
 - Planning and Execution: [Miro](https://miro.com/app/board/o9J_l5ZAx5k=/)
-  1.  Problem Statement
-  2.  Definitions
-  3.  Use Cases
-  4.  User Stories
-  5.  Wireframes
-  6.  Entity Relationship Diagrams
-  7.  Kanban Board
-      - To Do
-      - In Progress
-      - Done
-      - Wishlist
+  - Problem Statement
+  - Definitions
+  - Use Cases
+  - User Stories
+  - Wireframes
+  - Entity Relationship Diagrams
+  - Kanban Board
+    - To Do
+    - In Progress
+    - Done
+    - Wishlist
 
-## Installation
-
-The installation options below are ordered from least configurable to most configurable.
+## Usage and Installation
 
 ### PlatformONE
 
@@ -123,6 +122,12 @@ port for the UI is accessed in the code by referencing
 | cors           | Runtime     | CORS middleware    |
 | pg             | Runtime     | Postgres client    |
 | bcrypt         | Runtime     | Encryption library |
+
+## Team
+- Andrew Pham: Frontend
+- Justin Law: Integration
+- Mark Terry: Backend
+- Noah Loy: Frontend
 
 ## License
 
