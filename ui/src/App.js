@@ -27,6 +27,8 @@ import Paper from "@material-ui/core/Paper";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
 
+import CreateTemplate from "./components/CreateTemplate"
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -142,7 +144,7 @@ const App = () => {
               <MenuIcon />
             </IconButton>
             <img
-              src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/docs/icon.png"
+              src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/ui/public/favicon.png"
               style={{
                 position: "flex",
                 top: "10px",
@@ -235,7 +237,7 @@ const App = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>Create</Paper>
+            <Paper className={classes.paper}><CreateTemplate /></Paper>
           </Container>
         </main>
       </div>
