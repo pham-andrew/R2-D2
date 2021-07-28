@@ -22,9 +22,30 @@ router.get("/", async (req, res) => {
   await knex("users")
     .select("*")
     .then((data) => {
-    res.status(200).json(data).end()
-    })
-})
+      res.status(200).json(data).end();
+    });
+});
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  // console.log(id);
+  // console.log(include_users);
+  await knex("users")
+    .where("users.id", id)
+    .select(
+      "users.id AS user_id",
+      "users.fname",
+      "users.lname",
+      "users.rank",
+      "groups.id AS group_id",
+      "groups.name AS group_name"
+    )
+    .join("memberships", "users.id", "=", "memberships.user_id")
+    .join("groups", "memberships.group_id", "=", "groups.id")
+    .then((data) => {
+      res.status(200).json(data).end();
+    });
+});
 
 router.post("/post", async (req, res) => {
   let password = await encrypt(`${req.body.password}`, 12);
@@ -48,16 +69,6 @@ router.post("/post", async (req, res) => {
         })
         .end()
     );
-});
-
-router.delete("/delete", async (req, res) => {
-  await knex("users")
-    .del()
-    .where({
-      id: req.body.userId,
-    })
-    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
-    .then(res.status(200).json({message: `Success`}).end())
 });
 
 router.post("/login", async (req, res) => {
@@ -88,13 +99,13 @@ router.post("/login", async (req, res) => {
         res
           .cookie("token", token, { maxAge: 90000000 })
           .json({
-            userId: rows[0].id,
+            user_id: rows[0].id,
             rank: rows[0].rank,
             fname: rows[0].fname,
             lname: rows[0].lname,
             password: `${req.body.password}`,
             email: rows[0].email,
-            role: rows[0].role
+            role: rows[0].role,
           })
           .status(200)
           .end();
@@ -121,13 +132,49 @@ router.post("/persist", async (req, res) => {
         .json({
           userId: rows[0].id,
           username: rows[0].name,
-          password: "For security reasons please login again to see your password.",
+          password:
+            "For security reasons please login again to see your password.",
           email: rows[0].email,
         })
         .status(200)
         .end();
     })
     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }));
+});
+
+router.patch("/patch", async (req, res) => {
+  let password = await encrypt(`${req.body.password}`, 12);
+  await knex("users")
+    .where({
+      id: req.body.user_id,
+    })
+    .update({
+      name: req.body.name,
+      email: req.body.email,
+      password: password,
+    })
+    .returning("id")
+    .then((data) =>
+      res.status(200).json({ message: `Success`, data: data }).end()
+    )
+    .catch(() =>
+      res
+        .status(404)
+        .json({
+          message: `Provided email has already been registered and exists in our database. Please try using a different email or login with the existing email.`,
+        })
+        .end()
+    );
+});
+
+router.delete("/delete", async (req, res) => {
+  await knex("users")
+    .del()
+    .where({
+      id: req.body.user_id,
+    })
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+    .then(res.status(200).json({ message: `Success` }).end());
 });
 
 module.exports = router;

@@ -1,5 +1,4 @@
 exports.seed = function (knex) {
-
   return knex("users")
     .del()
     .then(function () {
@@ -12,7 +11,7 @@ exports.seed = function (knex) {
           password:
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
-          role: "Jedi Master"
+          role: "Jedi Master",
         },
         {
           rank: "TSgt",
@@ -22,7 +21,7 @@ exports.seed = function (knex) {
           password:
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
-          role: "Jedi Master"
+          role: "Jedi Master",
         },
         {
           rank: "2Lt",
@@ -33,7 +32,7 @@ exports.seed = function (knex) {
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
           role: "Padawan",
-          supervisor_id: 1
+          supervisor_id: 1,
         },
         {
           rank: "SSgt",
@@ -44,7 +43,7 @@ exports.seed = function (knex) {
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
           role: "Padawan",
-          supervisor_id: 3
+          supervisor_id: 3,
         },
         {
           rank: "A1C",
@@ -55,7 +54,7 @@ exports.seed = function (knex) {
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
           role: "Padawan",
-          supervisor_id: 4
+          supervisor_id: 4,
         },
         {
           rank: "Maj",
@@ -65,10 +64,10 @@ exports.seed = function (knex) {
           password:
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
-          role: "Padawan"
+          role: "Padawan",
         },
         {
-          rank: "A1C",
+          rank: "TSgt",
           fname: "Joe",
           lname: "Schmoe",
           email: "joe.schmoe.9000@spaceforce.mil",
@@ -76,10 +75,10 @@ exports.seed = function (knex) {
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
           role: "Padawan",
-          supervisor_id: 4
+          supervisor_id: 4,
         },
         {
-          rank: "A1C",
+          rank: "GS-09",
           fname: "Tanzia",
           lname: "Eusufzai",
           email: "tanzia.eusufzai.9000@spaceforce.mil",
@@ -87,7 +86,18 @@ exports.seed = function (knex) {
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
           role: "Padawan",
-          supervisor_id: 7
+          supervisor_id: 7,
+        },
+        {
+          rank: "NH-03",
+          fname: "Rick",
+          lname: "Roll",
+          email: "rick.roll.9000@spaceforce.mil",
+          password:
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+          token: "",
+          role: "Padawan",
+          supervisor_id: 2,
         },
       ]);
     });
