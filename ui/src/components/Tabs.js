@@ -51,13 +51,6 @@ function TabPanel(props) {
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
   };
-  
-  function a11yProps(index) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
 
 const CustomTabs = () => {
   const classes = useStyles();
@@ -107,11 +100,6 @@ const CustomTabs = () => {
     setTabList(tabs);
   };
 
-  const [tab, setTab] = React.useState(0);
-    const handleTab = (event, newValue) => {
-        setTab(newValue);
-    };
-
   return (
     <>
         <AppBar position="static" className={classes.appBar}>
@@ -141,9 +129,15 @@ const CustomTabs = () => {
             </Grid>
         </Grid>
         </AppBar>
-        <TabPanel value={tab} index={0}>
-            <Stage />
-        </TabPanel>
+
+        {/* todo make persistent */}
+        {tabList.map(tab => (
+            <TabPanel value={tabValue} index={tab.id}>
+                <Stage />
+            </TabPanel>
+        ))}
+
+        
     </>
   );
 };
