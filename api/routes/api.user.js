@@ -28,20 +28,27 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  // console.log(id);
-  // console.log(include_users);
   await knex("users")
     .where("users.id", id)
-    .select(
-      "users.id AS user_id",
-      "users.fname",
-      "users.lname",
-      "users.rank",
-      "groups.id AS group_id",
-      "groups.name AS group_name"
-    )
-    .join("memberships", "users.id", "=", "memberships.user_id")
-    .join("groups", "memberships.group_id", "=", "groups.id")
+    .select("*")
+    .then(async (user) => {
+      let results = [];
+      let tmpObj = {
+        user_id: user[0].id,
+        fname: user[0].fname,
+        lname: user[0].lname,
+        rank: user[0].rank,
+        email: user[0].email,
+        supervisor_id: user[0].supervisor_id,
+      };
+      tmpObj.groups = await knex
+        .select("groups.id AS group_id", "groups.name AS group_name")
+        .from("groups")
+        .join("memberships", "groups.id", "=", "memberships.group_id")
+        .where("memberships.user_id", user[0].id);
+      results.push(tmpObj);
+      return results;
+    })
     .then((data) => {
       res.status(200).json(data).end();
     });

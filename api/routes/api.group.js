@@ -6,24 +6,35 @@ const knex = require("knex")(
 
 router.get("/", async (req, res) => {
   let include_users = req.query.include_users;
-  // console.log(include_users);
   if (include_users) {
     await knex
-      .select(
-        "groups.id AS group_id",
-        "groups.name AS group_name",
-        "users.id AS user_id",
-        "users.fname",
-        "users.lname",
-        "users.rank",
-        "users.email",
-        "users.supervisor_id"
-      )
+      .select("id AS group_id", "name AS group_name")
       .from("groups")
-      .join("memberships", "groups.id", "=", "memberships.group_id")
-      .join("users", "memberships.user_id", "=", "users.id")
+      .then(async (groups) => {
+        let results = [];
+        // return groups.map(async (group) => {
+        for (let i = 0; i < groups.length; i++) {
+          let tmpObj = {};
+          tmpObj.group_id = groups[i].group_id;
+          tmpObj.group_name = groups[i].group_name;
+          tmpObj.users = await knex
+            .select(
+              "users.id AS user_id",
+              "users.fname",
+              "users.lname",
+              "users.rank",
+              "users.email",
+              "users.supervisor_id"
+            )
+            .from("users")
+            .join("memberships", "users.id", "=", "memberships.user_id")
+            .where("memberships.group_id", groups[i].group_id);
+          results.push(tmpObj);
+        }
+        return results;
+      })
       .then((data) => {
-        res.status(200).json(data).end();
+        res.status(201).json(data).end();
       });
   } else {
     await knex("groups")
@@ -36,8 +47,6 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  //console.log(id);
-  // console.log(include_users);
   await knex("groups")
     .where("groups.id", id)
     .select(

@@ -7,13 +7,13 @@ exports.seed = function (knex) {
           name: "Engineering Review Board",
           group_id: 7,
           instructions:
-            "Please provide the technical documentation you are putting up for ERB, as well as a CRM template and any other reference documenation required to properly review your change proposal(s). Please note that it is recommended that you provide a summarized document or powerpoint of your change proposal(s) for the reviewers.",
+            "Please provide the technical documentation you are putting up for CCB, as well as a CRM template and any other reference documentation required to properly review your change proposal(s). Please note that it is recommended that you provide a summarized version of your change proposal(s) in document or powerpoint form for the reviewers quick reference.",
         },
         {
           name: "Configuration Control Board",
           group_id: 7,
           instructions:
-            "Please provide the technical documentation you are putting up for CCB, as well as a CRM template and any other reference documenation required to properly review your change proposal(s). Please note that it is recommended that you provide a summarized document or powerpoint of your change proposal(s) for the reviewers.",
+            "Please provide the technical documentation you are putting up for CCB, as well as a CRM template and any other reference documentation required to properly review your change proposal(s). Please note that it is recommended that you provide a summarized version of your change proposal(s) in document or powerpoint form for the reviewers quick reference.",
         },
         {
           name: "Quarterly Awards Package",
