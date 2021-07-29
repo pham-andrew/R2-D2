@@ -7,6 +7,8 @@ const app = express();
 const user = require("./routes/api.user.js");
 const group = require("./routes/api.group.js");
 const routeTemplates = require("./routes/api.routes.templates.js");
+const stageTemplates = require("./routes/api.stages.templates.js");
+const requests = require("./routes/api.routes.requests.js");
 
 // Declared Dependencies
 app.use(express.json());
@@ -16,6 +18,8 @@ app.use(cors());
 app.use("/users", user);
 app.use("/groups", group);
 app.use("/routes/templates", routeTemplates);
+app.use("/stages/templates", stageTemplates);
+app.use("/routes/requests", requests);
 
 // Test
 app.get("/", (req, res) => {

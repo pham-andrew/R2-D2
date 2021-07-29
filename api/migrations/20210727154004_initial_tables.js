@@ -108,7 +108,7 @@ exports.up = function (knex) {
           .references("id")
           .inTable("users")
           .onUpdate("CASCADE");
-        table.integer("current_stage");
+        table.integer("current_stage").defaultTo(1);
         table
           .integer("route_template_id")
           .notNullable()
@@ -119,6 +119,7 @@ exports.up = function (knex) {
         table.text("change_log");
         table.text("status");
         table.timestamps(true, true); //created_at and updated_at
+        table.date("completed_at");
         table.unique(["subject"]);
       });
     })
@@ -164,7 +165,6 @@ exports.up = function (knex) {
         table.text("notes");
         table
           .integer("user_id")
-          .notNullable()
           .references("id")
           .inTable("users")
           .onUpdate("CASCADE");
