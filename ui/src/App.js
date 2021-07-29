@@ -28,6 +28,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
 
 import CreateTemplate from "./components/CreateTemplate"
+import InitialRouting from "./components/InitialRouting";
 
 const drawerWidth = 240;
 
@@ -243,14 +244,14 @@ const App = () => {
       </div>
     );
 
-  if (page === "routing")
+  if (page === "initial")
     return (
       <div className={classes.root}>
         {nav}
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>Initial Routing</Paper>
+            <Paper className={classes.paper}><InitialRouting /></Paper>
           </Container>
         </main>
       </div>

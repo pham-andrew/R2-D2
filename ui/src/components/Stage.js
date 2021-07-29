@@ -102,9 +102,6 @@ const Stage = () => {
     </Paper>
   );
 
-
-
-
     return(
         <Grid container>
             <Grid item xs={8}>
