@@ -1,3 +1,5 @@
+//bug: deletion not working sometimes, stale state maybe?
+
 import React, { useState } from "react";
 import { AppBar, Tabs, Tab, Grid, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
