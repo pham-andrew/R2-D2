@@ -1,4 +1,4 @@
-# R2D2 - Rapid Routing & Decision-making Dashboard
+# R2/D2 - Rapid Routing & Decision-making Dashboard
 
 <img src="./ui/public/favicon.png" alt="R2D2" width="40%"/>
 
@@ -13,7 +13,7 @@
 
 ## Overview
 
-The Rapid Routing and Decision-making Dashboard (R2D2) is a unit-centric task-flow management system that enables accountable and informed decision-making at all levels in the CoC. 
+The Rapid Routing and Decision-making Dashboard (R2/D2) is a unit-centric task-flow management system that enables accountable and informed decision-making at all levels in the CoC.
 
 Most of today's task-flows involve one of the following:
 
@@ -23,11 +23,11 @@ Most of today's task-flows involve one of the following:
 
 All of these methods significantly reduce both the velocity and efficacy of the decision-making loop and provide little to no interconnectivity or modularity for a digitally-oriented force.
 
-R2D2 is built by those of us who have experienced the pain of using the existing systems and wanted something better. Our team's instantiation of task-flow management fills in the gaps left by those systems and provides a solid foundation for future improvements such as: more intra-unit customizability, inter-unit task-flow hooks, Active Directory or LDAP-based data injection, and operational metrics generation.
+R2/D2 is built by those of us who have experienced the pain of using the existing systems and wanted something better. Our team's instantiation of task-flow management fills in the gaps left by those systems and provides a solid foundation for future improvements such as: more intra-unit customizability, inter-unit task-flow hooks, Active Directory or LDAP-based data injection, and operational metrics generation.
 
 ## Description
 
-From the database schema to the user interface (UI) and experience (UX), this full-stack PostgreSQL, ExpressJS, ReactJS, and NodeJS (PERN) application was designed with scalability and accessibility in mind. The UI contains conditional rendering, modular dialog components, and intuitive clickstreams for user input and notification. The API handles requests sent to it by the UI and forwards them to the PostgreSQL database. SQL is used in these queries to find, join, and manipulate data so that the API can send the right data back to the UI for display. User passwords are protected with encryption, and authorization is required to access protected routes. Cookies containing an encrytped secret token are used to persist login and re-acquire state for a logged-in user. The PostgreSQL database is set-up with data validation and cascading. Foreign and primary key relationships dynamically alter table data based on user changes and inputs.
+From the database schema to the user interface (UI) and experience (UX), this full-stack PostgreSQL, ExpressJS, ReactJS, and NodeJS (PERN) application was designed with scalability and accessibility in mind. The UI contains conditional rendering, modular dialog components, and intuitive clickstreams for user input and notification. The API handles requests sent to it by the UI and forwards them to the PostgreSQL database. SQL is used in these queries to find, join, and manipulate data so that the API can send the right data back to the UI for display. User passwords are protected with encryption, and authorization is required to access protected routes. Cookies containing an encrypted secret token are used to persist login and re-acquire state for a logged-in user. The PostgreSQL database is set-up with data validation and cascading. Foreign and primary key relationships dynamically alter table data based on user changes and inputs.
 
 Below is a breakdown of the stack:
 
@@ -124,6 +124,7 @@ port for the UI is accessed in the code by referencing
 | bcrypt         | Runtime     | Encryption library |
 
 ## Team
+
 - Andrew Pham: Frontend
 - Justin Law: Integration
 - Mark Terry: Backend
