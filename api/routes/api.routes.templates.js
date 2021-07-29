@@ -26,18 +26,63 @@ router.get("/:route_id", async (req, res) => {
     )
     .where({ route_template_id: req.params.route_id })
     .select(
-      "route_templates.name as route_name",
-      "route_templates.group_id",
-      "route_templates.instructions as route_instructions",
       "stage_templates.name as stage_name",
       "stage_templates.instructions as stage_instructions",
-      "stage_templates.suspense_hours"
+      "stage_templates.suspense_hours",
+      "route_templates.name as route_name",
+      "route_templates.updated_at as last_updated",
+      "route_templates.group_id as route_creator_id",
+      "route_templates.instructions as route_instructions"
     )
     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
     .then((data) => {
       res.status(200).json(data).end();
     });
 });
+
+// router.get("/:route_id/substages", async (req, res) => {
+//   await knex("stage_templates")
+//     .join(
+//       "route_templates",
+//       "route_templates.id",
+//       "stage_templates.route_template_id"
+//     )
+//     .where({ route_template_id: req.params.route_id })
+//     .select(
+//       "route_templates.name as route_name",
+//       "route_templates.group_id",
+//       "route_templates.instructions as route_instructions",
+//       "stage_templates.name as stage_name",
+//       "stage_templates.instructions as stage_instructions",
+//       "stage_templates.suspense_hours"
+//     )
+//     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+//     .then((data) => {
+//       res.status(200).json(data).end();
+//     });
+// });
+
+// router.get("/:route_id/substages/:substage_id", async (req, res) => {
+//   await knex("stage_templates")
+//     .join(
+//       "route_templates",
+//       "route_templates.id",
+//       "stage_templates.route_template_id"
+//     )
+//     .where({ route_template_id: req.params.route_id })
+//     .select(
+//       "route_templates.name as route_name",
+//       "route_templates.group_id",
+//       "route_templates.instructions as route_instructions",
+//       "stage_templates.name as stage_name",
+//       "stage_templates.instructions as stage_instructions",
+//       "stage_templates.suspense_hours"
+//     )
+//     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+//     .then((data) => {
+//       res.status(200).json(data).end();
+//     });
+// });
 
 router.post("/post", async (req, res) => {
   await knex("route_templates")
