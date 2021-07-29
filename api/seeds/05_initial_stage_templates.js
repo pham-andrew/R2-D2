@@ -54,13 +54,6 @@ exports.seed = function (knex) {
             "Please review the attached technical documentation and provide any other necessary attachments (CRMs, redlines, etc.) before accepting or rejecting the progression of this request to the next stage. All rejections and regressions to the previous stage must be accompanied by a rationale in your notes section as well as any supporting attachments.",
         },
         {
-          name: "Section Review",
-          route_template_id: 3,
-          suspense_hours: 72, // 3 days
-          instructions:
-            "Please review the attached rewards package, and approve the package for submittal to the CSS.",
-        },
-        {
           name: "CSS Review",
           route_template_id: 3,
           suspense_hours: 72, // 3 days

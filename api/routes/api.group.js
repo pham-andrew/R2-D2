@@ -6,27 +6,6 @@ const knex = require("knex")(
 
 router.get("/", async (req, res) => {
   let include_users = req.query.include_users;
-  // console.log(include_users);
-  // if (include_users === "true") {
-  //   await knex
-  //     .select(
-  //       "groups.id AS group_id",
-  //       "groups.name AS group_name",
-  //       "users.id AS user_id",
-  //       "users.fname",
-  //       "users.lname",
-  //       "users.rank",
-  //       "users.email",
-  //       "users.supervisor_id"
-  //     )
-  //     .from("groups")
-  //     .join("memberships", "groups.id", "=", "memberships.group_id")
-  //     .join("users", "memberships.user_id", "=", "users.id")
-  //     .orderBy("group_id")
-  //     .then((data) => {
-  //       res.status(202).json(data).end();
-  //     });
-  // }
   if (include_users) {
     await knex
       .select("id AS group_id", "name AS group_name")
@@ -68,8 +47,6 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  //console.log(id);
-  // console.log(include_users);
   await knex("groups")
     .where("groups.id", id)
     .select(

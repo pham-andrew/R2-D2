@@ -1,10 +1,14 @@
 const path = require("path");
 
-const dbConnection =  process.env.DATABASE_URL ||
-  `postgres://postgres:docker@localhost:5432/r2d2`;
+const dbConnection =
+  process.env.NODE_ENV === "production"
+    ? `postgres://${process.env.PG_RW_USER}:${process.env.APP_DB_RW_PASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PG_DATABASE}`
+    : `postgres://postgres:docker@localhost:5432/r2d2`;
+
+console.log(dbConnection);
 
 module.exports = {
-development: {
+  development: {
     client: "pg",
     connection: dbConnection,
     ssl: {
@@ -36,7 +40,9 @@ development: {
   production: {
     client: "pg",
     connection: dbConnection,
-    ssl: true,
+    ssl: {
+      rejectUnauthorized: false,
+    },
     pool: {
       min: 2,
       max: 10,

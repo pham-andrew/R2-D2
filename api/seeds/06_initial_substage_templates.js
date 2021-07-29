@@ -40,16 +40,12 @@ exports.seed = function (knex) {
           stage_template_id: 7, // Division
         },
         {
-          group_id: 9, // Section
-          stage_template_id: 8, // Section
-        },
-        {
           group_id: 2, // CSS
-          stage_template_id: 9, // CSS
+          stage_template_id: 8, // CSS
         },
         {
           group_id: 1, // CC
-          stage_template_id: 10, // CC
+          stage_template_id: 9, // CC
         },
       ]);
     });
