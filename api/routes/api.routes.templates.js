@@ -25,14 +25,36 @@ router.post("/post", async (req, res) => {
       instructions: req.body.instructions,
     })
     .returning("id")
+    .then(async (data) => {
+      let stage_templates = req.body.stages;
+      for (let i = 0; i < stage_templates.length; i++) {
+        let substage_templates = stage_templates[i].substages;
+        await knex("stage_templates")
+          .insert({
+            route_template_id: data[0],
+            name: stage_templates[i].name,
+            suspense_hours: stage_templates[i].suspense_hours,
+            instructions: stage_templates[i].instructions,
+          })
+          .returning("id")
+          .then(async (data) => {
+            for (let j = 0; j < substage_templates.length; j++) {
+              await knex("substage_templates").insert({
+                stage_template_id: data[0],
+                group_id: substage_templates[j].group_id,
+              });
+            }
+          });
+      }
+    })
     .then((data) =>
       res.status(200).json({ message: `Success`, data: data }).end()
     )
-    .catch(() =>
+    .catch((err) =>
       res
         .status(404)
         .json({
-          message: `Provided route name has already been used and created. Please use a different name or modify the existing route.`,
+          message: `Encountered ${err}`,
         })
         .end()
     );
@@ -40,24 +62,42 @@ router.post("/post", async (req, res) => {
 
 router.patch("/patch", async (req, res) => {
   await knex("route_templates")
-    .where({
-      id: req.body.route_template_id,
-    })
+    .where({ id: req.body.route_id })
     .update({
       name: req.body.name,
       group_id: req.body.group_id,
       instructions: req.body.instructions,
-      updated_at: new Date(),
     })
-    .returning("id")
+    .then(async () => {
+      let stage_templates = req.body.stages;
+      for (let i = 0; i < stage_templates.length; i++) {
+        let substage_templates = stage_templates[i].substages;
+        await knex("stage_templates")
+          .where({ id: stage_templates[i].stage_id })
+          .update({
+            name: stage_templates[i].name,
+            suspense_hours: stage_templates[i].suspense_hours,
+            instructions: stage_templates[i].instructions,
+          })
+          .then(async () => {
+            for (let j = 0; j < substage_templates.length; j++) {
+              await knex("substage_templates")
+                .where({ id: substage_templates[j].substage_id })
+                .update({
+                  group_id: substage_templates[j].group_id,
+                });
+            }
+          });
+      }
+    })
     .then((data) =>
       res.status(200).json({ message: `Success`, data: data }).end()
     )
-    .catch(() =>
+    .catch((err) =>
       res
         .status(404)
         .json({
-          message: `Provided route name has already been used and created. Please use a different name or modify the existing route.`,
+          message: `Encountered ${err}`,
         })
         .end()
     );
@@ -125,6 +165,56 @@ router.get("/get/all/details", async (req, res) => {
   let results = [];
   await knex("route_templates")
     .select("*")
+    .then(async (rows) => {
+      for (let i = 0; i < rows.length; i++) {
+        results.push({
+          route_name: rows[i].name,
+          route_id: rows[i].id,
+          group_id: rows[i].group_id,
+          route_instructions: rows[i].instructions,
+          stages: [],
+        });
+
+        await knex("stage_templates")
+          .select("*")
+          .where({ route_template_id: rows[i].id })
+          .then(async (rows) => {
+            for (let j = 0; j < rows.length; j++) {
+              results[i].stages.push({
+                stage_id: rows[j].id,
+                stage_name: rows[j].name,
+                stage_instructions: rows[j].instructions,
+                suspense_hours: rows[j].suspense_hours,
+                substages: [],
+              });
+
+              await knex("substage_templates")
+                .select("*")
+                .where({ stage_template_id: rows[j].id })
+                .then((rows) => {
+                  for (let k = 0; k < rows.length; k++) {
+                    results[i].stages[j].substages.push({
+                      substage_id: rows[k].id,
+                      group_id: rows[k].group_id,
+                    });
+                  }
+                });
+            }
+          });
+      }
+      return results;
+    })
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+    .then((data) => {
+      res.status(200).json(data).end();
+    });
+});
+
+router.get("/get/all/details/:route_id", async (req, res) => {
+  let results = [];
+  await knex("route_templates")
+    .select("*")
+    .where({ id: req.params.route_id })
     .then(async (rows) => {
       for (let i = 0; i < rows.length; i++) {
         results.push({

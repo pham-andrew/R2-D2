@@ -10,9 +10,10 @@ exports.seed = function (knex) {
           comments: "Drafted package, ready for CSS!",
           current_stage: 2,
           status: "En route",
-          change_log: `Name: SSgt Banks, Date: ${Date.now()}\n
-          Comments: Drafted package, ready for CSS!\n\n
-          Name: TSgt Terry, Date: ${Date.now()}\n  Comments: Made edits and attached, think we got a group winner over here.`,
+          change_log: `Name: SSgt Banks, Date: ${Date.now()},
+          Comments: Drafted package, ready for CSS!\n
+          Name: TSgt Terry, Date: ${Date.now()},
+          Comments: Made edits and attached, think we got a group winner over here.\n`,
         },
       ]);
     })
@@ -41,7 +42,7 @@ exports.seed = function (knex) {
         {
           group_id: 2, // CSS
           request_stage_id: 1,
-          status: "approved",
+          status: "Approved",
           notes:
             "Made edits and attached, think we got a group winner over here.",
           user_id: 2,
