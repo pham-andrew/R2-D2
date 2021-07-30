@@ -7,7 +7,6 @@ import { ValidateEmail } from "../utils/regex";
 import Cookies from "js-cookie";
 
 // components
-import Drawer from "./Drawer";
 import Registration from "./Registration";
 import {
   TextField,
@@ -30,10 +29,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const { setCurrentUser } = useContext(AppContext);
-  const { setOpen } = useContext(AppContext);
+  const { setOpenAlert } = useContext(AppContext);
   const { reload, setReload } = useContext(AppContext);
-  const { setItems } = useContext(AppContext);
-  const { setStores } = useContext(AppContext);
   const { setOpenPrompt } = useContext(AppContext);
   const { baseURL } = useContext(AppContext);
   const { alert, setAlert } = useContext(AppContext);
@@ -95,7 +92,7 @@ export default function Login() {
           await setReload(!reload);
           await setReload(!reload);
           await auth.login(() => {
-            history.push("/home");
+            history.push("/");
           });
         } else {
           await setAlert({
@@ -104,17 +101,17 @@ export default function Login() {
             actions: "",
             closeAction: "Close",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
         }
       })
-      .catch(async (err) => {
+      .catch(async () => {
         await setAlert({
           title: "Login Error",
           text: "The provided email or password does not match our records. Please try again or register as a new user.",
           actions: "",
           closeAction: "Close",
         });
-        await setOpen(true);
+        await setOpenAlert(true);
       });
   };
 
@@ -133,7 +130,6 @@ export default function Login() {
   try {
     return (
       <>
-        <Drawer login={true} />
         <PromptDialog bodyPrompt={prompt} />
         <AlertDialog bodyAlert={alert} />
         <div
@@ -217,8 +213,6 @@ export default function Login() {
     );
   } catch {
     auth.logout(async () => {
-      await setItems([]);
-      await setStores([]);
       await Cookies.remove("token");
       window.location.href = `${window.location.origin}/`;
     });

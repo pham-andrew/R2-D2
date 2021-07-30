@@ -12,17 +12,15 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 export default function AlertDialog({ bodyAlert }) {
   const { open, setOpen } = useContext(AppContext);
-  const { deconflict, setDeconflict } = useContext(AppContext);
 
   const handleCancelAlert = async () => {
     await setOpen(false);
-    await setDeconflict(false);
   };
 
   return (
     <div>
       <Dialog
-        open={open && !deconflict}
+        open={open}
         onClose={handleCancelAlert}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"

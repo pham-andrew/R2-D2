@@ -6,10 +6,9 @@ import { ValidateEmail, ValidatePassword } from "../utils/regex";
 import Cookies from "js-cookie";
 
 // styles
-import "../styles/user.css";
+import "../styles/loading.css";
 
 // components
-import Drawer from "./Drawer.js";
 import {
   makeStyles,
   Paper,
@@ -68,14 +67,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const { currentUser, setCurrentUser } = useContext(AppContext);
-  const { setOpen } = useContext(AppContext);
+  const { setOpenAlert } = useContext(AppContext);
   const { baseURL } = useContext(AppContext);
   const { alert, setAlert } = useContext(AppContext);
   const { reload, setReload } = useContext(AppContext);
-  const [time, setTime] = useState(true);
-  const { setItems } = useContext(AppContext);
-  const { setStores } = useContext(AppContext);
 
+  const [time, setTime] = useState(true);
   const [editName, setEditName] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
   const [editPass, setEditPass] = useState(false);
@@ -97,7 +94,7 @@ export default function Login() {
 
   useEffect(() => {
     const getData = async () => {
-      await fetch(`${baseURL}/users/persist`, {
+      await fetch(`${baseURL}/users`, {
         credentials: "include",
         method: "POST",
         headers: {
@@ -124,7 +121,7 @@ export default function Login() {
               actions: "",
               closeAction: "Close",
             });
-            await setOpen(true);
+            await setOpenAlert(true);
           }
           await setReload(true);
           setTime(false);
@@ -292,7 +289,7 @@ export default function Login() {
         </Button>
       ),
     });
-    await setOpen(true);
+    await setOpenAlert(true);
   };
 
   const editNameHandler = async (e) => {
@@ -314,7 +311,7 @@ export default function Login() {
             text: `Your username was changed to ${name}!`,
             actions: "",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
           await setCurrentUser({
             username: name,
             userId: currentUser.userId,
@@ -327,7 +324,7 @@ export default function Login() {
             text: data.message,
             actions: "",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
         }
       })
       .catch((err) => console.log(err));
@@ -352,7 +349,7 @@ export default function Login() {
             text: `Your email was changed to ${email}!`,
             actions: "",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
           await setCurrentUser({
             username: currentUser.username,
             userId: currentUser.userId,
@@ -365,7 +362,7 @@ export default function Login() {
             text: data.message,
             actions: "",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
         }
       })
       .catch((err) => console.log(err));
@@ -390,7 +387,7 @@ export default function Login() {
             text: `Your password was successfully changed!`,
             actions: "",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
           await setCurrentUser({
             username: currentUser.username,
             userId: currentUser.userId,
@@ -403,7 +400,7 @@ export default function Login() {
             text: data.message,
             actions: "",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
         }
       })
       .catch((err) => console.log(err));
@@ -413,15 +410,7 @@ export default function Login() {
     if (!currentUser.username && time) {
       return (
         <>
-          <Drawer />
-          <main
-            style={{
-              marginTop: 110,
-              marginLeft: 250,
-              marginRight: 40,
-              marginBottom: 70,
-            }}
-          >
+          <main>
             <div className="svg-loader">
               <svg
                 className="svg-container"
@@ -449,15 +438,7 @@ export default function Login() {
     } else {
       return (
         <>
-          <Drawer />
-          <main
-            style={{
-              marginTop: 110,
-              marginLeft: 250,
-              marginRight: 40,
-              marginBottom: 70,
-            }}
-          >
+          <main>
             <AlertDialog bodyAlert={alert} />
             <div className={classes.root}>
               <Grid container spacing={2}>

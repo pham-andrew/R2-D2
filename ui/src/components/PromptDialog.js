@@ -9,13 +9,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default function PromptDialog({ id, bodyPrompt }) {
+export default function PromptDialog({ bodyPrompt }) {
   const { openPrompt, setOpenPrompt } = useContext(AppContext);
-  const { setDeconflict } = useContext(AppContext);
 
   const handleCancelAlert = async () => {
     await setOpenPrompt(false);
-    await setDeconflict(false);
   };
 
   return (

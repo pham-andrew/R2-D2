@@ -1,9 +1,17 @@
 // Dependencies
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import AppContext from "./contexts/AppContext";
 
 // Components
+import CreateTemplate from "./components/CreateTemplate";
+import InitialRouting from "./components/InitialRouting";
+import Account from "./components/Account";
+import Admin from "./components/Admin";
+import Archive from "./components/Archive";
+import Login from "./components/Login";
+
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -26,9 +34,6 @@ import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
-
-import CreateTemplate from "./components/CreateTemplate"
-import InitialRouting from "./components/InitialRouting";
 
 const drawerWidth = 240;
 
@@ -115,7 +120,29 @@ const useStyles = makeStyles((theme) => ({
 const App = () => {
   const classes = useStyles();
 
-  const [page, setPage] = useState("Home");
+  const [currentUser, setCurrentUser] = useState([]);
+  const [reload, setReload] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [openPrompt, setOpenPrompt] = useState(false);
+  const [alert, setAlert] = useState({
+    title: "Title",
+    text: "Text",
+    actions: "Actions",
+    closeAction: "Close",
+  });
+  const [prompt, setPrompt] = useState({
+    title: "Title",
+    text: "Text",
+    actions: "Actions",
+    closeAction: "Close",
+  });
+  const [baseURL] = useState(
+    process.env.NODE_ENV === "development"
+      ? `http://localhost:8080`
+      : `https://sdi05-05.staging.dso.mil/api`
+  );
+
+  const [page, setPage] = useState("Login");
   const [drawerOpen, setDrawerOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
@@ -164,7 +191,7 @@ const App = () => {
             </Typography>
             <IconButton color="inherit">
               <Badge color="secondary">
-                <ExitToAppIcon />
+                <ExitToAppIcon onClick={() => setPage("login")} />
               </Badge>
             </IconButton>
           </Toolbar>
@@ -215,7 +242,7 @@ const App = () => {
                 <ListItemIcon>
                   <AccountBoxIcon />
                 </ListItemIcon>
-                <ListItemText primary="Profile" />
+                <ListItemText disabled={true} primary="Profile" />
               </ListItem>
               <ListItem button onClick={() => setPage("admin")}>
                 <ListItemIcon>
@@ -238,7 +265,9 @@ const App = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}><CreateTemplate /></Paper>
+            <Paper className={classes.paper}>
+              <CreateTemplate />
+            </Paper>
           </Container>
         </main>
       </div>
@@ -251,7 +280,9 @@ const App = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}><InitialRouting /></Paper>
+            <Paper className={classes.paper}>
+              <InitialRouting />
+            </Paper>
           </Container>
         </main>
       </div>
@@ -277,7 +308,7 @@ const App = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>Archive</Paper>
+            <Archive />
           </Container>
         </main>
       </div>
@@ -285,15 +316,33 @@ const App = () => {
 
   if (page === "profile")
     return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>Profile</Paper>
-          </Container>
-        </main>
-      </div>
+      <AppContext.Provider
+        value={{
+          alert,
+          setAlert,
+          prompt,
+          setPrompt,
+          openPrompt,
+          setOpenPrompt,
+          openAlert,
+          setOpenAlert,
+          baseURL,
+          currentUser,
+          setCurrentUser,
+          reload,
+          setReload,
+        }}
+      >
+        <div className={classes.root}>
+          {nav}
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+              <Account />
+            </Container>
+          </main>
+        </div>
+      </AppContext.Provider>
     );
 
   if (page === "admin")
@@ -303,22 +352,79 @@ const App = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>Admin</Paper>
+            <Admin />
+          </Container>
+        </main>
+      </div>
+    );
+
+  if (page === "login")
+    return (
+      <div className={classes.root}>
+        {nav}
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Login />
           </Container>
         </main>
       </div>
     );
 
   return (
-    <div className={classes.root}>
-      {nav}
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Paper className={classes.paper}>Homepage</Paper>
-        </Container>
-      </main>
-    </div>
+    <AppContext.Provider
+      value={{
+        alert,
+        setAlert,
+        prompt,
+        setPrompt,
+        openPrompt,
+        setOpenPrompt,
+        openAlert,
+        setOpenAlert,
+        baseURL,
+        currentUser,
+        setCurrentUser,
+        reload,
+        setReload,
+      }}
+    >
+      <div className={classes.root}>
+        <AppBar position="absolute" className={clsx(classes.appBar)}>
+          <Toolbar className={classes.toolbar}>
+            <img
+              src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/ui/public/favicon.png"
+              style={{
+                position: "flex",
+                top: "10px",
+                height: "45px",
+                paddingRight: "10px",
+              }}
+            />
+            <Typography
+              component="h1"
+              variant="h6"
+              color="inherit"
+              noWrap
+              className={classes.title}
+            >
+              Rapid Routing and Decision Dashboard
+            </Typography>
+            <IconButton color="inherit">
+              <Badge color="secondary">
+                <ExitToAppIcon onClick={() => setPage("login")} />
+              </Badge>
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Login />
+          </Container>
+        </main>
+      </div>
+    </AppContext.Provider>
   );
 };
 
