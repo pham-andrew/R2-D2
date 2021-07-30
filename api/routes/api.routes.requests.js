@@ -22,49 +22,47 @@ router.post("/post", async (req, res) => {
     .insert({
       subject: req.body.subject,
       initiator_id: req.body.initiator_id,
-      route_template_id: req.body.route_id,
+      route_template_id: req.body.route_template_id,
       comments: req.body.comments,
-      current_stage: 1,
-      status: "En route",
       change_log: `Name: ${req.body.rank} ${
         req.body.lname
-      }, Date: ${Date.now()}\n
-      Comments: ${req.body.comments}`,
+      }, Date: ${Date.now()},
+      Comments: ${req.body.comments}\n`,
     })
-    .then(() => {
-      let request_stages = req.body.route_template[0].stages;
-      request_stages
-        .forEach(async (stage) => {
-          let request_substages = stage.substages;
-          await knex("request_stages")
-            .insert({
-              route_id: req.body.route_id,
-              name: stage.name,
-              suspense_hours: stage.suspense_hours,
-              instructions: stage.instructions,
-            })
-            .then(() => {
-              request_substages.forEach(async (substage) => {
-                await knex("request_substages").insert({
-                  route_id: stage.id,
-                  name: substage.name,
-                  group_id: substage.group_id,
-                });
+    .returning("id")
+    .then(async (data) => {
+      let request_stages = req.body.route_template.stages;
+      for (let i = 0; i < request_stages.length; i++) {
+        let request_substages = request_stages[i].substages;
+        await knex("request_stages")
+          .insert({
+            request_id: data[0],
+            name: request_stages[i].stage_name,
+            suspense_hours: request_stages[i].suspense_hours,
+            instructions: request_stages[i].stage_instructions,
+          })
+          .returning("id")
+          .then(async (data) => {
+            for (let j = 0; j < request_substages.length; j++) {
+              await knex("request_substages").insert({
+                request_stage_id: data[0],
+                group_id: request_substages[j].group_id,
               });
-            });
+            }
+          });
+      }
+    })
+    .then((data) =>
+      res.status(200).json({ message: `Success`, data: data }).end()
+    )
+    .catch(() =>
+      res
+        .status(404)
+        .json({
+          message: `Error, you must use the force.`,
         })
-        .then((data) =>
-          res.status(200).json({ message: `Success`, data: data }).end()
-        )
-        .catch(() =>
-          res
-            .status(404)
-            .json({
-              message: `Error, you must use the force.`,
-            })
-            .end()
-        );
-    });
+        .end()
+    );
 });
 
 router.patch("/patch", async (req, res) => {
@@ -79,8 +77,8 @@ router.patch("/patch", async (req, res) => {
       updated_at: new Date(),
       change_log: `Name: ${req.body.rank} ${
         req.body.lname
-      }, Date: ${Date.now()}\n
-      Comments: ${req.body.comments}`,
+      }, Date: ${Date.now()},
+      Comments: ${req.body.comments}\n`,
     })
     .returning("id")
     .then((data) =>
@@ -96,6 +94,101 @@ router.patch("/patch", async (req, res) => {
     );
 });
 
+router.patch("/patch/substage/approve", async (req, res) => {
+  const {
+    rank,
+    lname,
+    notes,
+    request_stage_id,
+    request_id,
+    change_log,
+    final_stage,
+    current_stage,
+  } = req.body;
+  const status = "Approved";
+  let proceed = true;
+
+  await knex("request_substages")
+    .where({
+      id: req.body.substage_id,
+    })
+    .update({
+      status: status,
+      notes: notes,
+      user_id: req.body.user_id,
+      completed_at: new Date(),
+    })
+    .then(async () => {
+      return knex("request_substages").select("status").where({
+        request_stage_id: request_stage_id,
+      });
+    })
+    .then(async (rows) => {
+      console.log(rows);
+      rows.forEach((row) => {
+        if (row.status !== "Approved") return (proceed = false);
+      });
+      if (proceed) {
+        await knex("request_stages")
+          .where({
+            id: request_stage_id,
+          })
+          .update({
+            status: status,
+            completed_at: new Date(),
+          });
+      }
+    })
+    .then(async () => {
+      if (proceed && final_stage) {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            status: "Completed",
+            completed_at: new Date(),
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+          });
+      } else if (proceed) {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            current_stage: current_stage + 1,
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+          });
+      } else {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()},
+            Comments: ${notes}\n`,
+          });
+      }
+    })
+    .then((data) =>
+      res.status(200).json({ message: `Success`, data: data }).end()
+    )
+    .catch(() =>
+      res
+        .status(404)
+        .json({
+          message: `Error, you have entered the darkside.`,
+        })
+        .end()
+    );
+});
+
 router.delete("/delete", async (req, res) => {
   await knex("requests")
     .del()
@@ -106,100 +199,169 @@ router.delete("/delete", async (req, res) => {
     .then(res.status(200).json({ message: `Success` }).end());
 });
 
-// /** ROUTE_STAGE_SUBSTAGE TEMPLATES JOIN TABLES **/
-// router.get("/:route_id", async (req, res) => {
-//   await knex("stage_templates")
-//     .join(
-//       "route_templates",
-//       "route_templates.id",
-//       "stage_templates.route_template_id"
-//     )
-//     .where({ route_template_id: req.params.route_id })
-//     .select(
-//       "route_templates.id AS route_id",
-//       "stage_templates.id AS stage_id",
-//       "stage_templates.name AS stage_name",
-//       "stage_templates.instructions AS stage_instructions",
-//       "stage_templates.suspense_hours"
-//     )
-//     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
-//     .then((data) => {
-//       res.status(200).json(data).end();
-//     });
-// });
+/** REQUEST_STAGE_SUBSTAGE JOIN TABLES **/
+router.get("/:request_id", async (req, res) => {
+  await knex("request_stages")
+    .join("requests", "requests.id", "request_stages.request_id")
+    .where({ request_id: req.params.request_id })
+    .select(
+      "requests.id AS request_id",
+      "request_stages.id AS stage_id",
+      "request_stages.name AS stage_name",
+      "request_stages.instructions AS stage_instructions",
+      "request_stages.suspense_hours"
+    )
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+    .then((data) => {
+      res.status(200).json(data).end();
+    });
+});
 
-// router.get("/:route_id/:stage_id", async (req, res) => {
-//   await knex("substage_templates")
-//     .join(
-//       "stage_templates",
-//       "stage_templates.id",
-//       "substage_templates.stage_template_id"
-//     )
-//     .where({ stage_template_id: req.params.stage_id })
-//     .join(
-//       "route_templates",
-//       "route_templates.id",
-//       "stage_templates.route_template_id"
-//     )
-//     .where({ route_template_id: req.params.route_id })
-//     .select(
-//       "stage_templates.route_template_id AS route_id",
-//       "substage_templates.stage_template_id AS stage_id",
-//       "substage_templates.id AS substage_id",
-//       "substage_templates.group_id"
-//     )
-//     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
-//     .then((data) => {
-//       res.status(200).json(data).end();
-//     });
-// });
+router.get("/:request_id/:request_stage_id", async (req, res) => {
+  await knex("request_substages")
+    .join(
+      "request_stages",
+      "request_stages.id",
+      "request_substages.request_stage_id"
+    )
+    .where({ request_stage_id: req.params.request_stage_id })
+    .join("requests", "requests.id", "request_stages.request_id")
+    .where({ request_id: req.params.request_id })
+    .select(
+      "request_stages.request_id AS request_id",
+      "request_substages.request_stage_id AS stage_id",
+      "request_substages.id AS substage_id",
+      "request_substages.group_id"
+    )
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+    .then((data) => {
+      res.status(200).json(data).end();
+    });
+});
 
-// router.get("/get/all/details", async (req, res) => {
-//   let results = [];
-//   await knex("route_templates")
-//     .select("*")
-//     .then(async (rows) => {
-//       for (let i = 0; i < rows.length; i++) {
-//         results.push({
-//           route_name: rows[i].name,
-//           route_id: rows[i].id,
-//           route_instructions: rows[i].instructions,
-//           stages: [],
-//         });
+router.get("/get/all/details", async (req, res) => {
+  let results = [];
+  await knex("requests")
+    .select("*")
+    .then(async (rows) => {
+      for (let i = 0; i < rows.length; i++) {
+        results.push({
+          request_subject: rows[i].subject,
+          request_id: rows[i].id,
+          request_instructions: rows[i].instructions,
+          subject: req.body.subject,
+          initiator_id: rows[i].initiator_id,
+          route_template_id: rows[i].route_template_id,
+          comments: rows[i].comments,
+          current_stage: rows[i].current_stage,
+          status: rows[i].status,
+          change_log: rows[i].change_log,
+          stages: [],
+        });
 
-//         await knex("stage_templates")
-//           .select("*")
-//           .where({ route_template_id: rows[i].id })
-//           .then(async (rows) => {
-//             for (let j = 0; j < rows.length; j++) {
-//               results[i].stages.push({
-//                 stage_id: rows[j].id,
-//                 stage_name: rows[j].name,
-//                 stage_instructions: rows[j].instructions,
-//                 suspense_hours: rows[j].suspense_hours,
-//                 substages: [],
-//               });
+        await knex("request_stages")
+          .select("*")
+          .where({ request_id: rows[i].id })
+          .orderBy("id")
+          .then(async (rows) => {
+            for (let j = 0; j < rows.length; j++) {
+              results[i].stages.push({
+                stage_id: rows[j].id,
+                stage_name: rows[j].name,
+                stage_instructions: rows[j].instructions,
+                suspense_hours: rows[j].suspense_hours,
+                completed_at: rows[j].completed_at,
+                status: rows[j].status,
+                substages: [],
+              });
 
-//               await knex("substage_templates")
-//                 .select("*")
-//                 .where({ stage_template_id: rows[j].id })
-//                 .then((rows) => {
-//                   for (let k = 0; k < rows.length; k++) {
-//                     results[i].stages[j].substages.push({
-//                       substage_id: rows[k].id,
-//                       group_id: rows[k].group_id,
-//                     });
-//                   }
-//                 });
-//             }
-//           });
-//       }
-//       return results;
-//     })
-//     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
-//     .then((data) => {
-//       res.status(200).json(data).end();
-//     });
-// });
+              await knex("request_substages")
+                .select("*")
+                .where({ request_stage_id: rows[j].id })
+                .then((rows) => {
+                  for (let k = 0; k < rows.length; k++) {
+                    results[i].stages[j].substages.push({
+                      stage_id: rows[k].request_stage_id,
+                      substage_id: rows[k].id,
+                      group_id: rows[k].group_id,
+                      status: rows[k].status,
+                      notes: rows[k].notes,
+                      user_id: rows[k].user_id,
+                      completed_at: rows[k].completed_at,
+                    });
+                  }
+                });
+            }
+          });
+      }
+      return results;
+    })
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+    .then((data) => {
+      res.status(200).json(data).end();
+    });
+});
+
+router.get("/get/all/details/:request_id", async (req, res) => {
+  let results = [];
+  await knex("requests")
+    .select("*")
+    .where({ id: req.params.request_id })
+    .then(async (rows) => {
+      for (let i = 0; i < rows.length; i++) {
+        results.push({
+          request_subject: rows[i].subject,
+          request_id: rows[i].id,
+          request_instructions: rows[i].instructions,
+          initiator_id: rows[i].initiator_id,
+          route_template_id: rows[i].route_template_id,
+          comments: rows[i].comments,
+          current_stage: rows[i].current_stage,
+          status: rows[i].status,
+          change_log: rows[i].change_log,
+          stages: [],
+        });
+
+        await knex("request_stages")
+          .select("*")
+          .where({ request_id: rows[i].id })
+          .then(async (rows) => {
+            for (let j = 0; j < rows.length; j++) {
+              results[i].stages.push({
+                stage_id: rows[j].id,
+                stage_name: rows[j].name,
+                stage_instructions: rows[j].instructions,
+                suspense_hours: rows[j].suspense_hours,
+                completed_at: rows[j].completed_at,
+                status: rows[j].status,
+                substages: [],
+              });
+
+              await knex("request_substages")
+                .select("*")
+                .where({ request_stage_id: rows[j].id })
+                .then((rows) => {
+                  for (let k = 0; k < rows.length; k++) {
+                    results[i].stages[j].substages.push({
+                      stage_id: rows[k].request_stage_id,
+                      substage_id: rows[k].id,
+                      group_id: rows[k].group_id,
+                      status: rows[k].status,
+                      notes: rows[k].notes,
+                      user_id: rows[k].user_id,
+                      completed_at: rows[k].completed_at,
+                    });
+                  }
+                });
+            }
+          });
+      }
+      return results;
+    })
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
+    .then((data) => {
+      res.status(200).json(data).end();
+    });
+});
 
 module.exports = router;
