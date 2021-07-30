@@ -31,10 +31,7 @@ router.post("/post", async (req, res) => {
     })
     .returning("id")
     .then(async (data) => {
-      console.log(data[0]);
       let request_stages = req.body.route_template.stages;
-      console.log(request_stages);
-      // .forEach(async (stage) => {
       for (let i = 0; i < request_stages.length; i++) {
         let request_substages = request_stages[i].substages;
         await knex("request_stages")
@@ -46,9 +43,6 @@ router.post("/post", async (req, res) => {
           })
           .returning("id")
           .then(async (data) => {
-            console.log(data[0]);
-            console.log(request_substages);
-            // request_substages.forEach(async (substage) => {
             for (let j = 0; j < request_substages.length; j++) {
               await knex("request_substages").insert({
                 request_stage_id: data[0],
@@ -101,8 +95,18 @@ router.patch("/patch", async (req, res) => {
 });
 
 router.patch("/patch/substage/approve", async (req, res) => {
-  const { rank, lname, notes, request_stage_id, request_id } = req.body;
+  const {
+    rank,
+    lname,
+    notes,
+    request_stage_id,
+    request_id,
+    change_log,
+    final_stage,
+    current_stage,
+  } = req.body;
   const status = "Approved";
+  let proceed = true;
 
   await knex("request_substages")
     .where({
@@ -114,8 +118,63 @@ router.patch("/patch/substage/approve", async (req, res) => {
       user_id: req.body.user_id,
       completed_at: new Date(),
     })
-    .then((substage_row) => {
-      console.log(substage_row);
+    .then(async () => {
+      return knex("request_substages").select("status").where({
+        request_stage_id: request_stage_id,
+      });
+    })
+    .then(async (rows) => {
+      console.log(rows);
+      rows.forEach((row) => {
+        if (row.status !== "Approved") return (proceed = false);
+      });
+      if (proceed) {
+        await knex("request_stages")
+          .where({
+            id: request_stage_id,
+          })
+          .update({
+            status: status,
+            completed_at: new Date(),
+          });
+      }
+    })
+    .then(async () => {
+      if (proceed && final_stage) {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            status: "Completed",
+            completed_at: new Date(),
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+          });
+      } else if (proceed) {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            current_stage: current_stage + 1,
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+          });
+      } else {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()},
+            Comments: ${notes}\n`,
+          });
+      }
     })
     .then((data) =>
       res.status(200).json({ message: `Success`, data: data }).end()
@@ -203,6 +262,7 @@ router.get("/get/all/details", async (req, res) => {
         await knex("request_stages")
           .select("*")
           .where({ request_id: rows[i].id })
+          .orderBy("id")
           .then(async (rows) => {
             for (let j = 0; j < rows.length; j++) {
               results[i].stages.push({
