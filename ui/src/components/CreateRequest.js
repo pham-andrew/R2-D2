@@ -52,7 +52,7 @@ function getStepContent(step) {
   }
 }
 
-const InitialRouting = () => {
+const CreateRequest = () => {
   const classes = useStyles();
 
   const [activeStep, setActiveStep] = React.useState(0);
@@ -176,4 +176,4 @@ const InitialRouting = () => {
   );
 };
 
-export default InitialRouting;
+export default CreateRequest;

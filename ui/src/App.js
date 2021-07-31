@@ -1,17 +1,22 @@
-// Dependencies
+// dependencies
 import React, { useState } from "react";
+import { Switch, Link, Route } from "react-router-dom";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import AppContext from "./contexts/AppContext";
+import auth from "./utils/auth";
+import ProtectedRoute from "./utils/protected";
 
-// Components
+// components
 import CreateTemplate from "./components/CreateTemplate";
-import InitialRouting from "./components/InitialRouting";
-import Account from "./components/Account";
+import CreateRequest from "./components/CreateRequest";
+import Profile from "./components/Profile";
 import Admin from "./components/Admin";
 import Archive from "./components/Archive";
 import Login from "./components/Login";
+import Dashboard from "./components/Dashboard";
 
+// material-ui
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -52,7 +57,9 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    position: "absolute",
+    top: 24,
+    zIndex: theme.zIndex.drawer + 3,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -74,6 +81,8 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    fontWeight: 500,
+    letterSpacing: 1,
   },
   drawerPaper: {
     position: "relative",
@@ -98,8 +107,8 @@ const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
+    height: "calc(100vh - 48px)",
+    overflow: "none",
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -114,6 +123,10 @@ const useStyles = makeStyles((theme) => ({
   },
   fixedHeight: {
     height: 240,
+  },
+  link: {
+    color: "black",
+    textDecoration: "none",
   },
 }));
 
@@ -142,7 +155,6 @@ const App = () => {
       : `https://sdi05-05.staging.dso.mil/api`
   );
 
-  const [page, setPage] = useState("Login");
   const [drawerOpen, setDrawerOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
@@ -152,14 +164,18 @@ const App = () => {
     setDrawerOpen(false);
   };
 
-  const nav = (
-    <>
-      <div className={classes.root}>
-        <AppBar
-          position="absolute"
-          className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
-        >
-          <Toolbar className={classes.toolbar}>
+  const bar = (shift) => {
+    return (
+      <AppBar
+        position="absolute"
+        className={
+          shift
+            ? clsx(classes.appBar, drawerOpen && classes.appBarShift)
+            : clsx(classes.appBar)
+        }
+      >
+        <Toolbar className={classes.toolbar}>
+          {shift ? (
             <IconButton
               edge="start"
               color="inherit"
@@ -171,31 +187,58 @@ const App = () => {
             >
               <MenuIcon />
             </IconButton>
+          ) : (
+            ""
+          )}
+          <Link exact to="/dashboard" className={classes.link}>
             <img
               src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/ui/public/favicon.png"
               style={{
                 position: "flex",
-                top: "10px",
-                height: "45px",
-                paddingRight: "10px",
+                marginTop: 2.5,
+                marginRight: 5,
+                height: 50,
+                paddingRight: 10,
+                filter: "drop-shadow(1px 1px 1px #2E2E2E)",
               }}
-            ></img>
-            <Typography
-              component="h1"
-              variant="h6"
+            />
+          </Link>
+          <Typography
+            component="h1"
+            variant="h5"
+            color="inherit"
+            noWrap
+            className={classes.title}
+          >
+            R2/D2
+          </Typography>
+          {shift ? (
+            <IconButton
               color="inherit"
-              noWrap
-              className={classes.title}
+              onClick={() =>
+                auth.logout(async () => {
+                  window.location.href = `${window.location.origin}/`;
+                })
+              }
             >
-              Rapid Routing and Decision Dashboard
-            </Typography>
-            <IconButton color="inherit">
               <Badge color="secondary">
-                <ExitToAppIcon onClick={() => setPage("login")} />
+                <Link exact to="/" style={{ color: "white" }}>
+                  <ExitToAppIcon />
+                </Link>
               </Badge>
             </IconButton>
-          </Toolbar>
-        </AppBar>
+          ) : (
+            ""
+          )}
+        </Toolbar>
+      </AppBar>
+    );
+  };
+
+  const nav = (
+    <>
+      <div className={classes.root}>
+        {bar(true)}
         <Drawer
           variant="permanent"
           classes={{
@@ -214,42 +257,54 @@ const App = () => {
           <Divider />
           <List>
             <div>
-              <ListItem button onClick={() => setPage("create")}>
-                <ListItemIcon>
-                  <NoteIcon />
-                </ListItemIcon>
-                <ListItemText primary="Create Template" />
-              </ListItem>
-              <ListItem button onClick={() => setPage("initial")}>
-                <ListItemIcon>
-                  <AssignmentReturnedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Initial Routing" />
-              </ListItem>
-              <ListItem button onClick={() => setPage("dashboard")}>
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="Routing Dashboard" />
-              </ListItem>
-              <ListItem button onClick={() => setPage("archive")}>
-                <ListItemIcon>
-                  <ArchiveIcon />
-                </ListItemIcon>
-                <ListItemText primary="Archive" />
-              </ListItem>
-              <ListItem button onClick={() => setPage("profile")}>
-                <ListItemIcon>
-                  <AccountBoxIcon />
-                </ListItemIcon>
-                <ListItemText disabled={true} primary="Profile" />
-              </ListItem>
-              <ListItem button onClick={() => setPage("admin")}>
-                <ListItemIcon>
-                  <SupervisorAccountIcon />
-                </ListItemIcon>
-                <ListItemText primary="Admin" />
-              </ListItem>
+              <Link exact to="/dashboard" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Routing Dashboard" />
+                </ListItem>
+              </Link>
+              <Link exact to="/template" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <NoteIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Create Template" />
+                </ListItem>
+              </Link>
+              <Link exact to="/request" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <AssignmentReturnedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Create Request" />
+                </ListItem>
+              </Link>
+              <Link exact to="/archive" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <ArchiveIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Archive" />
+                </ListItem>
+              </Link>
+              <Link exact to="/profile" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <AccountBoxIcon />
+                  </ListItemIcon>
+                  <ListItemText disabled={true} primary="Profile" />
+                </ListItem>
+              </Link>
+              <Link exact to="/jedi-only" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <SupervisorAccountIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Admin" />
+                </ListItem>
+              </Link>
             </div>
           </List>
           <Divider />
@@ -257,174 +312,156 @@ const App = () => {
       </div>
     </>
   );
+  return (
+    <Switch>
+      <Route exact path="/">
+        <AppContext.Provider
+          value={{
+            alert,
+            setAlert,
+            prompt,
+            setPrompt,
+            openPrompt,
+            setOpenPrompt,
+            openAlert,
+            setOpenAlert,
+            baseURL,
+            currentUser,
+            setCurrentUser,
+            reload,
+            setReload,
+          }}
+        >
+          {bar(false)}
+          <Login />
+        </AppContext.Provider>
+      </Route>
 
-  if (page === "create")
-    return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>
-              <CreateTemplate />
-            </Paper>
-          </Container>
-        </main>
-      </div>
-    );
-
-  if (page === "initial")
-    return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>
-              <InitialRouting />
-            </Paper>
-          </Container>
-        </main>
-      </div>
-    );
-
-  if (page === "dashboard")
-    return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Paper className={classes.paper}>Dashboard</Paper>
-          </Container>
-        </main>
-      </div>
-    );
-
-  if (page === "archive")
-    return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Archive />
-          </Container>
-        </main>
-      </div>
-    );
-
-  if (page === "profile")
-    return (
-      <AppContext.Provider
-        value={{
-          alert,
-          setAlert,
-          prompt,
-          setPrompt,
-          openPrompt,
-          setOpenPrompt,
-          openAlert,
-          setOpenAlert,
-          baseURL,
-          currentUser,
-          setCurrentUser,
-          reload,
-          setReload,
-        }}
-      >
+      <Route exact path="/template">
         <div className={classes.root}>
           {nav}
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
-              <Account />
+              <Paper className={classes.paper}>
+                <ProtectedRoute component={CreateTemplate} />
+              </Paper>
             </Container>
           </main>
         </div>
-      </AppContext.Provider>
-    );
+      </Route>
+      <Route exact path="/request">
+        <div className={classes.root}>
+          {nav}
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+              <Paper className={classes.paper}>
+                <ProtectedRoute component={CreateRequest} />
+              </Paper>
+            </Container>
+          </main>
+        </div>
+      </Route>
+      <Route exact path="/dashboard">
+        <div className={classes.root}>
+          {nav}
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+              <Paper className={classes.paper}>
+                <ProtectedRoute component={Dashboard} />
+              </Paper>
+            </Container>
+          </main>
+        </div>
+      </Route>
 
-  if (page === "admin")
-    return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Admin />
-          </Container>
-        </main>
-      </div>
-    );
+      <Route exact path="/archive">
+        <div className={classes.root}>
+          {nav}
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+              <ProtectedRoute component={Archive} />
+            </Container>
+          </main>
+        </div>
+      </Route>
 
-  if (page === "login")
-    return (
-      <div className={classes.root}>
-        {nav}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Login />
-          </Container>
-        </main>
-      </div>
-    );
+      <Route exact path="/profile">
+        <AppContext.Provider
+          value={{
+            alert,
+            setAlert,
+            prompt,
+            setPrompt,
+            openPrompt,
+            setOpenPrompt,
+            openAlert,
+            setOpenAlert,
+            baseURL,
+            currentUser,
+            setCurrentUser,
+          }}
+        >
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <ProtectedRoute component={Profile} />
+              </Container>
+            </main>
+          </div>
+        </AppContext.Provider>
+      </Route>
 
-  return (
-    <AppContext.Provider
-      value={{
-        alert,
-        setAlert,
-        prompt,
-        setPrompt,
-        openPrompt,
-        setOpenPrompt,
-        openAlert,
-        setOpenAlert,
-        baseURL,
-        currentUser,
-        setCurrentUser,
-        reload,
-        setReload,
-      }}
-    >
-      <div className={classes.root}>
-        <AppBar position="absolute" className={clsx(classes.appBar)}>
-          <Toolbar className={classes.toolbar}>
-            <img
-              src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/ui/public/favicon.png"
-              style={{
-                position: "flex",
-                top: "10px",
-                height: "45px",
-                paddingRight: "10px",
-              }}
-            />
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              className={classes.title}
-            >
-              Rapid Routing and Decision Dashboard
-            </Typography>
-            <IconButton color="inherit">
-              <Badge color="secondary">
-                <ExitToAppIcon onClick={() => setPage("login")} />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Login />
-          </Container>
-        </main>
-      </div>
-    </AppContext.Provider>
+      <Route exact path="/jedi-only">
+        <div className={classes.root}>
+          {nav}
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+              <ProtectedRoute component={Admin} />
+            </Container>
+          </main>
+        </div>
+      </Route>
+
+      <Route path="*">
+        {bar(false)}
+        <div
+          style={{
+            marginTop: 50,
+            padding: 50,
+            font: "14 px Lucida Grande, Helvetica, Arial, sans-serif",
+          }}
+        >
+          <Typography variant="h3">404 Error: Path Not Found</Typography> <br />
+          <Typography variant="body2">
+            You weren't supposed to see this! Click on the R2/D2 icon at the top
+            to return to the home screen.
+          </Typography>
+          <br />
+          <iframe
+            width="850"
+            height="500"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ marginBottom: 10 }}
+          />{" "}
+          <br />
+          <Typography variant="body2">
+            You can thank your browser for forcing us to mute this video while
+            autoplay is enabled.
+          </Typography>
+        </div>
+      </Route>
+    </Switch>
   );
 };
 
