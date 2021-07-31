@@ -22,7 +22,7 @@ exports.up = function (knex) {
         table.string("role", [11]).defaultTo("Padawan").notNullable();
         table.string("password").notNullable();
         table.string("token");
-        table.unique(["email", "password", "token"]);
+        table.unique(["email"]);
       });
     })
 

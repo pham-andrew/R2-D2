@@ -4,11 +4,9 @@ import { useHistory } from "react-router-dom";
 import AppContext from "../contexts/AppContext";
 import auth from "../utils/auth";
 import { ValidateEmail } from "../utils/regex";
-import Cookies from "js-cookie";
 
 // components
-import Drawer from "./Drawer";
-import Registration from "./Registration";
+import Registration from "./helpers/Registration";
 import {
   TextField,
   makeStyles,
@@ -16,8 +14,9 @@ import {
   Button,
   Tooltip,
 } from "@material-ui/core";
-import PromptDialog from "./PromptDialog";
-import AlertDialog from "./AlertDialog";
+import PromptDialog from "./helpers/PromptDialog";
+import AlertDialog from "./helpers/AlertDialog";
+import Robot from "./helpers/Robot";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,10 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const { setCurrentUser } = useContext(AppContext);
-  const { setOpen } = useContext(AppContext);
-  const { reload, setReload } = useContext(AppContext);
-  const { setItems } = useContext(AppContext);
-  const { setStores } = useContext(AppContext);
+  const { setOpenAlert } = useContext(AppContext);
   const { setOpenPrompt } = useContext(AppContext);
   const { baseURL } = useContext(AppContext);
   const { alert, setAlert } = useContext(AppContext);
@@ -65,7 +61,7 @@ export default function Login() {
 
   const handlePassCheck = () => {
     let password = document.getElementById("password").value;
-    if (password.length < 8) {
+    if (password.length < 1) {
       setValidPass(false);
       setPassError(true);
       setPassHelper("Please enter a valid password");
@@ -81,7 +77,6 @@ export default function Login() {
     let password = document.getElementById("password").value;
     let email = document.getElementById("email").value;
     await fetch(`${baseURL}/users/login`, {
-      credentials: "include",
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -90,12 +85,10 @@ export default function Login() {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        if (data.userId && data.username && data.password && data.email) {
+        if (data.user_id) {
           await setCurrentUser(data);
-          await setReload(!reload);
-          await setReload(!reload);
           await auth.login(() => {
-            history.push("/home");
+            history.push("/dashboard");
           });
         } else {
           await setAlert({
@@ -104,17 +97,17 @@ export default function Login() {
             actions: "",
             closeAction: "Close",
           });
-          await setOpen(true);
+          await setOpenAlert(true);
         }
       })
-      .catch(async (err) => {
+      .catch(async () => {
         await setAlert({
           title: "Login Error",
           text: "The provided email or password does not match our records. Please try again or register as a new user.",
           actions: "",
           closeAction: "Close",
         });
-        await setOpen(true);
+        await setOpenAlert(true);
       });
   };
 
@@ -130,39 +123,51 @@ export default function Login() {
     await setOpenPrompt(true);
   };
 
-  try {
-    return (
-      <>
-        <Drawer login={true} />
-        <PromptDialog bodyPrompt={prompt} />
-        <AlertDialog bodyAlert={alert} />
-        <div
+  return (
+    <>
+      <PromptDialog bodyPrompt={prompt} />
+      <AlertDialog bodyAlert={alert} />
+      <div
+        style={{
+          display: "flex",
+          marginTop: "22.5vh",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          variant="h2"
           style={{
-            display: "flex",
-            marginTop: 180,
-            justifyContent: "center",
-            alignItems: "center",
+            textAlign: "center",
+            padding: 0,
+            marginRight: 40,
+            fontWeight: 600,
+            letterSpacing: 1.5,
+            filter: "drop-shadow(1px 1px 1px #5E5E5E)",
           }}
         >
-          <form
-            className={classes.root}
-            noValidate
-            autoComplete="true"
-            onSubmit={handleLogin}
-          >
+          R2/D2
+          <div style={{ marginTop: -40 }}>
             <Typography
-              variant="h3"
+              variant="caption"
               style={{
                 textAlign: "center",
-                padding: 0,
-                margin: 0,
-                fontWeight: 600,
               }}
             >
-              Login
+              Rapid Routing and Decision-making Dashboard
             </Typography>
+          </div>
+        </Typography>
+
+        <form
+          className={classes.root}
+          noValidate
+          autoComplete="true"
+          onSubmit={handleLogin}
+        >
+          <div>
             <TextField
-              style={{ marginLeft: 25, marginTop: 50 }}
+              style={{ marginLeft: 10, marginTop: 10 }}
               id="email"
               label="Email"
               variant="outlined"
@@ -175,7 +180,7 @@ export default function Login() {
             />
             <br />
             <TextField
-              style={{ marginLeft: 25 }}
+              style={{ marginLeft: 10, marginTop: 20 }}
               id="password"
               label="Password"
               variant="outlined"
@@ -190,12 +195,13 @@ export default function Login() {
               error={passError}
               helperText={passHelper}
             />
-            <br />
+          </div>
+          <div>
             <Button
               variant="contained"
               color="primary"
               type="submit"
-              style={{ marginLeft: 30, marginTop: 25 }}
+              style={{ marginLeft: 20, marginTop: 10 }}
               disabled={!validPass || !validEmail}
               onClick={handleLogin}
             >
@@ -205,22 +211,16 @@ export default function Login() {
               <Button
                 variant="contained"
                 color="default"
-                style={{ marginLeft: 10, marginTop: 25 }}
+                style={{ marginLeft: 15, marginTop: 10 }}
                 onClick={handleRegister}
               >
                 Register
               </Button>
             </Tooltip>
-          </form>
-        </div>
-      </>
-    );
-  } catch {
-    auth.logout(async () => {
-      await setItems([]);
-      await setStores([]);
-      await Cookies.remove("token");
-      window.location.href = `${window.location.origin}/`;
-    });
-  }
+          </div>
+        </form>
+        <Robot style={{ width: "100%" }} />
+      </div>
+    </>
+  );
 }

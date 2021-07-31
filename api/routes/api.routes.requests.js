@@ -94,7 +94,7 @@ router.patch("/patch", async (req, res) => {
     );
 });
 
-router.patch("/patch/substage/approve", async (req, res) => {
+router.patch("/resubmit", async (req, res) => {
   const {
     rank,
     lname,
@@ -102,20 +102,79 @@ router.patch("/patch/substage/approve", async (req, res) => {
     request_stage_id,
     request_id,
     change_log,
+    current_stage,
+  } = req.body;
+  const status = "Pending Action";
+
+  await knex("requests")
+    .where({
+      id: request_id,
+    })
+    .update({
+      current_stage: current_stage + 1,
+      change_log:
+        change_log +
+        `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+    })
+    .then(async () => {
+      await knex("request_stages")
+        .where({
+          id: request_stage_id,
+        })
+        .update({
+          status: status,
+        });
+    })
+    .then(async () => {
+      await knex("request_substages")
+        .where({
+          id: request_stage_id,
+        })
+        .update({
+          status: status,
+          notes: null,
+          user_id: null,
+        });
+    })
+    .then((data) =>
+      res.status(200).json({ message: `Success`, data: data }).end()
+    )
+    .catch((error) =>
+      res
+        .status(404)
+        .json({
+          message: `Error, you have entered the darkside.`,
+          error: error,
+        })
+        .end()
+    );
+});
+
+router.patch("/patch/substage/approve", async (req, res) => {
+  const {
+    rank,
+    lname,
+    user_id,
+    notes,
+    substage_id,
+    request_stage_id,
+    request_id,
+    change_log,
     final_stage,
     current_stage,
+    next_stage_id,
   } = req.body;
   const status = "Approved";
   let proceed = true;
 
   await knex("request_substages")
     .where({
-      id: req.body.substage_id,
+      id: substage_id,
     })
     .update({
       status: status,
       notes: notes,
-      user_id: req.body.user_id,
+      user_id: user_id,
       completed_at: new Date(),
     })
     .then(async () => {
@@ -136,6 +195,26 @@ router.patch("/patch/substage/approve", async (req, res) => {
           .update({
             status: status,
             completed_at: new Date(),
+          })
+          .then(async () => {
+            await knex("request_stages")
+              .where({
+                id: next_stage_id,
+              })
+              .update({
+                status: "Pending Action",
+              });
+          })
+          .then(async () => {
+            await knex("request_substages")
+              .where({
+                id: next_stage_id,
+              })
+              .update({
+                status: "Pending Action",
+                notes: null,
+                user_id: null,
+              });
           });
       }
     })
@@ -179,11 +258,96 @@ router.patch("/patch/substage/approve", async (req, res) => {
     .then((data) =>
       res.status(200).json({ message: `Success`, data: data }).end()
     )
-    .catch(() =>
+    .catch((error) =>
       res
         .status(404)
         .json({
           message: `Error, you have entered the darkside.`,
+          error: error,
+        })
+        .end()
+    );
+});
+
+router.patch("/patch/substage/deny", async (req, res) => {
+  const {
+    rank,
+    lname,
+    user_id,
+    notes,
+    request_stage_id,
+    request_id,
+    change_log,
+    current_stage,
+    substage_id,
+  } = req.body;
+  const status = "Denied";
+  let proceed = true;
+
+  await knex("request_substages")
+    .where({
+      id: substage_id,
+    })
+    .update({
+      status: status,
+      notes: notes,
+      user_id: user_id,
+    })
+    .then(async () => {
+      return knex("request_substages").select("status").where({
+        request_stage_id: request_stage_id,
+      });
+    })
+    .then(async (rows) => {
+      console.log(rows);
+      rows.forEach((row) => {
+        if (row.status === "Approved" || row.status === "Pending Action")
+          return (proceed = false);
+      });
+      if (proceed) {
+        await knex("request_stages")
+          .where({
+            id: request_stage_id,
+          })
+          .update({
+            status: status,
+          });
+      }
+    })
+    .then(async () => {
+      if (proceed) {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            current_stage: current_stage - 1,
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+          });
+      } else {
+        await knex("requests")
+          .where({
+            id: request_id,
+          })
+          .update({
+            change_log:
+              change_log +
+              `Name: ${rank} ${lname}, Date: ${Date.now()},
+            Comments: ${notes}\n`,
+          });
+      }
+    })
+    .then((data) =>
+      res.status(200).json({ message: `Success`, data: data }).end()
+    )
+    .catch((error) =>
+      res
+        .status(404)
+        .json({
+          message: `Error, you have entered the darkside.`,
+          error: error,
         })
         .end()
     );

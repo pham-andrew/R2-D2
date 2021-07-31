@@ -4,7 +4,7 @@ exports.seed = function (knex) {
     .then(function () {
       return knex("users").insert([
         {
-          rank: "1Lt",
+          rank: "O-2",
           fname: "Justin",
           lname: "Law",
           email: "justin.law.1@spaceforce.mil",
@@ -14,7 +14,7 @@ exports.seed = function (knex) {
           role: "Jedi Master",
         },
         {
-          rank: "TSgt",
+          rank: "E-6",
           fname: "Mark",
           lname: "Terry",
           email: "mark.terry.7@us.af.mil",
@@ -24,18 +24,18 @@ exports.seed = function (knex) {
           role: "Jedi Master",
         },
         {
-          rank: "2Lt",
+          rank: "O-3",
           fname: "Alden",
           lname: "Davidson",
           email: "alden.davidson.9000@spaceforce.mil",
           password:
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
-          role: "Padawan",
+          role: "Jedi Knight",
           supervisor_id: 1,
         },
         {
-          rank: "SSgt",
+          rank: "E-5",
           fname: "Bob",
           lname: "Banks",
           email: "bob.banks.9000@spaceforce.mil",
@@ -46,7 +46,7 @@ exports.seed = function (knex) {
           supervisor_id: 3,
         },
         {
-          rank: "A1C",
+          rank: "E-3",
           fname: "Maynard",
           lname: "Snuffy",
           email: "maynard.snuffy.9000@spaceforce.mil",
@@ -57,7 +57,7 @@ exports.seed = function (knex) {
           supervisor_id: 4,
         },
         {
-          rank: "Maj",
+          rank: "O-4",
           fname: "",
           lname: "Lazer",
           email: "maj.lazer.9000@spaceforce.mil",
@@ -67,7 +67,7 @@ exports.seed = function (knex) {
           role: "Padawan",
         },
         {
-          rank: "TSgt",
+          rank: "E-6",
           fname: "Joe",
           lname: "Schmoe",
           email: "joe.schmoe.9000@spaceforce.mil",

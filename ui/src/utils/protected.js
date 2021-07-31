@@ -3,12 +3,12 @@ import { Route, Redirect } from "react-router-dom";
 import auth from "./auth";
 import Cookies from "js-cookie";
 
-export const ProtectedRoute = ({ component: Component, ...rest }) => {
+export default function ProtectedRoute({ component: Component, ...rest }) {
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (auth.isAuthenticated() || Cookies.get("token")) {
+        if (auth.isAuthenticated()) {
           return <Component {...props} />;
         } else {
           return (
@@ -25,4 +25,4 @@ export const ProtectedRoute = ({ component: Component, ...rest }) => {
       }}
     />
   );
-};
+}

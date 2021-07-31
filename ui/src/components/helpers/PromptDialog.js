@@ -1,6 +1,6 @@
 // dependencies
 import React, { useContext } from "react";
-import AppContext from "../contexts/AppContext";
+import AppContext from "../../contexts/AppContext";
 
 // components
 import Button from "@material-ui/core/Button";
@@ -9,13 +9,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default function PromptDialog({ id, bodyPrompt }) {
+export default function PromptDialog({ bodyPrompt }) {
   const { openPrompt, setOpenPrompt } = useContext(AppContext);
-  const { setDeconflict } = useContext(AppContext);
 
   const handleCancelAlert = async () => {
     await setOpenPrompt(false);
-    await setDeconflict(false);
   };
 
   return (
@@ -26,7 +24,7 @@ export default function PromptDialog({ id, bodyPrompt }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle id="alert-dialog-title" style={{ marginTop: 5 }}>
           {bodyPrompt ? bodyPrompt.title : "empty title"}
         </DialogTitle>
         <DialogContent>
@@ -36,9 +34,9 @@ export default function PromptDialog({ id, bodyPrompt }) {
           {bodyPrompt ? bodyPrompt.actions : "empty actions"}
           <Button
             variant="contained"
-            color="primary"
+            color="default"
             size="medium"
-            style={{ marginLeft: 5, marginTop: 5 }}
+            style={{ marginRight: 5, marginBottom: 5 }}
             onClick={handleCancelAlert}
           >
             {bodyPrompt.closeAction}

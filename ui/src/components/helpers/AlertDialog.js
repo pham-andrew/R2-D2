@@ -1,6 +1,6 @@
 // dependencies
 import React, { useContext } from "react";
-import AppContext from "../contexts/AppContext";
+import AppContext from "../../contexts/AppContext";
 
 // components
 import Button from "@material-ui/core/Button";
@@ -11,18 +11,16 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 export default function AlertDialog({ bodyAlert }) {
-  const { open, setOpen } = useContext(AppContext);
-  const { deconflict, setDeconflict } = useContext(AppContext);
+  const { openAlert, setOpenAlert } = useContext(AppContext);
 
   const handleCancelAlert = async () => {
-    await setOpen(false);
-    await setDeconflict(false);
+    await setOpenAlert(false);
   };
 
   return (
     <div>
       <Dialog
-        open={open && !deconflict}
+        open={openAlert}
         onClose={handleCancelAlert}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"

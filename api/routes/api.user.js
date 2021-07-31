@@ -20,7 +20,16 @@ async function compareEncrypt(password, hashPassword) {
 
 router.get("/", async (req, res) => {
   await knex("users")
-    .select("*")
+    .select(
+      "id",
+      "fname",
+      "lname",
+      "rank",
+      "role",
+      "email",
+      "supervisor_id",
+      "password"
+    )
     .then((data) => {
       res.status(200).json(data).end();
     });
@@ -63,6 +72,7 @@ router.post("/post", async (req, res) => {
       lname: req.body.lname,
       email: req.body.email,
       password: password,
+      supervisor_id: req.body.supervisor_id,
     })
     .returning("id")
     .then((data) =>
@@ -70,7 +80,7 @@ router.post("/post", async (req, res) => {
     )
     .catch(() =>
       res
-        .status(404)
+        .status(400)
         .json({
           message: `Provided email has already been registered and exists in our database. Please try registering again with a different email or login with the existing email.`,
         })
@@ -113,40 +123,19 @@ router.post("/login", async (req, res) => {
             password: `${req.body.password}`,
             email: rows[0].email,
             role: rows[0].role,
+            supervisor_id: rows[0].supervisor_id,
           })
           .status(200)
           .end();
       }
     })
     .catch((err) =>
-      res.status(404).json({
+      res.status(401).json({
         message:
           "The provided email or password does not match our records. Please try again or register as a new user.",
         error: err,
       })
     );
-});
-
-router.post("/persist", async (req, res) => {
-  let token = req.cookies.token;
-  await knex("users")
-    .select("*")
-    .where({
-      token: `${token}`,
-    })
-    .then(async (rows) => {
-      res
-        .json({
-          userId: rows[0].id,
-          username: rows[0].name,
-          password:
-            "For security reasons please login again to see your password.",
-          email: rows[0].email,
-        })
-        .status(200)
-        .end();
-    })
-    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }));
 });
 
 router.patch("/patch", async (req, res) => {
@@ -156,9 +145,10 @@ router.patch("/patch", async (req, res) => {
       id: req.body.user_id,
     })
     .update({
-      name: req.body.name,
+      rank: req.body.rank,
       email: req.body.email,
       password: password,
+      supervisor_id: req.body.supervisor_id,
     })
     .returning("id")
     .then((data) =>
@@ -166,7 +156,7 @@ router.patch("/patch", async (req, res) => {
     )
     .catch(() =>
       res
-        .status(404)
+        .status(400)
         .json({
           message: `Provided email has already been registered and exists in our database. Please try using a different email or login with the existing email.`,
         })
