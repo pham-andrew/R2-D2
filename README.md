@@ -75,7 +75,7 @@ _NOTE 2_: The set-up of this repository and instructions were made to be as deve
 
 5. (OPTIONAL) If you change the seeds or migrations, or the database becomes corrupted, you can run `npm run reset` in the API folder to run the migrations and seeds again.
 
-6. Go to the UI and execute `npm run dev` to start the ReactJS app.
+6. Go to the UI and execute `npm start` to start the ReactJS app.
 
 7. Go to the API and execute `npm run dev` to start the ExpressJS API.
 
