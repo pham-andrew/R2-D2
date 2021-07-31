@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const cookieParser = require("cookie-parser");
 
 // Routes
 const user = require("./routes/api.user.js");
@@ -13,7 +14,16 @@ const documents = require("./routes/api.documents.js");
 
 // Declared Dependencies
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+);
 
 // Declared Routes
 app.use("/users", user);

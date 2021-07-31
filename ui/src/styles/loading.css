@@ -4,6 +4,7 @@
   align-content: space-around;
   justify-content: center;
 }
+
 .loader-svg {
   position: absolute;
   left: 0;
@@ -13,11 +14,11 @@
   fill: none;
   stroke-width: 5px;
   stroke-linecap: round;
-  stroke: rgb(64, 0, 148);
+  stroke: rgb(15, 0, 148);
 }
 .loader-svg.bg {
   stroke-width: 8px;
-  stroke: rgb(207, 205, 245);
+  stroke: rgb(205, 209, 245);
 }
 
 .animate {
