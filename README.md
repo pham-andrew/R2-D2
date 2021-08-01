@@ -79,9 +79,9 @@ _NOTE 2_: The set-up of this repository and instructions were made to be as deve
 
 7. Go to the API and execute `npm run dev` to start the ExpressJS API.
 
-8. Proceed to the address and port for the UI as specified in your .env file (e.g. http://localhost:3000)
+8. Proceed to the address and port for the UI (e.g. http://localhost:3000)
 
-9. Proceed to the address and port for the API API as specified in your .env file (e.g. http://localhost:3001/api)
+9. Proceed to the address and port for the API (e.g. http://localhost:8080)
 
 ### Environment Variables
 
