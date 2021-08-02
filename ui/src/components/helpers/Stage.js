@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
+import TemplateContext from "../../contexts/TemplateContext";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Paper } from "@material-ui/core";
-import { List } from "@material-ui/core";
-import { ListItem } from "@material-ui/core";
-import { ListItemIcon } from "@material-ui/core";
-import { ListItemText } from "@material-ui/core";
+import {
+  ListItemText,
+  MenuItem,
+  ListItemIcon,
+  ListItem,
+  List,
+  Paper,
+} from "@material-ui/core";
 import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,9 +39,11 @@ function intersection(a, b) {
 
 const Stage = () => {
   const classes = useStyles();
+  const { tabList, stages, setStages, groups } = useContext(TemplateContext);
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+  const [left, setLeft] = React.useState(groups);
+  const [right, setRight] = React.useState([]);
+  console.log(groups);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -77,28 +83,28 @@ const Stage = () => {
     setRight([]);
   };
 
-  const customList = (items) => (
+  const customList = (GpObjs) => (
     <Paper className={classes.paper}>
       <List dense component="div" role="list">
-        {items.map((value) => {
-          const labelId = `transfer-list-item-${value}-label`;
+        {GpObjs.map((group) => {
+          const labelId = `transfer-list-item-${group.id}-label`;
 
           return (
             <ListItem
               key={uuidv4()}
               role="listitem"
               button
-              onClick={handleToggle(value)}
+              onClick={handleToggle(group)}
             >
               <ListItemIcon>
                 <Checkbox
-                  checked={checked.indexOf(value) !== -1}
+                  checked={checked.indexOf(group.checked) !== -1}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`Group ${value + 1}`} />
+              <ListItemText id={labelId} primary={group.name} />
             </ListItem>
           );
         })}
@@ -162,21 +168,57 @@ const Stage = () => {
         </Grid>
       </Grid>
       <Grid item xs={4}>
-        <TextField label="Stage Name" />
+        <TextField
+          label="Stage Name"
+          required={true}
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          style={{ marginBottom: "20px" }}
+        />
         <form noValidate style={{ marginBottom: "20px" }}>
           <TextField
             label="Suspense"
-            type="datetime-local"
+            required={true}
+            variant="outlined"
+            type="number"
+            min={1}
+            onInput={(e) => {
+              if (e.target.value < 1) {
+                e.target.value = 1;
+              }
+            }}
             InputLabelProps={{
               shrink: true,
             }}
+            style={{ marginBottom: "20px", width: 159 }}
           />
+          <TextField
+            select
+            label="Time"
+            required={true}
+            default
+            id="time"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          >
+            <MenuItem value={"Hours"}>Hours</MenuItem>
+            <MenuItem value={"Days"}>Days</MenuItem>
+            <MenuItem value={"Weeks"}>Weeks</MenuItem>
+          </TextField>
         </form>
         <TextField
           label="Stage Instructions"
           multiline
           rows={4}
           variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          required={true}
         />
       </Grid>
     </Grid>

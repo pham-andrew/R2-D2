@@ -41,7 +41,7 @@ router.get("/:id", async (req, res) => {
     .where("users.id", id)
     .select("*")
     .then(async (user) => {
-      let results = [];
+      // let results = [];
       let tmpObj = {
         user_id: user[0].id,
         fname: user[0].fname,
@@ -55,8 +55,8 @@ router.get("/:id", async (req, res) => {
         .from("groups")
         .join("memberships", "groups.id", "=", "memberships.group_id")
         .where("memberships.user_id", user[0].id);
-      results.push(tmpObj);
-      return results;
+      // results.push(tmpObj);
+      return tmpObj;
     })
     .then((data) => {
       res.status(200).json(data).end();
