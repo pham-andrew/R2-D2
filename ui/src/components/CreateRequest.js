@@ -1,7 +1,4 @@
-//hold that thought: change checkmarks and icons. highlight done groups with backgroundColor
-
 // Dependencies
-import { v4 as uuidv4 } from "uuid";
 import React from "react";
 
 // Components
@@ -14,6 +11,9 @@ import {
   Step,
   StepLabel,
 } from "@material-ui/core";
+
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,12 +31,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+//TODO BACKEND HOOKUP
 function getStages() {
   return [
     { label: "Stage 1", groups: ["Group 1"], done: ["Group 1"] },
     { label: "Stage 2", groups: ["Group 2", "Group 3"], done: ["Group 2"] },
     { label: "Stage 3", groups: ["Group 4"], done: [] },
   ];
+}
+
+function groupColor(group, stage){
+  if(stage.done.includes(group))
+    return "lightGreen"
+  return "yellow"
+}
+
+function getStepIcon(stage){
+  if(stage.groups.length===stage.done.length)
+    return <CheckIcon />
+  return <CloseIcon />
 }
 
 function getStepContent(step) {
@@ -56,49 +70,14 @@ const CreateRequest = () => {
   const classes = useStyles();
 
   const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
   const steps = getStages();
 
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
-
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
-
   const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   return (
@@ -120,16 +99,11 @@ const CreateRequest = () => {
             <div className={classes.root}>
               <Stepper activeStep={activeStep}>
                 {steps.map((stage) => {
-                  const stepProps = {};
-                  const labelProps = {};
                   return (
-                    <Step key={uuidv4()} {...stepProps}>
-                      <StepLabel {...labelProps}>{stage.label}</StepLabel>
+                    <Step >
+                      <StepLabel icon={getStepIcon(stage)}>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
-                        <Typography
-                          style={{ marginLeft: "32px" }}
-                          key={uuidv4()}
-                        >
+                        <Typography style={{ marginLeft: "32px", backgroundColor: groupColor(group, stage)}}>
                           {group}
                         </Typography>
                       ))}
