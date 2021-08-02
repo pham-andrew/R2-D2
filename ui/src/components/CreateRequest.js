@@ -10,10 +10,21 @@ import {
   Stepper,
   Step,
   StepLabel,
+  TextField,
+  Paper,
 } from "@material-ui/core";
+
+import { List } from "@material-ui/core";
+import { ListItem } from "@material-ui/core";
+import { ListItemIcon } from "@material-ui/core";
+import { ListItemText } from "@material-ui/core";
+
+import Checkbox from "@material-ui/core/Checkbox";
 
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
+
+import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
+  paper: {
+    width: 200,
+    height: 230,
+    overflow: "auto",
+  },
 }));
 
 
@@ -39,6 +55,14 @@ function getStages() {
     { label: "Stage 2", groups: ["Group 2", "Group 3"], done: ["Group 2"] },
     { label: "Stage 3", groups: ["Group 4"], done: [] },
   ];
+}
+
+function currentStage(stages){
+  var i;
+  for(i=0;i<stages.length;i++)
+    if(stages[i].groups.length!=stages[i].done.length)
+      break
+  return i
 }
 
 function groupColor(group, stage){
@@ -53,16 +77,93 @@ function getStepIcon(stage){
   return <CloseIcon />
 }
 
-function getStepContent(step) {
+function getStepContent(step, stage) {
+
+  const classes = useStyles();
+
+  const left = React.useState([0, 1, 2, 3]);
+  const right = React.useState([4, 5, 6, 7]);
+
   switch (step) {
     case 0:
-      return "Stage 1 Details";
-    case 1:
-      return "Stage 2 Details";
-    case 2:
-      return "Stage 3 Details";
-    default:
-      return "Error";
+      return <Grid container>
+          <Grid item xs={8}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent="center"
+              alignItems="center"
+              className={classes.root}
+            >
+              <Grid item>
+                <Paper className={classes.paper}>
+                  <List dense component="div" role="list">
+                    {left.map((value) => (
+                        <ListItem
+                          key={uuidv4()}
+                          role="listitem"
+                          button
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={true}
+                              tabIndex={-1}
+                              disableRipple
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={`Group ${value + 1}`} />
+                        </ListItem>
+                      )
+                    )}
+                    <ListItem />
+                  </List>
+                </Paper>
+              </Grid>
+              <Grid item>
+                <Paper className={classes.paper}>
+                  <List dense component="div" role="list">
+                    {right.map((value) => (
+                        <ListItem
+                          key={uuidv4()}
+                          role="listitem"
+                          button
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={true}
+                              tabIndex={-1}
+                              disableRipple
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={`Group ${value + 1}`} />
+                        </ListItem>
+                      )
+                    )}
+                    <ListItem />
+                  </List>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={4}>
+            <TextField label="Stage Name" />
+            <form noValidate style={{ marginBottom: "20px" }}>
+              <TextField
+                label="Suspense"
+                type="datetime-local"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </form>
+            <TextField
+              label="Stage Instructions"
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
   }
 }
 
@@ -97,7 +198,7 @@ const CreateRequest = () => {
         <Grid item xs={9}>
           <Grid item xs={12} className={classes.tabs}>
             <div className={classes.root}>
-              <Stepper activeStep={activeStep}>
+              <Stepper activeStep={currentStage(getStages())}>
                 {steps.map((stage) => {
                   return (
                     <Step >

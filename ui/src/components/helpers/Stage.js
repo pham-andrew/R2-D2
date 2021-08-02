@@ -82,7 +82,6 @@ const Stage = () => {
       <List dense component="div" role="list">
         {items.map((value) => {
           const labelId = `transfer-list-item-${value}-label`;
-
           return (
             <ListItem
               key={uuidv4()}
@@ -95,7 +94,6 @@ const Stage = () => {
                   checked={checked.indexOf(value) !== -1}
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={`Group ${value + 1}`} />
