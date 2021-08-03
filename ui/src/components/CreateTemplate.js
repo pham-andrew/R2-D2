@@ -60,7 +60,8 @@ TabPanel.propTypes = {
 const CreateTemplate = () => {
   const classes = useStyles();
 
-  const { reload, currentUserDetails, baseURL } = useContext(AppContext);
+  const { reload, currentUserDetails, baseURL, alert, setAlert, setOpenAlert } =
+    useContext(AppContext);
   const [groups, setGroups] = React.useState("");
   // const { children, value, index, ...other } = props;
   const [routeTemplate, setRouteTemplate] = useState({});
@@ -82,61 +83,67 @@ const CreateTemplate = () => {
 
   const handleStageSubmit = (event, stageObj) => {
     event.preventDefault();
+
+    switch (stageObj.time) {
+      case "Hours":
+        stageObj.suspense_hours = stageObj.suspense_integer;
+        break;
+      case "Days":
+        stageObj.suspense_hours = stageObj.suspense_integer * 24;
+        break;
+      case "Weeks":
+        stageObj.suspense_hours = stageObj.suspense_integer * 168;
+        break;
+      default:
+        alert("Something went wrong! Please reload the page.");
+    }
+
     setStages({ ...stages, [tabValue]: stageObj });
     // console.log(stages);
   };
 
-  // const checkStages = () => {
-  //   for (let property in stages) {
-  //     if (
-  //       !property.stage_name ||
-  //       !property.stage_instructions ||
-  //       !property.substages
-  //     ) {
-  //       return true;
-  //     } else return false;
-  //   }
-  // };
+  const setTemplateObject = async (e) => {
+    e.preventDefault();
+    let group_name = await document.getElementById("template_group_id")
+      .childNodes[0].data;
+    let group_id = currentUserDetails.groups.filter(
+      (group) => group.group_name === group_name
+    )[0].group_id;
+    let name = await document.getElementById("template_name").value;
+    let instructions = await document.getElementById("template_instructions")
+      .value;
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    // console.log("Submit Template");
-    setRouteTemplate({
-      group_id: event.target.group_id.value,
-      name: event.target.name.value,
-      instructions: event.target.instructions.value,
+    await setRouteTemplate({
+      group_id: group_id,
+      name: name,
+      instructions: instructions,
+      stages: [],
     });
+
+    // setSubmitFlag(true);
+    return handleSubmit(e);
+  };
+
+  const handleSubmit = async (e) => {
+    console.log("handleSubmit misfire", routeTemplate);
 
     if (
       !routeTemplate.group_id ||
       !routeTemplate.name ||
-      !routeTemplate.instructions // && checkStages
+      !routeTemplate.instructions ||
+      !stages
     ) {
-      return alert({
+      await setAlert({
         title: "Submission Error",
-        text: "Please fill out all the required fields in all of the template stages.",
+        text: "Please fill out all the required fields before submitting the route template",
         closeAction: "Okay",
       });
+      await setOpenAlert(true);
     } else {
-      // console.log("posted template");
       for (let property in stages) {
-        switch (property.time) {
-          case "Hours":
-            return setStages(
-              (property.suspense_hours = property.suspense_integer)
-            );
-          case "Days":
-            return setStages(
-              (property.suspense_hours = property.suspense_integer * 24)
-            );
-          case "Weeks":
-            return setStages(
-              (property.suspense_hours = property.suspense_integer * 168)
-            );
-        }
-        setRouteTemplate(routeTemplate.stages.push(property));
+        routeTemplate.stages.push(stages[property]);
       }
-      // console.log(routeTemplate);
+      console.log(routeTemplate);
       //let  fetch(`${baseURL}/routes/templates/post`, {
       //  methood: "POST",
       //  headers: ,
@@ -152,8 +159,6 @@ const CreateTemplate = () => {
         setGroups,
         stages,
         setStages,
-        routeTemplate,
-        setRouteTemplate,
         tabValue,
         setTabValue,
         handleStageSubmit,
@@ -164,11 +169,7 @@ const CreateTemplate = () => {
       <div>
         <Grid container className={classes.root}>
           <Grid item xs={3}>
-            {/* <FormControl
-              className={classes.formControl}
-              onSubmit={handleSubmit}
-            > */}
-            <Paper style={{ padding: 20, marginRight: 20 }}>
+            <Paper style={{ padding: 20, marginRight: 20, height: 525 }}>
               <Grid item xs={12}>
                 <Typography
                   variant="h5"
@@ -189,7 +190,7 @@ const CreateTemplate = () => {
                     Group
                   </InputLabel>
                   <Select
-                    id="group_id"
+                    id="template_group_id"
                     // onChange={handleChange}
                   >
                     <MenuItem defaultValue="" disabled>
@@ -207,7 +208,7 @@ const CreateTemplate = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="name"
+                  id="template_name"
                   label="Template Name"
                   // onChange={handleChange}
                   required
@@ -218,7 +219,7 @@ const CreateTemplate = () => {
               </Grid>
               <Grid item xs={12} style={{ marginTop: 30 }}>
                 <TextField
-                  id="instructions"
+                  id="template_instructions"
                   label="Template Instructions"
                   multiline
                   rows={4}
@@ -243,17 +244,24 @@ const CreateTemplate = () => {
                 component="label"
                 color="primary"
                 type="submit"
-                style={{ width: 200, position: "relative", top: 20 }}
+                style={{
+                  width: 170,
+                  position: "relative",
+                  top: -10,
+                  left: 1000,
+                }}
+                onClick={(e) => {
+                  setTemplateObject(e);
+                }}
               >
-                Submit Template
+                Save Template
               </Button>
             </Grid>
-            {/* </FormControl> */}
           </Grid>
           <Grid item xs={9}>
             <Grid item xs={12} className={classes.tabs}>
               <Paper style={{ padding: 20, marginRight: 15 }}>
-                <CustomTabs groups={groups} user={currentUserDetails} />
+                <CustomTabs />
               </Paper>
             </Grid>
           </Grid>
