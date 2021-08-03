@@ -1,5 +1,4 @@
 //create request
-//wishlist: an edit button that undisables the stage inputs and saves edits
 
 // Dependencies
 import React from "react";
@@ -123,7 +122,6 @@ const useStyles = makeStyles((theme) => ({
 // }
 
 function getStageContent(step, stage) {
-
 
   const classes = useStyles();
   const [selectedGroup, setSelectedGroup] = React.useState(0)
@@ -376,7 +374,12 @@ const CreateRequest = () => {
                   </Typography>
                   <Grid container>
                     <Grid item xs={9} />
-                    <Grid item xs={2}> 
+                    <Grid item xs={3}> 
+                      <Button
+                          className={classes.button}
+                        >
+                          Edit
+                      </Button>
                       <Button
                         disabled={activeStep === 0}
                         onClick={handleBack}
