@@ -324,7 +324,7 @@ const CreateRequest = () => {
             <FormControl className={classes.formControl}>
               <InputLabel>Template</InputLabel>
               <Select
-                value={getTemplates()[0].name}
+                value={template}
                 onChange={handleChange}
               >
                 {getTemplates().map((template, index) => {
