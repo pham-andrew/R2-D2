@@ -361,7 +361,7 @@ const CreateRequest = () => {
                     <Step >
                       <StepLabel>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
-                        <Typography style={{ margingroups: "32px"}}>
+                        <Typography style={{ marginLeft: "32px"}}>
                           {group}
                         </Typography>
                       ))}
