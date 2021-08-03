@@ -159,7 +159,7 @@ function getStageContent(step, stage) {
               </Paper>
             </Grid>
             <Grid item>
-              Members of {stage.groups[selectedGroup].name}
+              Members of {stage.groups[selectedGroup]}
               <Paper className={classes.paper}>
                 <List dense component="div" role="list">
                   {getGroupMembers(stage.groups[selectedGroup]).map((member) => (
@@ -241,7 +241,7 @@ function getStageContent(step, stage) {
           </Paper>
         </Grid>
         <Grid item>
-          Members of {stage.groups[0].name}
+          Members of {stage.groups[0]}
           <Paper className={classes.paper}>
             <List dense component="div" role="list">
               {getGroupMembers(stage.groups[0]).map((member) => (
