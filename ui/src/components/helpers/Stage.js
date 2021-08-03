@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
 import TemplateContext from "../../contexts/TemplateContext";
-import AppContext from "../../contexts/AppContext";
+// import AppContext from "../../contexts/AppContext";
 import {
   ListItemText,
   MenuItem,
@@ -75,28 +75,43 @@ function intersection(a, b) {
 
 const Stage = ({ tabValue }) => {
   const classes = useStyles();
-  const { groups } = useContext(TemplateContext);
-  const { currentUserDetails, reload } = useContext(AppContext);
-  const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([]);
-  const [right, setRight] = React.useState([]);
-  const [stages, setStages] = useState({ id: tabValue });
+  const { stages, handleStageSubmit, currentUserDetails, groups } = useContext(TemplateContext);
+  // const { user, reload } = useContext(AppContext);
+  const [checked, setChecked] = useState([]);
+  const [left, setLeft] = useState([]);
+  const [right, setRight] = useState([]);
+  const [stage, setStage] = useState({});
+  const [reload, setReload] = useState(false)
+
+  console.log("stage render");
+  console.log(stages);
+
+  useEffect(()=>{
+    if (stages[tabValue]) {
+      setStage({...stage, ...stages[tabValue]})
+    }
+  }, [stages])
 
   useEffect(() => {
     if (groups) {
       setLeft(groups);
+    } 
+    if (stage.substages) {
+      setRight(stage.substages)
     }
   }, [reload]);
 
   useEffect(() => {
     if (right.length !== 0) {
-      setStages({ ...stages, substages: right });
+      setStage({ ...stage, substages: right });
     }
   }, [right]);
 
-  const handleChange = (event) => {
-    setStages({ ...stages, [event.target.id]: event.target.value });
-    console.log(stages);
+  const handleStageChange = (event) => {
+    let id = event.target.id
+    if (!id) id = "time"
+    setStage({ ...stage, [id]: event.target.value });
+    console.log(stage);
   };
 
   const leftChecked = intersection(checked, left);
@@ -240,8 +255,9 @@ const Stage = ({ tabValue }) => {
         </Grid>
       </Grid>
       <Grid item xs={4}>
+        <form noValidate style={{ marginBottom: 20 }} onSubmit={(e)=>handleStageSubmit(e, stage)}>
         <TextField
-          value={stages.stage_name || ""}
+          value={stage.stage_name || ""}
           label="Stage Name"
           required={true}
           variant="outlined"
@@ -250,10 +266,11 @@ const Stage = ({ tabValue }) => {
           }}
           style={{ marginBottom: 20 }}
           id="stage_name"
-          onChange={handleChange}
+          onChange={handleStageChange}
         />
-        <form noValidate style={{ marginBottom: 20 }}>
+
           <TextField
+            value={stage.suspense_integer || ""}
             label="Suspense"
             required={true}
             variant="outlined"
@@ -269,9 +286,10 @@ const Stage = ({ tabValue }) => {
             }}
             style={{ marginBottom: 20, width: 159 }}
             id="suspense_integer"
-            onChange={handleChange}
+            onChange={handleStageChange}
           />
           <TextField
+            value={stage.time || ""}
             select
             label="Time"
             required={true}
@@ -281,7 +299,7 @@ const Stage = ({ tabValue }) => {
               shrink: true,
             }}
             defaultValue=""
-            onChange={handleChange}
+            onChange={handleStageChange}
           >
             <MenuItem value="" disabled>
               <em>Measure of Time</em>
@@ -290,8 +308,9 @@ const Stage = ({ tabValue }) => {
             <MenuItem value={"Days"}>Days</MenuItem>
             <MenuItem value={"Weeks"}>Weeks</MenuItem>
           </TextField>
-        </form>
+
         <TextField
+          value={stage.stage_instructions || ""}
           label="Stage Instructions"
           multiline
           rows={4}
@@ -301,8 +320,10 @@ const Stage = ({ tabValue }) => {
           }}
           required={true}
           id="stage_instructions"
-          onChange={handleChange}
+          onChange={handleStageChange}
         />
+        <Button variant="contained" color="secondary" type="submit">Save Stage</Button>
+        </form>
       </Grid>
     </Grid>
   );
