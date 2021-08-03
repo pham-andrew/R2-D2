@@ -1,6 +1,5 @@
 //create request
 //wishlist: an edit button that undisables the stage inputs and saves edits
-//bug: if you click on a group to see its members then select next stage it goes undefined
 
 // Dependencies
 import React from "react";
@@ -31,7 +30,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import { v4 as uuidv4 } from "uuid";
 
-//hookup backend here...
+//hookup backend here in these functions!
 function getStages() {
   return [
     { label: "Stage 1", groups: ["Group 1"], done: ["Group 1"], suspense: "2014-08-18T21:11:54", instructions: "dew it"},
