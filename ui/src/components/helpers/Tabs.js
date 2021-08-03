@@ -1,8 +1,9 @@
 //bug: deletion not working sometimes, stale state maybe?
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import { AppBar, Tabs, Tab, Grid, Button, Divider } from "@material-ui/core";
-import TemplateContext from "../../contexts/TemplateContext";
+// import TemplateContext from "../../contexts/TemplateContext";
 import { makeStyles } from "@material-ui/styles";
+import TemplateContext from "../../contexts/TemplateContext";
 import PropTypes from "prop-types";
 import { Box } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
@@ -54,16 +55,19 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const CustomTabs = () => {
+const CustomTabs = (props) => {
   const classes = useStyles();
-  // const { stages, setStages } = useContext(TemplateContext);
-  const [tabValue, setTabValue] = useState(0);
+    const { user, groups } = props;
+  const { tabValue, setTabValue } = useContext(TemplateContext);
+  const [stages, setStages] = useState({})
   const [tabList, setTabList] = useState([
     {
       key: 0,
       id: 0,
     },
   ]);
+
+
 
   const handleTabChange = (event, value) => {
     setTabValue(value);
@@ -102,6 +106,13 @@ const CustomTabs = () => {
     setTabValue(curValue);
     setTabList(tabs);
   };
+
+  let stageTabs = tabList.map((tab) =>{
+  return (
+        <TabPanel value={tabValue} index={tab.id} key={uuidv4()}>
+          <Stage tabValue={tabValue} user={user}/>
+        </TabPanel>
+      )})
 
   return (
     <>
@@ -147,11 +158,7 @@ const CustomTabs = () => {
           </Grid>
         </Grid>
       </AppBar>
-      {tabList.map((tab) => (
-        <TabPanel value={tabValue} index={tab.id} key={uuidv4()}>
-          <Stage tabValue={tabValue} />
-        </TabPanel>
-      ))}
+      {stageTabs}
     </>
   );
 };
