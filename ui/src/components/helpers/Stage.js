@@ -1,10 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
 import TemplateContext from "../../contexts/TemplateContext";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Checkbox from "@material-ui/core/Checkbox";
+import AppContext from "../../contexts/AppContext";
 import {
   ListItemText,
   MenuItem,
@@ -12,48 +10,104 @@ import {
   ListItem,
   List,
   Paper,
+  FormControlLabel,
+  Button,
+  Checkbox,
+  TextField,
+  Grid,
 } from "@material-ui/core";
-import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "auto",
+    marginLeft: -20,
   },
   paper: {
-    width: 200,
+    width: 220,
     height: 230,
     overflow: "auto",
   },
   button: {
-    margin: theme.spacing(0.5, 0),
+    margin: theme.spacing(0.5, 0.5),
   },
 }));
 
-function not(a, b) {
-  return a.filter((value) => b.indexOf(value) === -1);
+function notOnSide(a, b) {
+  let tmpArray = [];
+  a.forEach((value) => {
+    let found = false;
+    b.forEach((group) => {
+      if (group.id === value.id) {
+        return (found = true);
+      }
+    });
+    if (!found) tmpArray.push(value);
+  });
+  return tmpArray;
+}
+
+function notChecked(a, b) {
+  let tmpArray = [];
+  a.forEach((value) => {
+    let found = false;
+    b.forEach((group) => {
+      if (group.id === value) {
+        return (found = true);
+      }
+    });
+    if (!found) tmpArray.push(value);
+  });
+  return tmpArray;
 }
 
 function intersection(a, b) {
-  return a.filter((value) => b.indexOf(value) !== -1);
+  let tmpArray = [];
+  a.forEach((value) => {
+    b.forEach((group) => {
+      if (group.id === value) {
+        tmpArray.push(group);
+        return;
+      }
+    });
+  });
+  return tmpArray;
 }
 
-const Stage = () => {
+const Stage = ({ tabValue }) => {
   const classes = useStyles();
-  const { tabList, stages, setStages, groups } = useContext(TemplateContext);
+  const { groups } = useContext(TemplateContext);
+  const { currentUserDetails, reload } = useContext(AppContext);
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState(groups);
+  const [left, setLeft] = React.useState([]);
   const [right, setRight] = React.useState([]);
-  console.log(groups);
+  const [stages, setStages] = useState({ id: tabValue });
+
+  useEffect(() => {
+    if (groups) {
+      setLeft(groups);
+    }
+  }, [reload]);
+
+  useEffect(() => {
+    if (right.length !== 0) {
+      setStages({ ...stages, substages: right });
+    }
+  }, [right]);
+
+  const handleChange = (event) => {
+    setStages({ ...stages, [event.target.id]: event.target.value });
+    console.log(stages);
+  };
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
+  const handleToggle = (grpObj) => {
+    const currentIndex = checked.indexOf(grpObj.id);
     const newChecked = [...checked];
 
     if (currentIndex === -1) {
-      newChecked.push(value);
+      newChecked.push(grpObj.id);
     } else {
       newChecked.splice(currentIndex, 1);
     }
@@ -68,20 +122,29 @@ const Stage = () => {
 
   const handleCheckedRight = () => {
     setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
+    setLeft(notOnSide(left, leftChecked));
+    setChecked(notChecked(checked, leftChecked));
   };
 
   const handleCheckedLeft = () => {
     setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
+    setRight(notOnSide(right, rightChecked));
+    setChecked(notChecked(checked, rightChecked));
   };
 
   const handleAllLeft = () => {
     setLeft(left.concat(right));
     setRight([]);
   };
+
+  // const handleSupervisor = (e) => {
+  //   e.preventDefault();
+  //   if (supervisor) {
+  //     setSupervisor(null);
+  //   } else {
+  //     setSupervisor(e.target.value);
+  //   }
+  // };
 
   const customList = (GpObjs) => (
     <Paper className={classes.paper}>
@@ -94,11 +157,11 @@ const Stage = () => {
               key={uuidv4()}
               role="listitem"
               button
-              onClick={handleToggle(group)}
+              onClick={() => handleToggle(group)}
             >
               <ListItemIcon>
                 <Checkbox
-                  checked={checked.indexOf(group.checked) !== -1}
+                  checked={checked.indexOf(group.id) !== -1}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": labelId }}
@@ -116,9 +179,19 @@ const Stage = () => {
   return (
     <Grid container>
       <Grid item xs={8}>
+        <Grid item>
+          <FormControlLabel
+            control={<Checkbox color="primary" />}
+            labelPlacement="end"
+            id="supervisor"
+            value={currentUserDetails.supervisor_id}
+            style={{ marginLeft: 5, marginBottom: 11 }}
+            label={`Add your supervisor: ${currentUserDetails.supervisor_name}`}
+          />
+        </Grid>
         <Grid
           container
-          spacing={2}
+          spacing={0}
           justifyContent="center"
           alignItems="center"
           className={classes.root}
@@ -169,15 +242,18 @@ const Stage = () => {
       </Grid>
       <Grid item xs={4}>
         <TextField
+          value={stages.stage_name || ""}
           label="Stage Name"
           required={true}
           variant="outlined"
           InputLabelProps={{
             shrink: true,
           }}
-          style={{ marginBottom: "20px" }}
+          style={{ marginBottom: 20 }}
+          id="stage_name"
+          onChange={handleChange}
         />
-        <form noValidate style={{ marginBottom: "20px" }}>
+        <form noValidate style={{ marginBottom: 20 }}>
           <TextField
             label="Suspense"
             required={true}
@@ -192,19 +268,25 @@ const Stage = () => {
             InputLabelProps={{
               shrink: true,
             }}
-            style={{ marginBottom: "20px", width: 159 }}
+            style={{ marginBottom: 20, width: 159 }}
+            id="suspense_integer"
+            onChange={handleChange}
           />
           <TextField
             select
             label="Time"
             required={true}
-            default
             id="time"
             variant="outlined"
             InputLabelProps={{
               shrink: true,
             }}
+            defaultValue=""
+            onChange={handleChange}
           >
+            <MenuItem value="" disabled>
+              <em>Measure of Time</em>
+            </MenuItem>
             <MenuItem value={"Hours"}>Hours</MenuItem>
             <MenuItem value={"Days"}>Days</MenuItem>
             <MenuItem value={"Weeks"}>Weeks</MenuItem>
@@ -219,6 +301,8 @@ const Stage = () => {
             shrink: true,
           }}
           required={true}
+          id="stage_instructions"
+          onChange={handleChange}
         />
       </Grid>
     </Grid>

@@ -1,6 +1,6 @@
 //bug: deletion not working sometimes, stale state maybe?
 import React, { useState, useContext } from "react";
-import { AppBar, Tabs, Tab, Grid, Button } from "@material-ui/core";
+import { AppBar, Tabs, Tab, Grid, Button, Divider } from "@material-ui/core";
 import TemplateContext from "../../contexts/TemplateContext";
 import { makeStyles } from "@material-ui/styles";
 import PropTypes from "prop-types";
@@ -56,21 +56,21 @@ TabPanel.propTypes = {
 
 const CustomTabs = () => {
   const classes = useStyles();
-  const { tabList, setTabList, stages, setStages } =
-    useContext(TemplateContext);
-  // const [tabList, setTabList] = useState([
-  //   {
-  //     key: 0,
-  //     id: 0,
-  //   },
-  // ]);
-
+  // const { stages, setStages } = useContext(TemplateContext);
   const [tabValue, setTabValue] = useState(0);
+  const [tabList, setTabList] = useState([
+    {
+      key: 0,
+      id: 0,
+    },
+  ]);
+
   const handleTabChange = (event, value) => {
     setTabValue(value);
   };
 
-  const addTab = () => {
+  const addTab = (event) => {
+    event.preventDefault();
     let id = tabList[tabList.length - 1].id + 1;
     setTabList([...tabList, { key: id, id: id }]);
   };
@@ -105,6 +105,14 @@ const CustomTabs = () => {
 
   return (
     <>
+      <Grid item xs={12}>
+        <Typography variant="h5" style={{ marginBottom: 10, fontWeight: 600 }}>
+          Stage Details
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Divider orientation="horizontal" style={{ marginBottom: 20 }} />
+      </Grid>
       <AppBar position="static" className={classes.appBar}>
         <Grid container alignItems="center" justify="center">
           <Grid item xl={11} lg={11} md={11} sm={11} xs={11}>
@@ -139,10 +147,9 @@ const CustomTabs = () => {
           </Grid>
         </Grid>
       </AppBar>
-
       {tabList.map((tab) => (
         <TabPanel value={tabValue} index={tab.id} key={uuidv4()}>
-          <Stage />
+          <Stage tabValue={tabValue} />
         </TabPanel>
       ))}
     </>

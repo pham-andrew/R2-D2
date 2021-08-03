@@ -2,7 +2,7 @@ const path = require("path");
 
 const dbConnection =
   process.env.NODE_ENV === "production"
-    ? `postgres://${process.env.PG_RW_USER}:${process.env.APP_DB_RW_PASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PG_DATABASE}`
+    ? `postgres://${process.env.PG_USER}:${process.env.APP_DB_ADMIN_PASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PG_DATABASE}`
     : `postgres://postgres:docker@localhost:5432/r2d2`;
 
 console.log(dbConnection);

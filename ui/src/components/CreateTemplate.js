@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import TemplateContext from "../contexts/TemplateContext";
 import AppContext from "../contexts/AppContext";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography, Paper } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -9,7 +9,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { Box } from "@material-ui/core";
+import { Box, Divider } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import AlertDialog from "./helpers/AlertDialog";
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     minWidth: 120,
+    marginBottom: 20,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -65,52 +66,36 @@ TabPanel.propTypes = {
 const CreateTemplate = (props) => {
   const classes = useStyles();
 
-  const { currentUserDetails, baseURL, setOpenAlert, setAlert, alert } =
+  const { reload, currentUserDetails, baseURL, setOpenAlert, setAlert, alert } =
     useContext(AppContext);
   const [groups, setGroups] = React.useState("");
   // const { children, value, index, ...other } = props;
   const [routeTemplate, setRouteTemplate] = useState({});
-  const [stages, setStages] = useState({});
-  const [tabList, setTabList] = useState([
-    {
-      key: 0,
-      id: 0,
-    },
-  ]);
 
   useEffect(() => {
     fetch(`${baseURL}/groups/`)
       .then((resp) => resp.json())
       .then((data) => setGroups(data));
-  }, []);
+  }, [reload]);
 
-  const handleGroupSelect = (event) => {
-    let group_id = event.target.value;
-    console.log(group_id);
-    // setGroup(group_id);
-    setRouteTemplate({ ...routeTemplate, group_id: group_id });
-  };
+  // function handleChange(event) {
+  //   setRouteTemplate({
+  //     ...routeTemplate,
+  //     [event.target.id]: event.target.value,
+  //   });
+  // }
 
-  const handleChange = (event) => {
-    console.log(event.target.value);
-    setRouteTemplate({
-      ...routeTemplate,
-      [event.target.id]: event.target.value,
-    });
-  };
-
-  const checkStages = () => {
-    for (let property in stages) {
-      if (
-        !property.stage_name ||
-        !property.stage_instructions ||
-        !property.substages
-      ) {
-        return true;
-        //alerts if any required stage fields are not filled out
-      } else return false;
-    }
-  };
+  // const checkStages = () => {
+  //   for (let property in stages) {
+  //     if (
+  //       !property.stage_name ||
+  //       !property.stage_instructions ||
+  //       !property.substages
+  //     ) {
+  //       return true;
+  //     } else return false;
+  //   }
+  // };
 
   const handleClick = async (event) => {
     event.preventDefault();
@@ -118,7 +103,7 @@ const CreateTemplate = (props) => {
     if (
       !routeTemplate.group_id ||
       !routeTemplate.name ||
-      (!routeTemplate.instructions && checkStages)
+      !routeTemplate.instructions // && checkStages
     ) {
       await setAlert({
         title: "Submission Error",
@@ -128,9 +113,24 @@ const CreateTemplate = (props) => {
       await setOpenAlert(true);
     } else {
       console.log("posted template");
-      for (let property in stages) {
-        routeTemplate.stages.push(property);
-      }
+      // for (let property in stages) {
+      //   // switch (property.time) {
+      //   //   case "Hours":
+      //   //     return setStages(
+      //   //       (property.suspense_hours = property.suspense_integer)
+      //   //     );
+      //   //   case "Days":
+      //   //     return setStages(
+      //   //       (property.suspense_hours = property.suspense_integer * 24)
+      //   //     );
+      //   //   case "Weeks":
+      //   //     return setStages(
+      //   //       (property.suspense_hours = property.suspense_integer * 168)
+      //   //     );
+      //   // }
+      //   setRouteTemplate(routeTemplate.stages.push(property));
+      // }
+      console.log(routeTemplate);
       //let  fetch(`${baseURL}/routes/templates/post`, {
       //  methood: "POST",
       //  headers: ,
@@ -152,74 +152,97 @@ const CreateTemplate = (props) => {
         setGroups,
         routeTemplate,
         setRouteTemplate,
-        stages,
-        setStages,
-        tabList,
-        setTabList,
       }}
     >
       <div>
         <AlertDialog bodyAlert={alert} />
         <Grid container className={classes.root}>
           <Grid item xs={3}>
-            <Grid item xs={12}>
-              <FormControl className={classes.formControl}>
-                <InputLabel>Group</InputLabel>
-                <Select
-                  id="group_id"
-                  value={routeTemplate.group_id}
-                  onChange={handleGroupSelect}
-                  required
+            <Paper style={{ padding: 20, marginRight: 20 }}>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  style={{ marginBottom: 10, fontWeight: 600 }}
                 >
-                  {/* *TODO: map of user's group memberships */}
-                  {currentUserDetails.groups.map((group) => {
-                    return (
-                      <MenuItem value={group.group_id} key={uuidv4()}>
-                        {group.group_name}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="name"
-                label="Template Name"
-                onChange={handleChange}
-                required
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />{" "}
-              {/**TODO: Maps to name key for post */}
-            </Grid>
-            <Grid item xs={12} style={{ marginTop: "30px" }}>
-              <TextField
-                id="instructions"
-                label="Template Instructions"
-                multiline
-                rows={4}
-                variant="outlined"
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} style={{ marginTop: "20px" }}>
-              <Button variant="contained" component="label" color="primary">
-                Upload Document
-                <input type="file" hidden />
-              </Button>
-            </Grid>
+                  Route Details
+                </Typography>
+                <Grid item xs={12}>
+                  <Divider
+                    orientation="horizontal"
+                    style={{ marginBottom: 20 }}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel required={true} shrink={true}>
+                    Group
+                  </InputLabel>
+                  <Select
+                    id="group_id"
+                    // onChange={handleChange}
+                  >
+                    <MenuItem defaultValue="" disabled>
+                      <em>Your Memberships</em>
+                    </MenuItem>
+                    {currentUserDetails.groups.map((group) => {
+                      return (
+                        <MenuItem value={group.group_id} key={uuidv4()}>
+                          {group.group_name}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="name"
+                  label="Template Name"
+                  // onChange={handleChange}
+                  required
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} style={{ marginTop: 30 }}>
+                <TextField
+                  id="instructions"
+                  label="Template Instructions"
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  // onChange={handleChange}
+                  required
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} style={{ marginTop: 20 }}>
+                <Button variant="contained" component="label" color="primary">
+                  Upload Document
+                  <input type="file" hidden />
+                </Button>
+              </Grid>
+            </Paper>
           </Grid>
           <Grid item xs={9}>
             <Grid item xs={12} className={classes.tabs}>
-              <CustomTabs />
+              <Paper style={{ padding: 20, marginRight: 15 }}>
+                <CustomTabs />
+              </Paper>
             </Grid>
           </Grid>
-          <Grid item xs={10} />
-          <Grid item xs={2} style={{ marginTop: "20px" }}>
-            <Button variant="contained" component="label" onClick={handleClick}>
+          <Grid item xs={11} />
+          <Grid item xs={1} style={{ marginTop: 20 }}>
+            <Button
+              variant="contained"
+              component="label"
+              onClick={handleClick}
+              color="primary"
+            >
               Submit
             </Button>
           </Grid>
