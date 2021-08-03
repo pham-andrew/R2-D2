@@ -1,8 +1,9 @@
 //dependencies
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import AppContext from "../contexts/AppContext";
 import auth from "../utils/auth";
 import { ValidateEmail, ValidatePassword } from "../utils/regex";
+import { v4 as uuidv4 } from "uuid";
 
 // styles
 import "../styles/loading.css";
@@ -16,6 +17,7 @@ import {
   TextField,
   Button,
   Tooltip,
+  MenuItem,
 } from "@material-ui/core";
 import AlertDialog from "./helpers/AlertDialog";
 
@@ -66,12 +68,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const { currentUser, setCurrentUser } = useContext(AppContext);
+  const { currentUserDetails, setCurrentUserDetails } = useContext(AppContext);
+  const { allUsers, setAllUsers } = useContext(AppContext);
   const { setOpenAlert } = useContext(AppContext);
   const { baseURL } = useContext(AppContext);
   const { alert, setAlert } = useContext(AppContext);
 
   const [editEmail, setEditEmail] = useState(false);
+  const [supervisor, setSupervisor] = useState(false);
   const [editPass, setEditPass] = useState(false);
+  const [editSupervisor, setEditSupervisor] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
   const [validPass, setValidPass] = useState(false);
   const [validConfirm, setValidConfirm] = useState(false);
@@ -84,6 +90,12 @@ export default function Login() {
   const [seePass, setSeePass] = useState(false);
 
   const classes = useStyles();
+
+  useEffect(() => {
+    fetch(`${baseURL}/users`)
+      .then((res) => res.json())
+      .then((data) => setAllUsers(data));
+  }, []);
 
   const handleEmailCheck = () => {
     let email = document.getElementById("newEmail").value;
@@ -152,21 +164,28 @@ export default function Login() {
       case "password":
         setEditPass(true);
         break;
+      case "supervisor":
+        setEditSupervisor(true);
+        break;
       default:
         alert("Something went wrong! Please reload the page.");
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     switch (e.target.querySelector("p").innerText) {
       case "email":
-        setEditEmail(false);
-        editEmailHandler(e);
+        await editEmailHandler(e);
+        await setEditEmail(false);
         break;
       case "password":
-        setEditPass(false);
-        editPassHandler(e);
+        await editPassHandler(e);
+        await setEditPass(false);
+        break;
+      case "supervisor":
+        await editSupervisorHandler(e);
+        await setEditSupervisor(false);
         break;
       default:
         alert("Something went wrong! Please reload the page.");
@@ -181,6 +200,9 @@ export default function Login() {
         break;
       case "password":
         setEditPass(false);
+        break;
+      case "supervisor":
+        setEditSupervisor(false);
         break;
       default:
         alert("Something went wrong! Please reload the page.");
@@ -320,7 +342,58 @@ export default function Login() {
       .catch((err) => console.log(err));
   };
 
-  if (!currentUser.fname) {
+  const editSupervisorHandler = async (e) => {
+    e.preventDefault();
+    let newSuperName = document.getElementById("newSupervisor").innerText;
+    await fetch(`${baseURL}/users/patch`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: currentUser.email,
+        user_id: currentUser.user_id,
+        rank: currentUser.rank,
+        fname: currentUser.fname,
+        lname: currentUser.lname,
+        role: currentUser.role,
+        supervisor_id: supervisor,
+        password: currentUser.password,
+      }),
+    })
+      .then((res) => res.json())
+      .then(async (data) => {
+        if (data.message === "Success") {
+          currentUserDetails.supervisor_name = newSuperName;
+          await setAlert({
+            title: "Success!",
+            text: `Your supervisor was successfully changed to ${currentUserDetails.supervisor_name}!`,
+            actions: "",
+          });
+          await setOpenAlert(true);
+          await setCurrentUser({
+            email: currentUser.email,
+            user_id: currentUser.user_id,
+            rank: currentUser.rank,
+            fname: currentUser.fname,
+            lname: currentUser.lname,
+            role: currentUser.role,
+            supervisor_id: supervisor,
+            password: currentUser.password,
+          });
+        } else {
+          await setAlert({
+            title: "Edit Error",
+            text: data.message,
+            actions: "",
+          });
+          await setOpenAlert(true);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  if (!currentUser) {
     return (
       <>
         <main>
@@ -433,11 +506,11 @@ export default function Login() {
                         className={classes.paperText}
                         style={{ paddingRight: 81, paddingLeft: 81 }}
                       >
-                        <Tooltip title="Edit Username">
+                        <Tooltip title="Feature not available - name is extracted from government email addresses">
                           <Button
                             onClick={() =>
                               console.log(
-                                "Feature not available - name is extracted from military email addresses"
+                                "Feature not available - name is extracted from government email addresses"
                               )
                             }
                             variant="contained"
@@ -453,7 +526,10 @@ export default function Login() {
                   </Grid>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Paper className={classes.paperHead}>
+                      <Paper
+                        className={classes.paperHead}
+                        style={{ marginLeft: 1 }}
+                      >
                         <Typography
                           style={{ paddingRight: 32.5, paddingLeft: 32.5 }}
                           className={classes.type}
@@ -554,10 +630,13 @@ export default function Login() {
 
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Paper className={classes.paperHead}>
+                      <Paper
+                        className={classes.paperHead}
+                        style={{ marginLeft: 2 }}
+                      >
                         <Typography
                           className={classes.type}
-                          style={{ paddingRight: 16, paddingLeft: 16 }}
+                          style={{ paddingRight: 15, paddingLeft: 16 }}
                         >
                           Password
                         </Typography>
@@ -718,8 +797,162 @@ export default function Login() {
                         </Paper>
                       )}
                     </Grid>
-                  </Grid>
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <Paper
+                          className={classes.paperHead}
+                          style={{ marginLeft: 10 }}
+                        >
+                          <Typography
+                            className={classes.type}
+                            style={{ paddingRight: 12.1, paddingLeft: 12.1 }}
+                          >
+                            Supervisor
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs style={{ overflow: "hidden" }}>
+                        <Paper
+                          className={classes.paperText}
+                          style={{ overflow: "hidden" }}
+                        >
+                          {editSupervisor ? (
+                            <TextField
+                              id="newSupervisor"
+                              variant="outlined"
+                              select
+                              defaultValue={currentUser.supervisor_id || ""}
+                              size="small"
+                              className={classes.input}
+                              autoFocus={true}
+                              required={true}
+                              style={{ width: 225 }}
+                              onChange={(e) => setSupervisor(e.target.value)}
+                              onBlur={(e) => setSupervisor(e.target.value)}
+                            >
+                              <MenuItem value="" disabled>
+                                <em>Available Supervisors</em>
+                              </MenuItem>
 
+                              {allUsers.map((user) => {
+                                return (
+                                  <MenuItem
+                                    key={uuidv4()}
+                                    value={user.id}
+                                  >{`${user.fname} ${user.lname} (${user.rank})`}</MenuItem>
+                                );
+                              })}
+                            </TextField>
+                          ) : (
+                            <Typography
+                              id="supervisor"
+                              style={{ marginRight: -25 }}
+                            >
+                              {currentUserDetails.supervisor_name || "N/A"}
+                            </Typography>
+                          )}
+                        </Paper>
+                      </Grid>
+                      <Grid item>
+                        {editSupervisor ? (
+                          <>
+                            <Paper
+                              className={classes.paperText}
+                              style={{ marginRight: 7 }}
+                            >
+                              <Tooltip title="Submit Supervisor">
+                                <span>
+                                  <Button
+                                    onClick={handleSubmit}
+                                    variant="contained"
+                                    color="secondary"
+                                    className={classes.buttonEdit}
+                                    style={{ marginRight: 10 }}
+                                    disabled={!supervisor}
+                                  >
+                                    Submit
+                                    <p style={{ display: "none" }}>
+                                      supervisor
+                                    </p>
+                                  </Button>
+                                </span>
+                              </Tooltip>
+                              <Tooltip title="Cancel Changes">
+                                <Button
+                                  onClick={(e) => {
+                                    handleCancel(e);
+                                  }}
+                                  variant="contained"
+                                  color="default"
+                                  className={classes.buttonEdit}
+                                >
+                                  Cancel
+                                  <p style={{ display: "none" }}>supervisor</p>
+                                </Button>
+                              </Tooltip>
+                            </Paper>
+                          </>
+                        ) : (
+                          <Paper
+                            className={classes.paperText}
+                            style={{
+                              paddingRight: 81,
+                              paddingLeft: 81,
+                              marginRight: 8,
+                            }}
+                          >
+                            <Tooltip title="Change Supervisor">
+                              <Button
+                                onClick={handleEdit}
+                                variant="contained"
+                                color="primary"
+                                className={classes.buttonEdit}
+                              >
+                                Edit
+                                <p style={{ display: "none" }}>supervisor</p>
+                              </Button>
+                            </Tooltip>
+                          </Paper>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2} style={{ marginTop: 20 }}>
+                    <Grid item style={{ width: 167.5 }}>
+                      <Paper className={classes.paper}>
+                        <Typography className={classes.type}>
+                          Subordinates
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs>
+                      <Paper className={classes.paper}>
+                        {allUsers.map((user) => {
+                          if (user.supervisor_id === currentUser.user_id) {
+                            return (
+                              <Typography key={uuidv4()}>
+                                {user.fname +
+                                  " " +
+                                  user.lname +
+                                  " (" +
+                                  user.rank +
+                                  ")"}
+                              </Typography>
+                            );
+                          }
+                        })}
+                        <div style={{ marginBottom: 0.5, marginTop: 0.5 }}>
+                          <Typography
+                            key={uuidv4()}
+                            variant="caption"
+                            style={{ color: "lightgray" }}
+                          >
+                            End of List
+                          </Typography>
+                        </div>
+                      </Paper>
+                    </Grid>
+                  </Grid>
                   <Grid container spacing={2} style={{ marginTop: 20 }}>
                     <Grid item xs>
                       <Paper className={classes.paper}>

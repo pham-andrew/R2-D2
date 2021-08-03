@@ -24,9 +24,11 @@ import {
   ListItemText,
 } from "@material-ui/core";
 
+
 //icons
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
+
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -87,19 +89,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 function completed(stages){
+
   var i;
-  for(i=0;i<stages.length;i++)
-    if(stages[i].groups.length!=stages[i].done.length)
-      break
-  return i
+  for (i = 0; i < stages.length; i++)
+    if (stages[i].groups.length != stages[i].done.length) break;
+  return i;
 }
 
-function groupColor(group, stage){
-  if(stage.done.includes(group))
-    return "lightGreen"
-  return "yellow"
+function groupColor(group, stage) {
+  if (stage.done.includes(group)) return "lightGreen";
+  return "yellow";
 }
+
 
 function memberColor(member){
   if(memberDone(member)===true)
@@ -114,6 +117,7 @@ function getStageIcon(stage){
 }
 
 function getStageContent(step, stage) {
+
 
   const classes = useStyles();
   const [selectedGroup, setSelectedGroup] = React.useState(0)
@@ -280,6 +284,7 @@ function getStageContent(step, stage) {
       />
     </Grid>
   </Grid>
+
 }
 
 const CreateRequest = () => {
@@ -343,10 +348,12 @@ const CreateRequest = () => {
               <Stepper activeStep={completed(getStages())}>
                 {stages.map((stage) => {
                   return (
+
                     <Step >
                       <StepLabel icon={getStageIcon(stage)}>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
                         <Typography style={{ margingroups: "32px", backgroundColor: groupColor(group, stage)}}>
+
                           {group}
                         </Typography>
                       ))}

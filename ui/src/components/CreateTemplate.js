@@ -57,17 +57,10 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-// function a11yProps(index) {
-//   return {
-//     id: `simple-tab-${index}`,
-//   };
-// }
-
-const CreateTemplate = (props) => {
+const CreateTemplate = () => {
   const classes = useStyles();
 
-  const { reload, currentUserDetails, baseURL, setOpenAlert, setAlert, alert } =
-    useContext(AppContext);
+  const { reload, currentUserDetails, baseURL } = useContext(AppContext);
   const [groups, setGroups] = React.useState("");
   // const { children, value, index, ...other } = props;
   const [routeTemplate, setRouteTemplate] = useState({});
@@ -88,45 +81,44 @@ const CreateTemplate = (props) => {
   // }
 
   const handleStageSubmit = (event, stageObj) => {
-    event.preventDefault()
+    event.preventDefault();
     setStages({ ...stages, [tabValue]: stageObj });
-    console.log(stages);
+    // console.log(stages);
   };
 
-  const checkStages = () => {
-    for (let property in stages) {
-      if (
-        !property.stage_name ||
-        !property.stage_instructions ||
-        !property.substages
-      ) {
-        return true;
-      } else return false;
-    }
-  };
+  // const checkStages = () => {
+  //   for (let property in stages) {
+  //     if (
+  //       !property.stage_name ||
+  //       !property.stage_instructions ||
+  //       !property.substages
+  //     ) {
+  //       return true;
+  //     } else return false;
+  //   }
+  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("clicked")
+    // console.log("Submit Template");
     setRouteTemplate({
       group_id: event.target.group_id.value,
       name: event.target.name.value,
       instructions: event.target.instructions.value,
-    })
+    });
 
     if (
       !routeTemplate.group_id ||
       !routeTemplate.name ||
       !routeTemplate.instructions // && checkStages
     ) {
-      await setAlert({
+      return alert({
         title: "Submission Error",
         text: "Please fill out all the required fields in all of the template stages.",
         closeAction: "Okay",
       });
-      await setOpenAlert(true);
     } else {
-      console.log("posted template");
+      // console.log("posted template");
       for (let property in stages) {
         switch (property.time) {
           case "Hours":
@@ -144,7 +136,7 @@ const CreateTemplate = (props) => {
         }
         setRouteTemplate(routeTemplate.stages.push(property));
       }
-      console.log(routeTemplate);
+      // console.log(routeTemplate);
       //let  fetch(`${baseURL}/routes/templates/post`, {
       //  methood: "POST",
       //  headers: ,
@@ -152,7 +144,6 @@ const CreateTemplate = (props) => {
       //})
     }
   };
-
 
   return (
     <TemplateContext.Provider
@@ -169,11 +160,14 @@ const CreateTemplate = (props) => {
         currentUserDetails,
       }}
     >
+      <AlertDialog bodyAlert={alert} />
       <div>
-        <AlertDialog bodyAlert={alert} />
         <Grid container className={classes.root}>
           <Grid item xs={3}>
-            <form onSubmit={handleSubmit}>
+            {/* <FormControl
+              className={classes.formControl}
+              onSubmit={handleSubmit}
+            > */}
             <Paper style={{ padding: 20, marginRight: 20 }}>
               <Grid item xs={12}>
                 <Typography
@@ -191,7 +185,7 @@ const CreateTemplate = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <FormControl className={classes.formControl}>
-                  <InputLabel required={true} shrink={true}>
+                  <InputLabel required shrink={true}>
                     Group
                   </InputLabel>
                   <Select
@@ -244,16 +238,17 @@ const CreateTemplate = (props) => {
               </Grid>
             </Paper>
             <Grid item xs={1} style={{ marginTop: 50 }}>
-            <Button
-              variant="contained"
-              component="label"
-              color="primary"
-              type="submit"
-            >
-              Submit Template
-            </Button>
-          </Grid>
-          </form>
+              <Button
+                variant="contained"
+                component="label"
+                color="primary"
+                type="submit"
+                style={{ width: 200, position: "relative", top: 20 }}
+              >
+                Submit Template
+              </Button>
+            </Grid>
+            {/* </FormControl> */}
           </Grid>
           <Grid item xs={9}>
             <Grid item xs={12} className={classes.tabs}>
