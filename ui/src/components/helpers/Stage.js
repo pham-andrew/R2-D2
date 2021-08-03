@@ -1,53 +1,113 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Checkbox from "@material-ui/core/Checkbox";
-import { Paper } from "@material-ui/core";
-import { List } from "@material-ui/core";
-import { ListItem } from "@material-ui/core";
-import { ListItemIcon } from "@material-ui/core";
-import { ListItemText } from "@material-ui/core";
-import { Button } from "@material-ui/core";
+import TemplateContext from "../../contexts/TemplateContext";
+import AppContext from "../../contexts/AppContext";
+import {
+  ListItemText,
+  MenuItem,
+  ListItemIcon,
+  ListItem,
+  List,
+  Paper,
+  FormControlLabel,
+  Button,
+  Checkbox,
+  TextField,
+  Grid,
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "auto",
+    marginLeft: -20,
   },
   paper: {
-    width: 200,
+    width: 220,
     height: 230,
     overflow: "auto",
   },
   button: {
-    margin: theme.spacing(0.5, 0),
+    margin: theme.spacing(0.5, 0.5),
   },
 }));
 
-function not(a, b) {
-  return a.filter((value) => b.indexOf(value) === -1);
+function notOnSide(a, b) {
+  let tmpArray = [];
+  a.forEach((value) => {
+    let found = false;
+    b.forEach((group) => {
+      if (group.id === value.id) {
+        return (found = true);
+      }
+    });
+    if (!found) tmpArray.push(value);
+  });
+  return tmpArray;
+}
+
+function notChecked(a, b) {
+  let tmpArray = [];
+  a.forEach((value) => {
+    let found = false;
+    b.forEach((group) => {
+      if (group.id === value) {
+        return (found = true);
+      }
+    });
+    if (!found) tmpArray.push(value);
+  });
+  return tmpArray;
 }
 
 function intersection(a, b) {
-  return a.filter((value) => b.indexOf(value) !== -1);
+  let tmpArray = [];
+  a.forEach((value) => {
+    b.forEach((group) => {
+      if (group.id === value) {
+        tmpArray.push(group);
+        return;
+      }
+    });
+  });
+  return tmpArray;
 }
 
-const Stage = () => {
+const Stage = ({ tabValue }) => {
   const classes = useStyles();
+  const { groups } = useContext(TemplateContext);
+  const { currentUserDetails, reload } = useContext(AppContext);
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+  const [left, setLeft] = React.useState([]);
+  const [right, setRight] = React.useState([]);
+  const [stages, setStages] = useState({ id: tabValue });
+
+  useEffect(() => {
+    if (groups) {
+      setLeft(groups);
+    }
+  }, [reload]);
+
+  useEffect(() => {
+    if (right.length !== 0) {
+      setStages({ ...stages, substages: right });
+    }
+  }, [right]);
+
+  const handleChange = (event) => {
+    setStages({ ...stages, [event.target.id]: event.target.value });
+    console.log(stages);
+  };
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
+  const handleToggle = (grpObj) => {
+    const currentIndex = checked.indexOf(grpObj.id);
     const newChecked = [...checked];
 
     if (currentIndex === -1) {
-      newChecked.push(value);
+      newChecked.push(grpObj.id);
     } else {
       newChecked.splice(currentIndex, 1);
     }
@@ -62,14 +122,14 @@ const Stage = () => {
 
   const handleCheckedRight = () => {
     setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
+    setLeft(notOnSide(left, leftChecked));
+    setChecked(notChecked(checked, leftChecked));
   };
 
   const handleCheckedLeft = () => {
     setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
+    setRight(notOnSide(right, rightChecked));
+    setChecked(notChecked(checked, rightChecked));
   };
 
   const handleAllLeft = () => {
@@ -77,28 +137,37 @@ const Stage = () => {
     setRight([]);
   };
 
-  const customList = (items) => (
+  // const handleSupervisor = (e) => {
+  //   e.preventDefault();
+  //   if (supervisor) {
+  //     setSupervisor(null);
+  //   } else {
+  //     setSupervisor(e.target.value);
+  //   }
+  // };
+
+  const customList = (GpObjs) => (
     <Paper className={classes.paper}>
       <List dense component="div" role="list">
-        {items.map((value) => {
-          const labelId = `transfer-list-item-${value}-label`;
+        {GpObjs.map((group) => {
+          const labelId = `transfer-list-item-${group.id}-label`;
 
           return (
             <ListItem
               key={uuidv4()}
               role="listitem"
               button
-              onClick={handleToggle(value)}
+              onClick={() => handleToggle(group)}
             >
               <ListItemIcon>
                 <Checkbox
-                  checked={checked.indexOf(value) !== -1}
+                  checked={checked.indexOf(group.id) !== -1}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`Group ${value + 1}`} />
+              <ListItemText id={labelId} primary={group.name} />
             </ListItem>
           );
         })}
@@ -110,9 +179,19 @@ const Stage = () => {
   return (
     <Grid container>
       <Grid item xs={8}>
+        <Grid item>
+          <FormControlLabel
+            control={<Checkbox color="primary" />}
+            labelPlacement="end"
+            id="supervisor"
+            value={currentUserDetails.supervisor_id}
+            style={{ marginLeft: 5, marginBottom: 11 }}
+            label={`Add your supervisor: ${currentUserDetails.supervisor_name}`}
+          />
+        </Grid>
         <Grid
           container
-          spacing={2}
+          spacing={0}
           justifyContent="center"
           alignItems="center"
           className={classes.root}
@@ -162,21 +241,68 @@ const Stage = () => {
         </Grid>
       </Grid>
       <Grid item xs={4}>
-        <TextField label="Stage Name" />
-        <form noValidate style={{ marginBottom: "20px" }}>
+        <TextField
+          value={stages.stage_name || ""}
+          label="Stage Name"
+          required={true}
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          style={{ marginBottom: 20 }}
+          id="stage_name"
+          onChange={handleChange}
+        />
+        <form noValidate style={{ marginBottom: 20 }}>
           <TextField
             label="Suspense"
-            type="datetime-local"
+            required={true}
+            variant="outlined"
+            type="number"
+            min={1}
+            onInput={(e) => {
+              if (e.target.value < 1) {
+                e.target.value = 1;
+              }
+            }}
             InputLabelProps={{
               shrink: true,
             }}
+            style={{ marginBottom: 20, width: 159 }}
+            id="suspense_integer"
+            onChange={handleChange}
           />
+          <TextField
+            select
+            label="Time"
+            required={true}
+            id="time"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            defaultValue=""
+            onChange={handleChange}
+          >
+            <MenuItem value="" disabled>
+              <em>Measure of Time</em>
+            </MenuItem>
+            <MenuItem value={"Hours"}>Hours</MenuItem>
+            <MenuItem value={"Days"}>Days</MenuItem>
+            <MenuItem value={"Weeks"}>Weeks</MenuItem>
+          </TextField>
         </form>
         <TextField
           label="Stage Instructions"
           multiline
           rows={4}
           variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          required={true}
+          id="stage_instructions"
+          onChange={handleChange}
         />
       </Grid>
     </Grid>

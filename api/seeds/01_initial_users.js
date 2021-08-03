@@ -22,9 +22,10 @@ exports.seed = function (knex) {
             "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
           token: "",
           role: "Jedi Master",
+          supervisor_id: 6,
         },
         {
-          rank: "O-3",
+          rank: "O-1",
           fname: "Alden",
           lname: "Davidson",
           email: "alden.davidson.9000@spaceforce.mil",

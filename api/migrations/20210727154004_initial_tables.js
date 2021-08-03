@@ -154,6 +154,11 @@ exports.up = function (knex) {
           .onUpdate("CASCADE")
           .onDelete("CASCADE");
         table
+          .integer("supervisor_id")
+          .references("id")
+          .inTable("users")
+          .onUpdate("CASCADE");
+        table
           .integer("request_stage_id")
           .notNullable()
           .references("id")

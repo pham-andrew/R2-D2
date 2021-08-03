@@ -32,9 +32,9 @@ router.post("/post", async (req, res) => {
         await knex("stage_templates")
           .insert({
             route_template_id: data[0],
-            name: stage_templates[i].name,
+            name: stage_templates[i].stage_name,
             suspense_hours: stage_templates[i].suspense_hours,
-            instructions: stage_templates[i].instructions,
+            instructions: stage_templates[i].stage_instructions,
           })
           .returning("id")
           .then(async (data) => {
@@ -75,9 +75,9 @@ router.patch("/patch", async (req, res) => {
         await knex("stage_templates")
           .where({ id: stage_templates[i].stage_id })
           .update({
-            name: stage_templates[i].name,
+            name: stage_templates[i].stage_name,
             suspense_hours: stage_templates[i].suspense_hours,
-            instructions: stage_templates[i].instructions,
+            instructions: stage_templates[i].stage_instructions,
           })
           .then(async () => {
             for (let j = 0; j < substage_templates.length; j++) {

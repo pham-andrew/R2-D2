@@ -28,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login() {
-  const { setCurrentUser } = useContext(AppContext);
+  const { currentUser, setCurrentUser } = useContext(AppContext);
+  const { currentUserDetails, setCurrentUserDetails } = useContext(AppContext);
   const { setOpenAlert } = useContext(AppContext);
   const { setOpenPrompt } = useContext(AppContext);
   const { baseURL } = useContext(AppContext);
@@ -87,6 +88,9 @@ export default function Login() {
       .then(async (data) => {
         if (data.user_id) {
           await setCurrentUser(data);
+          await fetch(`${baseURL}/users/${data.user_id}`)
+            .then((res) => res.json())
+            .then((data) => setCurrentUserDetails(data));
           await auth.login(() => {
             history.push("/dashboard");
           });

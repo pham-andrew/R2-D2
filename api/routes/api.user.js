@@ -41,7 +41,6 @@ router.get("/:id", async (req, res) => {
     .where("users.id", id)
     .select("*")
     .then(async (user) => {
-      let results = [];
       let tmpObj = {
         user_id: user[0].id,
         fname: user[0].fname,
@@ -55,8 +54,17 @@ router.get("/:id", async (req, res) => {
         .from("groups")
         .join("memberships", "groups.id", "=", "memberships.group_id")
         .where("memberships.user_id", user[0].id);
-      results.push(tmpObj);
-      return results;
+      user[0].supervisor_id
+        ? (tmpObj.supervisor_name = await knex("users")
+            .where({
+              id: user[0].supervisor_id,
+            })
+            .select("fname", "lname", "rank")
+            .then((data) => {
+              return `${data[0].fname} ${data[0].lname} (${data[0].rank})`;
+            }))
+        : (tmpObj.supervisor_name = null);
+      return tmpObj;
     })
     .then((data) => {
       res.status(200).json(data).end();
