@@ -59,7 +59,7 @@ exports.seed = function (knex) {
         },
         {
           rank: "O-4",
-          fname: "",
+          fname: "Major",
           lname: "Lazer",
           email: "maj.lazer.9000@spaceforce.mil",
           password:
