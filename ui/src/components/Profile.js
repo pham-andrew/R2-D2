@@ -20,6 +20,7 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import AlertDialog from "./helpers/AlertDialog";
+import SnackBar from "./helpers/SnackBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,7 +69,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const { currentUser, setCurrentUser } = useContext(AppContext);
-  const { currentUserDetails, setCurrentUserDetails } = useContext(AppContext);
+  const { currentUserDetails } = useContext(AppContext);
+  const { setOpenSnack } = useContext(AppContext);
   const { allUsers, setAllUsers } = useContext(AppContext);
   const { setOpenAlert } = useContext(AppContext);
   const { baseURL } = useContext(AppContext);
@@ -420,6 +422,7 @@ export default function Login() {
     return (
       <>
         <main>
+          <SnackBar bodySnackBar={"Successfully copied email"} />
           <AlertDialog bodyAlert={alert} />
           <div className={classes.root}>
             <Grid container spacing={2}>
@@ -930,14 +933,46 @@ export default function Login() {
                         {allUsers.map((user) => {
                           if (user.supervisor_id === currentUser.user_id) {
                             return (
-                              <Typography key={uuidv4()}>
-                                {user.fname +
-                                  " " +
-                                  user.lname +
-                                  " (" +
-                                  user.rank +
-                                  ")"}
-                              </Typography>
+                              <Grid
+                                container
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Typography
+                                  key={uuidv4()}
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: 2.5,
+                                    marginRight: 20,
+                                  }}
+                                >
+                                  {user.fname +
+                                    " " +
+                                    user.lname +
+                                    " (" +
+                                    user.rank +
+                                    ")"}
+                                </Typography>
+
+                                <Tooltip
+                                  title={`${user.email}`}
+                                  id={`${user.email}`}
+                                >
+                                  <Button
+                                    size="small"
+                                    variant="outlined"
+                                    onClick={() => {
+                                      navigator.clipboard
+                                        .writeText(user.email)
+                                        .then(setOpenSnack(true));
+                                    }}
+                                  >
+                                    Copy Email
+                                  </Button>
+                                </Tooltip>
+                              </Grid>
                             );
                           }
                         })}

@@ -92,7 +92,8 @@ exports.up = function (knex) {
           .integer("supervisor_id")
           .references("id")
           .inTable("users")
-          .onUpdate("CASCADE");
+          .onUpdate("CASCADE")
+          .defaultTo(null);
         table
           .integer("stage_template_id")
           .notNullable()
@@ -158,6 +159,12 @@ exports.up = function (knex) {
           .inTable("groups")
           .onUpdate("CASCADE")
           .onDelete("CASCADE");
+        table
+          .integer("supervisor_id")
+          .references("id")
+          .inTable("users")
+          .onUpdate("CASCADE")
+          .defaultTo(null);
         table
           .integer("request_stage_id")
           .notNullable()

@@ -47,6 +47,7 @@ router.post("/post", async (req, res) => {
               await knex("request_substages").insert({
                 request_stage_id: data[0],
                 group_id: request_substages[j].group_id,
+                supervisor_id: request_substages[j].supervisor_id || null,
               });
             }
           });
@@ -395,7 +396,8 @@ router.get("/:request_id/:request_stage_id", async (req, res) => {
       "request_stages.request_id AS request_id",
       "request_substages.request_stage_id AS stage_id",
       "request_substages.id AS substage_id",
-      "request_substages.group_id"
+      "request_substages.group_id",
+      "request_substages.supervisor_id"
     )
     .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
     .then((data) => {
@@ -448,6 +450,7 @@ router.get("/get/all/details", async (req, res) => {
                       stage_id: rows[k].request_stage_id,
                       substage_id: rows[k].id,
                       group_id: rows[k].group_id,
+                      supervisor_id: rows[k].supervisor_id || null,
                       status: rows[k].status,
                       notes: rows[k].notes,
                       user_id: rows[k].user_id,
@@ -509,6 +512,7 @@ router.get("/get/all/details/:request_id", async (req, res) => {
                     results[i].stages[j].substages.push({
                       stage_id: rows[k].request_stage_id,
                       substage_id: rows[k].id,
+                      supervisor_id: rows[k].supervisor_id || null,
                       group_id: rows[k].group_id,
                       status: rows[k].status,
                       notes: rows[k].notes,
