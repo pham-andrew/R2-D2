@@ -22,13 +22,18 @@ import {
   List,
   ListItem,
   ListItemText,
-} from "@material-ui/core";
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Divider
 
+} from "@material-ui/core";
 
 //icons
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
-
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -50,7 +55,8 @@ function getGroupMembers(group){
   if(group==="Group 4")
     return ["baby yoda", "admiral ackbar"]
 }
-//returns if member has completed their submission. testing for dashboard
+
+//returns if member has completed their submission
 // function memberDone(member){
 //   if(member==="palpatine"||member==="darth vader"||member==="storm trooper")
 //     return true
@@ -74,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   formControl: {
-    minWidth: 120,
+    minWidth: 200,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -90,13 +96,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function completed(stages){
+// function completed(stages){
 
-  var i;
-  for (i = 0; i < stages.length; i++)
-    if (stages[i].groups.length != stages[i].done.length) break;
-  return i;
-}
+//   var i;
+//   for (i = 0; i < stages.length; i++)
+//     if (stages[i].groups.length != stages[i].done.length) break;
+//   return i;
+// }
 
 // function groupColor(group, stage){
 //   if(stage.done.includes(group))
@@ -110,11 +116,11 @@ function completed(stages){
 //   return "yellow"
 // }
 
-function getStageIcon(stage){
-  if(stage.groups.length===stage.done.length)
-    return <CheckIcon />
-  return <CloseIcon />
-}
+// function getStageIcon(stage){
+//   if(stage.groups.length===stage.done.length)
+//     return <CheckIcon />
+//   return <CloseIcon />
+// }
 
 function getStageContent(step, stage) {
 
@@ -290,19 +296,24 @@ const CreateRequest = () => {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const stages = getStages();
-
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const [template, setTemplate] = React.useState(0);
-
   const handleChange = (event) => {
     setTemplate(event.target.value);
+  };
+
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -343,12 +354,12 @@ const CreateRequest = () => {
         <Grid item xs={9}>
           <Grid item xs={12} className={classes.tabs}>
             <div className={classes.root}>
-              <Stepper activeStep={completed(getStages())}>
+              <Stepper activeStep={activeStep}>
                 {stages.map((stage) => {
                   return (
 
                     <Step >
-                      <StepLabel icon={getStageIcon(stage)}>{stage.label}</StepLabel>
+                      <StepLabel>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
                         <Typography style={{ margingroups: "32px"}}>
                           {group}
@@ -389,13 +400,50 @@ const CreateRequest = () => {
             </div>
           </Grid>
         </Grid>
-        <Grid item xs={11} />
-        <Grid item xs={1} style={{ marginTop: "20px" }}>
-          <Button variant="contained" component="label">
-            Send
+        <Grid item xs={10} />
+        <Grid item xs={2} style={{ marginTop: "20px" }}>
+          <Button variant="contained" component="label" onClick={handleClickOpen}>
+            Initiate Request
           </Button>
         </Grid>
       </Grid>
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle>Initiate Request</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Selected Route: {getTemplates()[template].name}
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Subject"
+            fullWidth
+          />
+          <TextField
+            multiline
+            rows={4}
+            autoFocus
+            margin="dense"
+            label="Comments"
+            fullWidth
+            variant="outlined"
+          />
+          <Divider style={{margin: '10px'}}/>
+          <Button variant="contained" component="label" color="primary">
+            Upload Supporting Documents
+            <input type="file" hidden />
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Send
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
