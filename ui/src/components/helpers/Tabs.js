@@ -1,9 +1,9 @@
 //bug: deletion not working sometimes, stale state maybe?
 import React, { useState, useContext, useEffect } from "react";
 import { AppBar, Tabs, Tab, Grid, Button, Divider } from "@material-ui/core";
-// import TemplateContext from "../../contexts/TemplateContext";
 import { makeStyles } from "@material-ui/styles";
 import TemplateContext from "../../contexts/TemplateContext";
+import AppContext from "../../contexts/AppContext";
 import PropTypes from "prop-types";
 import { Box } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
@@ -25,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
     "& .myTab": {
       backgroundColor: "yellow",
       color: "white",
+    },
+  },
+  ButtonBase: {
+    props: {
+      disabled: true,
     },
   },
 }));
@@ -59,24 +64,29 @@ const CustomTabs = () => {
   const classes = useStyles();
   // const { user, groups } = props;
   const { tabValue, setTabValue, stages } = useContext(TemplateContext);
+  const { reload, setReload } = useContext(AppContext);
   // const [stages, setStages] = useState({})
   const [tabList, setTabList] = useState([
     {
       key: 0,
       id: 0,
-      label: "Stage " + (id + 1),
+      label: "Stage 1", //inital stage, never changes
     },
   ]);
 
-  // useEffect(() => {
-  //   for (let i = 0; i > tabList.length; i++)
-  //     if (stages[tabList[i].id]) {
-  // let tempTab = tabList[i]
-  // tempTab.label = stages[tabList[i].id].stage_name
-  // overwrite tabList with new tab?
-  //       setTabList()
-  //     }
-  // }, [stages])
+  useEffect(() => {
+    for (let i = 0; i < tabList.length; i++) {
+      let currTab = tabList[i];
+      if (stages[currTab.id]) {
+        let tempTabList = tabList;
+        let tempTab = currTab;
+        tempTab.label = stages[currTab.id].stage_name;
+        tempTabList.splice(i, 1, tempTab);
+        setTabList(tempTabList);
+        setReload(!reload);
+      }
+    }
+  }, [stages]);
 
   const handleTabChange = (event, value) => {
     setTabValue(value);
