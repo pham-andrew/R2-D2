@@ -48,16 +48,16 @@ function getGroupMembers(group){
   if(group==="Group 4")
     return ["baby yoda", "admiral ackbar"]
 }
-//returns if member has completed their submission
-function memberDone(member){
-  if(member==="palpatine"||member==="darth vader"||member==="storm trooper")
-    return true
-  if(member==="andrew"||member==="jack"||member==="brandon")
-    return true
-  if(member==="kirk")
-    return true
-  return false
-}
+//returns if member has completed their submission. testing for dashboard
+// function memberDone(member){
+//   if(member==="palpatine"||member==="darth vader"||member==="storm trooper")
+//     return true
+//   if(member==="andrew"||member==="jack"||member==="brandon")
+//     return true
+//   if(member==="kirk")
+//     return true
+//   return false
+// }
 function getTemplates(){
   return [
     {name: "eSSS", instructions: "dew it", documents: "iono how this will work..."},
@@ -95,17 +95,17 @@ function completed(stages){
   return i
 }
 
-function groupColor(group, stage){
-  if(stage.done.includes(group))
-    return "lightGreen"
-  return "yellow"
-}
+// function groupColor(group, stage){
+//   if(stage.done.includes(group))
+//     return "lightGreen"
+//   return "yellow"
+// }
 
-function memberColor(member){
-  if(memberDone(member)===true)
-    return "lightGreen"
-  return "yellow"
-}
+// function memberColor(member){
+//   if(memberDone(member)===true)
+//     return "lightGreen"
+//   return "yellow"
+// }
 
 function getStageIcon(stage){
   if(stage.groups.length===stage.done.length)
@@ -140,7 +140,6 @@ function getStageContent(step, stage) {
                         role="listitem"
                         button
                         onClick={()=>setSelectedGroup(index)}
-                        style={{backgroundColor: groupColor(group, stage)}}
                       >
                         <ListItemText primary={group} />
                       </ListItem>
@@ -158,7 +157,6 @@ function getStageContent(step, stage) {
                         key={uuidv4()}
                         role="listitem"
                         button
-                        style={{backgroundColor: memberColor(member)}}
                       >
                         <ListItemText primary={member} />
                       </ListItem>
@@ -346,7 +344,7 @@ const CreateRequest = () => {
                     <Step >
                       <StepLabel icon={getStageIcon(stage)}>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
-                        <Typography style={{ margingroups: "32px", backgroundColor: groupColor(group, stage)}}>
+                        <Typography style={{ margingroups: "32px"}}>
                           {group}
                         </Typography>
                       ))}
