@@ -134,6 +134,7 @@ const App = () => {
   const classes = useStyles();
 
   const [currentUser, setCurrentUser] = useState([]);
+  const [currentUserDetails, setCurrentUserDetails] = useState({});
   const [reload, setReload] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [openPrompt, setOpenPrompt] = useState(false);
@@ -313,98 +314,84 @@ const App = () => {
     </>
   );
   return (
-    <Switch>
-      <Route exact path="/">
-        <AppContext.Provider
-          value={{
-            alert,
-            setAlert,
-            prompt,
-            setPrompt,
-            openPrompt,
-            setOpenPrompt,
-            openAlert,
-            setOpenAlert,
-            baseURL,
-            currentUser,
-            setCurrentUser,
-            reload,
-            setReload,
-          }}
-        >
+    <AppContext.Provider
+      value={{
+        alert,
+        setAlert,
+        prompt,
+        setPrompt,
+        openPrompt,
+        setOpenPrompt,
+        openAlert,
+        setOpenAlert,
+        baseURL,
+        currentUser,
+        setCurrentUser,
+        currentUserDetails,
+        setCurrentUserDetails,
+        reload,
+        setReload,
+      }}
+    >
+      <Switch>
+        <Route exact path="/">
           {bar(false)}
           <Login />
-        </AppContext.Provider>
-      </Route>
+        </Route>
 
-      <Route exact path="/template">
-        <div className={classes.root}>
-          {nav}
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
-              <Paper className={classes.paper}>
-                <ProtectedRoute component={CreateTemplate} />
-              </Paper>
-            </Container>
-          </main>
-        </div>
-      </Route>
-      <Route exact path="/request">
-        <div className={classes.root}>
-          {nav}
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
-              <Paper className={classes.paper}>
-                <ProtectedRoute component={CreateRequest} />
-              </Paper>
-            </Container>
-          </main>
-        </div>
-      </Route>
-      <Route exact path="/dashboard">
-        <div className={classes.root}>
-          {nav}
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
-              <Paper className={classes.paper}>
-                <ProtectedRoute component={Dashboard} />
-              </Paper>
-            </Container>
-          </main>
-        </div>
-      </Route>
+        <Route exact path="/template">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={CreateTemplate} />
+                </Paper>
+              </Container>
+            </main>
+          </div>
+        </Route>
+        <Route exact path="/request">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={CreateRequest} />
+                </Paper>
+              </Container>
+            </main>
+          </div>
+        </Route>
+        <Route exact path="/dashboard">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={Dashboard} />
+                </Paper>
+              </Container>
+            </main>
+          </div>
+        </Route>
 
-      <Route exact path="/archive">
-        <div className={classes.root}>
-          {nav}
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
-              <ProtectedRoute component={Archive} />
-            </Container>
-          </main>
-        </div>
-      </Route>
+        <Route exact path="/archive">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <ProtectedRoute component={Archive} />
+              </Container>
+            </main>
+          </div>
+        </Route>
 
-      <Route exact path="/profile">
-        <AppContext.Provider
-          value={{
-            alert,
-            setAlert,
-            prompt,
-            setPrompt,
-            openPrompt,
-            setOpenPrompt,
-            openAlert,
-            setOpenAlert,
-            baseURL,
-            currentUser,
-            setCurrentUser,
-          }}
-        >
+        <Route exact path="/profile">
           <div className={classes.root}>
             {nav}
             <main className={classes.content}>
@@ -414,54 +401,55 @@ const App = () => {
               </Container>
             </main>
           </div>
-        </AppContext.Provider>
-      </Route>
+        </Route>
 
-      <Route exact path="/jedi-only">
-        <div className={classes.root}>
-          {nav}
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
-              <ProtectedRoute component={Admin} />
-            </Container>
-          </main>
-        </div>
-      </Route>
+        <Route exact path="/jedi-only">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <ProtectedRoute component={Admin} />
+              </Container>
+            </main>
+          </div>
+        </Route>
 
-      <Route path="*">
-        {bar(false)}
-        <div
-          style={{
-            marginTop: 50,
-            padding: 50,
-            font: "14 px Lucida Grande, Helvetica, Arial, sans-serif",
-          }}
-        >
-          <Typography variant="h3">404 Error: Path Not Found</Typography> <br />
-          <Typography variant="body2">
-            You weren't supposed to see this! Click on the R2/D2 icon at the top
-            to return to the home screen.
-          </Typography>
-          <br />
-          <iframe
-            width="850"
-            height="500"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{ marginBottom: 10 }}
-          />{" "}
-          <br />
-          <Typography variant="body2">
-            You can thank your browser for forcing us to mute this video while
-            autoplay is enabled.
-          </Typography>
-        </div>
-      </Route>
-    </Switch>
+        <Route path="*">
+          {bar(false)}
+          <div
+            style={{
+              marginTop: 50,
+              padding: 50,
+              font: "14 px Lucida Grande, Helvetica, Arial, sans-serif",
+            }}
+          >
+            <Typography variant="h3">404 Error: Path Not Found</Typography>{" "}
+            <br />
+            <Typography variant="body2">
+              You weren't supposed to see this! Click on the R2/D2 icon at the
+              top to return to the home screen.
+            </Typography>
+            <br />
+            <iframe
+              width="850"
+              height="500"
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ marginBottom: 10 }}
+            />{" "}
+            <br />
+            <Typography variant="body2">
+              You can thank your browser for forcing us to mute this video while
+              autoplay is enabled.
+            </Typography>
+          </div>
+        </Route>
+      </Switch>
+    </AppContext.Provider>
   );
 };
 

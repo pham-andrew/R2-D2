@@ -16,7 +16,7 @@ exports.seed = function (knex) {
           group_id: 3, // Division
         },
         {
-          user_id: 2, // Alden
+          user_id: 3, // Alden
           group_id: 4, // Chief Engineer
         },
         {

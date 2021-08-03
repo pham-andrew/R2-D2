@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
   res.send("These are not the droids you are looking for!");
 });
 
-// Port and Listen3
+// Port and Listen
 const port = 8080;
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

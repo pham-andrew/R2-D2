@@ -1,10 +1,10 @@
 {
   "name": "r2d2-api",
   "version": "1.0.0",
-  "description": "r2d2 api",
+  "description": "r2d2-api",
   "main": "app.js",
   "scripts": {
-    "start": "npm run reset ; node ./app.js",
+    "start": "npm run reset; node ./app.js",
     "dev": "npm run reset && nodemon ./app.js",
     "reset": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run"
   },
