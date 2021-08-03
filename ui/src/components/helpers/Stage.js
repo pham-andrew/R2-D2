@@ -149,9 +149,9 @@ const Stage = ({ tabValue }) => {
   const customList = (GpObjs) => (
     <Paper className={classes.paper}>
       <List dense component="div" role="list">
+
         {GpObjs.map((group) => {
           const labelId = `transfer-list-item-${group.id}-label`;
-
           return (
             <ListItem
               key={uuidv4()}
@@ -164,7 +164,6 @@ const Stage = ({ tabValue }) => {
                   checked={checked.indexOf(group.id) !== -1}
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={group.name} />

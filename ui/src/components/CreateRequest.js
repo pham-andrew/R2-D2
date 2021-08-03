@@ -1,7 +1,4 @@
-//hold that thought: change checkmarks and icons. highlight done groups with backgroundColor
-
 // Dependencies
-import { v4 as uuidv4 } from "uuid";
 import React from "react";
 
 // Components
@@ -13,7 +10,21 @@ import {
   Stepper,
   Step,
   StepLabel,
+  TextField,
+  Paper,
 } from "@material-ui/core";
+
+import { List } from "@material-ui/core";
+import { ListItem } from "@material-ui/core";
+import { ListItemIcon } from "@material-ui/core";
+import { ListItemText } from "@material-ui/core";
+
+import Checkbox from "@material-ui/core/Checkbox";
+
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+
+import { v4 as uuidv4 } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,8 +40,15 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
+  paper: {
+    width: 200,
+    height: 230,
+    overflow: "auto",
+  },
 }));
 
+
+//TODO BACKEND HOOKUP
 function getStages() {
   return [
     { label: "Stage 1", groups: ["Group 1"], done: ["Group 1"] },
@@ -39,16 +57,113 @@ function getStages() {
   ];
 }
 
-function getStepContent(step) {
+function currentStage(stages){
+  var i;
+  for(i=0;i<stages.length;i++)
+    if(stages[i].groups.length!=stages[i].done.length)
+      break
+  return i
+}
+
+function groupColor(group, stage){
+  if(stage.done.includes(group))
+    return "lightGreen"
+  return "yellow"
+}
+
+function getStepIcon(stage){
+  if(stage.groups.length===stage.done.length)
+    return <CheckIcon />
+  return <CloseIcon />
+}
+
+function getStepContent(step, stage) {
+
+  const classes = useStyles();
+
+  const left = React.useState([0, 1, 2, 3]);
+  const right = React.useState([4, 5, 6, 7]);
+
   switch (step) {
     case 0:
-      return "Stage 1 Details";
-    case 1:
-      return "Stage 2 Details";
-    case 2:
-      return "Stage 3 Details";
-    default:
-      return "Error";
+      return <Grid container>
+          <Grid item xs={8}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent="center"
+              alignItems="center"
+              className={classes.root}
+            >
+              <Grid item>
+                <Paper className={classes.paper}>
+                  <List dense component="div" role="list">
+                    {left.map((value) => (
+                        <ListItem
+                          key={uuidv4()}
+                          role="listitem"
+                          button
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={true}
+                              tabIndex={-1}
+                              disableRipple
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={`Group ${value + 1}`} />
+                        </ListItem>
+                      )
+                    )}
+                    <ListItem />
+                  </List>
+                </Paper>
+              </Grid>
+              <Grid item>
+                <Paper className={classes.paper}>
+                  <List dense component="div" role="list">
+                    {right.map((value) => (
+                        <ListItem
+                          key={uuidv4()}
+                          role="listitem"
+                          button
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              checked={true}
+                              tabIndex={-1}
+                              disableRipple
+                            />
+                          </ListItemIcon>
+                          <ListItemText primary={`Group ${value + 1}`} />
+                        </ListItem>
+                      )
+                    )}
+                    <ListItem />
+                  </List>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={4}>
+            <TextField label="Stage Name" />
+            <form noValidate style={{ marginBottom: "20px" }}>
+              <TextField
+                label="Suspense"
+                type="datetime-local"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </form>
+            <TextField
+              label="Stage Instructions"
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
   }
 }
 
@@ -56,49 +171,14 @@ const CreateRequest = () => {
   const classes = useStyles();
 
   const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
   const steps = getStages();
 
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
-
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
-
   const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   return (
@@ -118,18 +198,13 @@ const CreateRequest = () => {
         <Grid item xs={9}>
           <Grid item xs={12} className={classes.tabs}>
             <div className={classes.root}>
-              <Stepper activeStep={activeStep}>
+              <Stepper activeStep={currentStage(getStages())}>
                 {steps.map((stage) => {
-                  const stepProps = {};
-                  const labelProps = {};
                   return (
-                    <Step key={uuidv4()} {...stepProps}>
-                      <StepLabel {...labelProps}>{stage.label}</StepLabel>
+                    <Step >
+                      <StepLabel icon={getStepIcon(stage)}>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
-                        <Typography
-                          style={{ marginLeft: "32px" }}
-                          key={uuidv4()}
-                        >
+                        <Typography style={{ marginLeft: "32px", backgroundColor: groupColor(group, stage)}}>
                           {group}
                         </Typography>
                       ))}
