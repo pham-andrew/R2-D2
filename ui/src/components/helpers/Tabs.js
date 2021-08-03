@@ -1,5 +1,5 @@
 //bug: deletion not working sometimes, stale state maybe?
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AppBar, Tabs, Tab, Grid, Button, Divider } from "@material-ui/core";
 // import TemplateContext from "../../contexts/TemplateContext";
 import { makeStyles } from "@material-ui/styles";
@@ -55,19 +55,28 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const CustomTabs = (props) => {
+const CustomTabs = () => {
   const classes = useStyles();
-    const { user, groups } = props;
-  const { tabValue, setTabValue } = useContext(TemplateContext);
-  const [stages, setStages] = useState({})
+  // const { user, groups } = props;
+  const { tabValue, setTabValue, stages } = useContext(TemplateContext);
+  // const [stages, setStages] = useState({})
   const [tabList, setTabList] = useState([
     {
       key: 0,
       id: 0,
+      label: "Stage " + (id + 1),
     },
   ]);
 
-
+  // useEffect(() => {
+  //   for (let i = 0; i > tabList.length; i++)
+  //     if (stages[tabList[i].id]) {
+  // let tempTab = tabList[i]
+  // tempTab.label = stages[tabList[i].id].stage_name
+  // overwrite tabList with new tab?
+  //       setTabList()
+  //     }
+  // }, [stages])
 
   const handleTabChange = (event, value) => {
     setTabValue(value);
@@ -76,7 +85,7 @@ const CustomTabs = (props) => {
   const addTab = (event) => {
     event.preventDefault();
     let id = tabList[tabList.length - 1].id + 1;
-    setTabList([...tabList, { key: id, id: id }]);
+    setTabList([...tabList, { key: id, id: id, label: "Stage " + (id + 1) }]);
   };
 
   const deleteTab = (e) => {
@@ -107,12 +116,13 @@ const CustomTabs = (props) => {
     setTabList(tabs);
   };
 
-  let stageTabs = tabList.map((tab) =>{
-  return (
-        <TabPanel value={tabValue} index={tab.id} key={uuidv4()}>
-          <Stage tabValue={tabValue} user={user}/>
-        </TabPanel>
-      )})
+  let stageTabs = tabList.map((tab) => {
+    return (
+      <TabPanel value={tabValue} index={tab.id} key={uuidv4()}>
+        <Stage tabValue={tabValue} />
+      </TabPanel>
+    );
+  });
 
   return (
     <>
@@ -138,7 +148,7 @@ const CustomTabs = (props) => {
                   style={{ color: "white" }}
                   key={tab.key.toString()}
                   value={tab.id}
-                  label={"Stage " + (tab.id + 1)}
+                  label={tab.label}
                   icon={
                     <RemoveCircleOutlineIcon
                       id={tab.id}

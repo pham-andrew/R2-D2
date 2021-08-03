@@ -20,16 +20,7 @@ async function compareEncrypt(password, hashPassword) {
 
 router.get("/", async (req, res) => {
   await knex("users")
-    .select(
-      "id",
-      "fname",
-      "lname",
-      "rank",
-      "role",
-      "email",
-      "supervisor_id",
-      "password"
-    )
+    .select("id", "fname", "lname", "rank", "role", "email", "supervisor_id")
     .then((data) => {
       res.status(200).json(data).end();
     });

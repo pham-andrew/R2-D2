@@ -21,8 +21,8 @@ import { ListItemText } from "@material-ui/core";
 
 import Checkbox from "@material-ui/core/Checkbox";
 
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 //TODO BACKEND HOOKUP
 function getStages() {
   return [
@@ -57,28 +56,24 @@ function getStages() {
   ];
 }
 
-function currentStage(stages){
+function currentStage(stages) {
   var i;
-  for(i=0;i<stages.length;i++)
-    if(stages[i].groups.length!=stages[i].done.length)
-      break
-  return i
+  for (i = 0; i < stages.length; i++)
+    if (stages[i].groups.length != stages[i].done.length) break;
+  return i;
 }
 
-function groupColor(group, stage){
-  if(stage.done.includes(group))
-    return "lightGreen"
-  return "yellow"
+function groupColor(group, stage) {
+  if (stage.done.includes(group)) return "lightGreen";
+  return "yellow";
 }
 
-function getStepIcon(stage){
-  if(stage.groups.length===stage.done.length)
-    return <CheckIcon />
-  return <CloseIcon />
+function getStepIcon(stage) {
+  if (stage.groups.length === stage.done.length) return <CheckIcon />;
+  return <CloseIcon />;
 }
 
 function getStepContent(step, stage) {
-
   const classes = useStyles();
 
   const left = React.useState([0, 1, 2, 3]);
@@ -86,7 +81,8 @@ function getStepContent(step, stage) {
 
   switch (step) {
     case 0:
-      return <Grid container>
+      return (
+        <Grid container>
           <Grid item xs={8}>
             <Grid
               container
@@ -99,22 +95,17 @@ function getStepContent(step, stage) {
                 <Paper className={classes.paper}>
                   <List dense component="div" role="list">
                     {left.map((value) => (
-                        <ListItem
-                          key={uuidv4()}
-                          role="listitem"
-                          button
-                        >
-                          <ListItemIcon>
-                            <Checkbox
-                              checked={true}
-                              tabIndex={-1}
-                              disableRipple
-                            />
-                          </ListItemIcon>
-                          <ListItemText primary={`Group ${value + 1}`} />
-                        </ListItem>
-                      )
-                    )}
+                      <ListItem key={uuidv4()} role="listitem" button>
+                        <ListItemIcon>
+                          <Checkbox
+                            checked={true}
+                            tabIndex={-1}
+                            disableRipple
+                          />
+                        </ListItemIcon>
+                        <ListItemText primary={`Group ${value + 1}`} />
+                      </ListItem>
+                    ))}
                     <ListItem />
                   </List>
                 </Paper>
@@ -123,22 +114,17 @@ function getStepContent(step, stage) {
                 <Paper className={classes.paper}>
                   <List dense component="div" role="list">
                     {right.map((value) => (
-                        <ListItem
-                          key={uuidv4()}
-                          role="listitem"
-                          button
-                        >
-                          <ListItemIcon>
-                            <Checkbox
-                              checked={true}
-                              tabIndex={-1}
-                              disableRipple
-                            />
-                          </ListItemIcon>
-                          <ListItemText primary={`Group ${value + 1}`} />
-                        </ListItem>
-                      )
-                    )}
+                      <ListItem key={uuidv4()} role="listitem" button>
+                        <ListItemIcon>
+                          <Checkbox
+                            checked={true}
+                            tabIndex={-1}
+                            disableRipple
+                          />
+                        </ListItemIcon>
+                        <ListItemText primary={`Group ${value + 1}`} />
+                      </ListItem>
+                    ))}
                     <ListItem />
                   </List>
                 </Paper>
@@ -164,6 +150,7 @@ function getStepContent(step, stage) {
             />
           </Grid>
         </Grid>
+      );
   }
 }
 
@@ -201,10 +188,18 @@ const CreateRequest = () => {
               <Stepper activeStep={currentStage(getStages())}>
                 {steps.map((stage) => {
                   return (
-                    <Step >
-                      <StepLabel icon={getStepIcon(stage)}>{stage.label}</StepLabel>
+                    <Step key={uuidv4()}>
+                      <StepLabel icon={getStepIcon(stage)}>
+                        {stage.label}
+                      </StepLabel>
                       {stage.groups.map((group) => (
-                        <Typography style={{ marginLeft: "32px", backgroundColor: groupColor(group, stage)}}>
+                        <Typography
+                          key={uuidv4()}
+                          style={{
+                            marginLeft: "32px",
+                            backgroundColor: groupColor(group, stage),
+                          }}
+                        >
                           {group}
                         </Typography>
                       ))}
