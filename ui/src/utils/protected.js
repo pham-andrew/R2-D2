@@ -7,7 +7,7 @@ export default function ProtectedRoute({ component: Component, ...rest }) {
     <Route
       {...rest}
       render={(props) => {
-        if (auth.isAuthenticated()) {
+        //if (auth.isAuthenticated()) {
         if (true) {
           return <Component {...props} />;
         } else {
@@ -22,7 +22,7 @@ export default function ProtectedRoute({ component: Component, ...rest }) {
             />
           );
         }
-      }}}
+      }}
     />
     )
 }
