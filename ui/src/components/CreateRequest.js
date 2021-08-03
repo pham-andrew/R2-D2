@@ -24,9 +24,11 @@ import {
   ListItemText,
 } from "@material-ui/core";
 
+
 //icons
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
+
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -58,6 +60,7 @@ function getGroupMembers(group){
 //     return true
 //   return false
 // }
+
 function getTemplates(){
   return [
     {name: "eSSS", instructions: "dew it", documents: "iono how this will work..."},
@@ -88,11 +91,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function completed(stages){
+
   var i;
-  for(i=0;i<stages.length;i++)
-    if(stages[i].groups.length!=stages[i].done.length)
-      break
-  return i
+  for (i = 0; i < stages.length; i++)
+    if (stages[i].groups.length != stages[i].done.length) break;
+  return i;
 }
 
 // function groupColor(group, stage){
@@ -114,6 +117,7 @@ function getStageIcon(stage){
 }
 
 function getStageContent(step, stage) {
+
 
   const classes = useStyles();
   const [selectedGroup, setSelectedGroup] = React.useState(0)
@@ -278,6 +282,7 @@ function getStageContent(step, stage) {
       />
     </Grid>
   </Grid>
+
 }
 
 const CreateRequest = () => {
@@ -341,6 +346,7 @@ const CreateRequest = () => {
               <Stepper activeStep={completed(getStages())}>
                 {stages.map((stage) => {
                   return (
+
                     <Step >
                       <StepLabel icon={getStageIcon(stage)}>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
