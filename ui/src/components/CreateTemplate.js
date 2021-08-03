@@ -71,6 +71,8 @@ const CreateTemplate = (props) => {
   const [groups, setGroups] = React.useState("");
   // const { children, value, index, ...other } = props;
   const [routeTemplate, setRouteTemplate] = useState({});
+  const [stages, setStages] = useState({});
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     fetch(`${baseURL}/groups/`)
@@ -85,20 +87,32 @@ const CreateTemplate = (props) => {
   //   });
   // }
 
-  // const checkStages = () => {
-  //   for (let property in stages) {
-  //     if (
-  //       !property.stage_name ||
-  //       !property.stage_instructions ||
-  //       !property.substages
-  //     ) {
-  //       return true;
-  //     } else return false;
-  //   }
-  // };
+  const handleStageSubmit = (event, stageObj) => {
+    event.preventDefault()
+    setStages({ ...stages, [tabValue]: stageObj });
+    console.log(stages);
+  };
 
-  const handleClick = async (event) => {
+  const checkStages = () => {
+    for (let property in stages) {
+      if (
+        !property.stage_name ||
+        !property.stage_instructions ||
+        !property.substages
+      ) {
+        return true;
+      } else return false;
+    }
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("clicked")
+    setRouteTemplate({
+      group_id: event.target.group_id.value,
+      name: event.target.name.value,
+      instructions: event.target.instructions.value,
+    })
 
     if (
       !routeTemplate.group_id ||
@@ -113,23 +127,23 @@ const CreateTemplate = (props) => {
       await setOpenAlert(true);
     } else {
       console.log("posted template");
-      // for (let property in stages) {
-      //   // switch (property.time) {
-      //   //   case "Hours":
-      //   //     return setStages(
-      //   //       (property.suspense_hours = property.suspense_integer)
-      //   //     );
-      //   //   case "Days":
-      //   //     return setStages(
-      //   //       (property.suspense_hours = property.suspense_integer * 24)
-      //   //     );
-      //   //   case "Weeks":
-      //   //     return setStages(
-      //   //       (property.suspense_hours = property.suspense_integer * 168)
-      //   //     );
-      //   // }
-      //   setRouteTemplate(routeTemplate.stages.push(property));
-      // }
+      for (let property in stages) {
+        switch (property.time) {
+          case "Hours":
+            return setStages(
+              (property.suspense_hours = property.suspense_integer)
+            );
+          case "Days":
+            return setStages(
+              (property.suspense_hours = property.suspense_integer * 24)
+            );
+          case "Weeks":
+            return setStages(
+              (property.suspense_hours = property.suspense_integer * 168)
+            );
+        }
+        setRouteTemplate(routeTemplate.stages.push(property));
+      }
       console.log(routeTemplate);
       //let  fetch(`${baseURL}/routes/templates/post`, {
       //  methood: "POST",
@@ -139,25 +153,27 @@ const CreateTemplate = (props) => {
     }
   };
 
-  // const [tab, setTab] = React.useState(0);
-
-  // const handleTab = (event, newValue) => {
-  //   setTab(newValue);
-  // };
 
   return (
     <TemplateContext.Provider
       value={{
         groups,
         setGroups,
+        stages,
+        setStages,
         routeTemplate,
         setRouteTemplate,
+        tabValue,
+        setTabValue,
+        handleStageSubmit,
+        currentUserDetails,
       }}
     >
       <div>
         <AlertDialog bodyAlert={alert} />
         <Grid container className={classes.root}>
           <Grid item xs={3}>
+            <form onSubmit={handleSubmit}>
             <Paper style={{ padding: 20, marginRight: 20 }}>
               <Grid item xs={12}>
                 <Typography
@@ -227,25 +243,26 @@ const CreateTemplate = (props) => {
                 </Button>
               </Grid>
             </Paper>
+            <Grid item xs={1} style={{ marginTop: 50 }}>
+            <Button
+              variant="contained"
+              component="label"
+              color="primary"
+              type="submit"
+            >
+              Submit Template
+            </Button>
+          </Grid>
+          </form>
           </Grid>
           <Grid item xs={9}>
             <Grid item xs={12} className={classes.tabs}>
               <Paper style={{ padding: 20, marginRight: 15 }}>
-                <CustomTabs />
+                <CustomTabs groups={groups} user={currentUserDetails} />
               </Paper>
             </Grid>
           </Grid>
           <Grid item xs={11} />
-          <Grid item xs={1} style={{ marginTop: 20 }}>
-            <Button
-              variant="contained"
-              component="label"
-              onClick={handleClick}
-              color="primary"
-            >
-              Submit
-            </Button>
-          </Grid>
         </Grid>
       </div>
     </TemplateContext.Provider>
