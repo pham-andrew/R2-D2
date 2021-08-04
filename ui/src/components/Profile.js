@@ -395,7 +395,7 @@ export default function Login() {
       .catch((err) => console.log(err));
   };
 
-  if (!currentUser) {
+  if (!currentUser || !currentUserDetails || !allUsers) {
     return (
       <>
         <main>

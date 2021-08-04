@@ -9,6 +9,7 @@ import ProtectedRoute from "./utils/protected";
 
 // components
 import CreateTemplate from "./components/CreateTemplate";
+import TemplateManage from "./components/TemplateManage";
 import CreateRequest from "./components/CreateRequest";
 import Profile from "./components/Profile";
 import Admin from "./components/Admin";
@@ -31,7 +32,7 @@ import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
 import NoteIcon from "@material-ui/icons/Note";
 import DashboardIcon from "@material-ui/icons/Dashboard";
-import AssignmentReturnedIcon from "@material-ui/icons/AssignmentReturned";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
@@ -39,6 +40,7 @@ import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
+import CollectionsBookmarkIcon from "@material-ui/icons/CollectionsBookmark";
 
 const drawerWidth = 240;
 
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     position: "absolute",
-    top: 24,
+    top: 23.5,
     zIndex: theme.zIndex.drawer + 3,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
@@ -276,10 +278,18 @@ const App = () => {
                   <ListItemText primary="Create Template" />
                 </ListItem>
               </Link>
+              <Link exact to="/template/manage" className={classes.link}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <CollectionsBookmarkIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Manage Templates" />
+                </ListItem>
+              </Link>
               <Link exact to="/request" className={classes.link}>
                 <ListItem button>
                   <ListItemIcon>
-                    <AssignmentReturnedIcon />
+                    <AssignmentIcon />
                   </ListItemIcon>
                   <ListItemText primary="Create Request" />
                 </ListItem>
@@ -289,9 +299,10 @@ const App = () => {
                   <ListItemIcon>
                     <ArchiveIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Archive" />
+                  <ListItemText primary="Request Archive" />
                 </ListItem>
               </Link>
+              <Divider style={{ margin: 7.5 }} />
               <Link exact to="/profile" className={classes.link}>
                 <ListItem button>
                   <ListItemIcon>
@@ -358,6 +369,21 @@ const App = () => {
             </main>
           </div>
         </Route>
+
+        <Route exact path="/template/manage">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={TemplateManage} />
+                </Paper>
+              </Container>
+            </main>
+          </div>
+        </Route>
+
         <Route exact path="/request">
           <div className={classes.root}>
             {nav}
@@ -371,6 +397,7 @@ const App = () => {
             </main>
           </div>
         </Route>
+
         <Route exact path="/dashboard">
           <div className={classes.root}>
             {nav}
