@@ -15,6 +15,7 @@ import Admin from "./components/Admin";
 import Archive from "./components/Archive";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
+import Request from "./components/Request"
 
 // material-ui
 import Drawer from "@material-ui/core/Drawer";
@@ -413,6 +414,19 @@ const App = () => {
               <div className={classes.appBarSpacer} />
               <Container maxWidth="lg" className={classes.container}>
                 <ProtectedRoute component={Admin} />
+              </Container>
+            </main>
+          </div>
+        </Route>
+
+        {/* for testing */}
+        <Route exact path="/r">
+          <div className={classes.root}>
+            {nav}
+            <main className={classes.content}>
+              <div className={classes.appBarSpacer} />
+              <Container maxWidth="lg" className={classes.container}>
+                <ProtectedRoute component={Request} />
               </Container>
             </main>
           </div>
