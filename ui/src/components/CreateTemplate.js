@@ -1,17 +1,26 @@
+// dependencies
 import React, { useContext, useState, useEffect } from "react";
 import TemplateContext from "../contexts/TemplateContext";
 import AppContext from "../contexts/AppContext";
-import { makeStyles, Typography, Paper } from "@material-ui/core";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import { Box, Divider } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
+import { useHistory } from "react-router-dom";
+
+// components
+import {
+  makeStyles,
+  Typography,
+  Paper,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  Grid,
+  Button,
+  TextField,
+  Box,
+  Divider,
+} from "@material-ui/core";
 import AlertDialog from "./helpers/AlertDialog";
 import CustomTabs from "./helpers/Tabs";
 
@@ -59,6 +68,7 @@ TabPanel.propTypes = {
 
 const CreateTemplate = () => {
   const classes = useStyles();
+  let history = useHistory();
 
   const { reload, currentUserDetails, baseURL, alert, setAlert, setOpenAlert } =
     useContext(AppContext);
@@ -67,6 +77,7 @@ const CreateTemplate = () => {
   const [routeTemplate, setRouteTemplate] = useState({});
   const [stages, setStages] = useState({});
   const [tabValue, setTabValue] = useState(0);
+  const [submitFlag, setSubmitFlag] = useState(false);
 
   useEffect(() => {
     fetch(`${baseURL}/groups/`)
@@ -118,15 +129,13 @@ const CreateTemplate = () => {
       name: name,
       instructions: instructions,
       stages: [],
-    });
+    })
 
-    // setSubmitFlag(true);
-    return handleSubmit(e);
+    setSubmitFlag(true);
   };
 
   const handleSubmit = async (e) => {
     console.log("handleSubmit misfire", routeTemplate);
-
     if (
       !routeTemplate.group_id ||
       !routeTemplate.name ||
@@ -134,7 +143,7 @@ const CreateTemplate = () => {
       !stages
     ) {
       await setAlert({
-        title: "Submission Error",
+        title: "Template Error",
         text: "Please fill out all the required fields before submitting the route template",
         closeAction: "Okay",
       });
@@ -144,14 +153,34 @@ const CreateTemplate = () => {
         routeTemplate.stages.push(stages[property]);
       }
       console.log(routeTemplate);
-      //let  fetch(`${baseURL}/routes/templates/post`, {
-      //  methood: "POST",
-      //  headers: ,
-      //  body: JSON.stringify(routeTemplate)
-      //})
+      let response = await fetch(`${baseURL}/routes/templates/post`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(routeTemplate),
+      })
+        .then((resp) => resp)
+        .catch((err) => err);
+      console.log(response);
+      if (response.status === 200) {
+        history.push("/dashboard");
+      } else {
+        let message = await response.json();
+        await setAlert({
+          title: "Submission Error",
+          text: message,
+          closeAction: "Roger Roger",
+        });
+        await setOpenAlert(true);
+      }
     }
   };
 
+    if (submitFlag) {
+      handleSubmit();
+    }
+ if(groups) {
   return (
     <TemplateContext.Provider
       value={{
@@ -247,7 +276,6 @@ const CreateTemplate = () => {
                 style={{
                   width: 170,
                   position: "relative",
-                  top: -10,
                   left: 1000,
                 }}
                 onClick={(e) => {
@@ -270,6 +298,31 @@ const CreateTemplate = () => {
       </div>
     </TemplateContext.Provider>
   );
+  } else {
+    return (
+      <>
+        <main>
+          <div className="svg-loader">
+            <svg
+              className="svg-container"
+              height="100"
+              width="100"
+              viewBox="0 0 100 100"
+            >
+              <circle className="loader-svg bg" cx="50" cy="50" r="45"></circle>
+              <circle
+                className="loader-svg animate"
+                cx="50"
+                cy="50"
+                r="45"
+              ></circle>
+            </svg>
+          </div>
+        </main>
+      </>
+    );
+  }
 };
+
 
 export default CreateTemplate;

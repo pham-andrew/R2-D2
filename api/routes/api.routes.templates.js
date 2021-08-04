@@ -41,22 +41,21 @@ router.post("/post", async (req, res) => {
             if (substage_templates.supervisor_id) {
               await knex("substage_templates").insert({
                 stage_template_id: data[0],
-                group_id: null,
                 supervisor_id: substage_templates.supervisor_id,
               });
             } else {
               for (let j = 0; j < substage_templates.length; j++) {
                 await knex("substage_templates").insert({
                   stage_template_id: data[0],
-                  group_id: substage_templates[j].group_id,
+                  group_id: substage_templates[j].id,
+                  supervisor_id: substage_templates.supervisor_id,
                 });
               }
-            }
-          });
+            };
+
+            })
+          }
       }
-    })
-    .then((data) =>
-      res.status(200).json({ message: `Success`, data: data }).end()
     )
     .catch((err) =>
       res
@@ -65,6 +64,9 @@ router.post("/post", async (req, res) => {
           message: `Encountered ${err}`,
         })
         .end()
+    )
+    .then((data) =>
+      res.status(200).json({ message: `Success`, data: data }).end()
     );
 });
 
