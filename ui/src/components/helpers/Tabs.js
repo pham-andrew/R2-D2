@@ -70,7 +70,7 @@ const CustomTabs = () => {
     {
       key: 0,
       id: 0,
-      label: "Stage 1", //inital stage, never changes
+      label: "New Stage", //inital stage, never changes
     },
   ]);
 
@@ -95,7 +95,7 @@ const CustomTabs = () => {
   const addTab = (event) => {
     event.preventDefault();
     let id = tabList[tabList.length - 1].id + 1;
-    setTabList([...tabList, { key: id, id: id, label: "Stage " + (id + 1) }]);
+    setTabList([...tabList, { key: id, id: id, label: "New Stage" }]);
   };
 
   const deleteTab = (e) => {
