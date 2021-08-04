@@ -78,7 +78,8 @@ const Stage = ({ tabValue }) => {
   const classes = useStyles();
   const { stages, handleStageSubmit, currentUserDetails, groups } =
     useContext(TemplateContext);
-  const { reload, setReload } = useContext(AppContext);
+  const { setReload } = useContext(AppContext);
+  const [supervisor, setSupervisor] = useState(null);
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState([]);
   const [right, setRight] = useState([]);
@@ -97,12 +98,15 @@ const Stage = ({ tabValue }) => {
   useEffect(() => {
     if (stages[tabValue]) {
       setStage({ ...stage, ...stages[tabValue] });
-      if (stages[tabValue].substages) {
+      if (stages[tabValue].substages && stages[tabValue].substages.length > 0) {
         // console.log(stages[tabValue].substages);
         setRight(stages[tabValue].substages);
         setLeft(notOnSide(groups, stages[tabValue].substages));
         setReload(false);
       } else if (groups) {
+        if (stages[tabValue].substages.supervisor_id) {
+          handleSupervisor();
+        }
         setLeft(groups);
       }
     } else if (groups) {
@@ -125,10 +129,12 @@ const Stage = ({ tabValue }) => {
   // }, []);
 
   useEffect(() => {
-    if (right.length !== 0) {
+    if (supervisor) {
+      setStage({ ...stage, substages: { supervisor_id: supervisor } });
+    } else if (right.length !== 0) {
       setStage({ ...stage, substages: right });
     }
-  }, [right]);
+  }, [right, supervisor]);
 
   const handleStageChange = (event) => {
     let id = event.target.id;
@@ -147,12 +153,12 @@ const Stage = ({ tabValue }) => {
       //   closeAction: "Okay",
       // });
       // await setOpenAlert(true);
-      return alert(`Please add groups to ${stage.stage_name}`);
-    } else if (stage.substages.length === 0) {
-      return alert(`Please add groups to ${stage.stage_name}`);
+      return alert(`Please add groups or supervisor to ${stage.stage_name}`);
+    } else if (stage.substages.length > 0 || supervisor) {
+      handleStageSubmit(e, stageObj);
     } else {
       // console.log("Passed stage validation");
-      handleStageSubmit(e, stageObj);
+      return alert(`Please add groups or supervisor to ${stage.stage_name}`);
     }
   };
 
@@ -194,17 +200,16 @@ const Stage = ({ tabValue }) => {
     setRight([]);
   };
 
-  // const handleSupervisor = (e) => {
-  //   e.preventDefault();
-  //   if (supervisor) {
-  //     setSupervisor(null);
-  //   } else {
-  //     setSupervisor(e.target.value);
-  //   }
-  // };
+  const handleSupervisor = async () => {
+    if (!supervisor) {
+      await setSupervisor(currentUserDetails.supervisor_id);
+    } else {
+      await setSupervisor(null);
+    }
+  };
 
   const customList = (GpObjs) => (
-    <Paper className={classes.paper}>
+    <Paper className={classes.paper} style={{ height: 232.5 }}>
       <List dense component="div" role="list">
         {GpObjs.map((group) => {
           const labelId = `transfer-list-item-${group.id}-label`;
@@ -233,7 +238,6 @@ const Stage = ({ tabValue }) => {
 
   return (
     <>
-      <AlertDialog bodyAlert={alert} />
       <form
         // noValidate
         style={{ marginTop: 20 }}
@@ -269,7 +273,7 @@ const Stage = ({ tabValue }) => {
               InputLabelProps={{
                 shrink: true,
               }}
-              style={{ marginBottom: 22, width: 159 }}
+              style={{ marginBottom: 22, width: 127 }}
               id="suspense_integer"
               onChange={handleStageChange}
             />
@@ -315,13 +319,15 @@ const Stage = ({ tabValue }) => {
                   <Checkbox
                     color="primary"
                     disabled={!currentUserDetails.supervisor_name}
+                    checked={supervisor}
+                    onClick={handleSupervisor}
                   />
                 }
                 labelPlacement="end"
                 id="supervisor"
                 value={currentUserDetails.supervisor_id}
                 style={{ marginLeft: 5, marginBottom: 11 }}
-                label={`Add your supervisor: ${
+                label={`Assign stage to supervisor: ${
                   currentUserDetails.supervisor_name || "N/A"
                 }`}
               />
@@ -332,6 +338,7 @@ const Stage = ({ tabValue }) => {
               justifyContent="center"
               alignItems="center"
               className={classes.root}
+              style={supervisor ? { display: "none" } : {}}
             >
               <Grid item>{customList(left)}</Grid>
               <Grid item>

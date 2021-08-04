@@ -140,6 +140,7 @@ const App = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [openPrompt, setOpenPrompt] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
+  const [openSnack, setOpenSnack] = useState(false);
   const [alert, setAlert] = useState({
     title: "Title",
     text: "Text",
@@ -335,6 +336,8 @@ const App = () => {
         setReload,
         allUsers,
         setAllUsers,
+        openSnack,
+        setOpenSnack,
       }}
     >
       <Switch>

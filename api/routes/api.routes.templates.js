@@ -38,11 +38,19 @@ router.post("/post", async (req, res) => {
           })
           .returning("id")
           .then(async (data) => {
-            for (let j = 0; j < substage_templates.length; j++) {
+            if (substage_templates.supervisor_id) {
               await knex("substage_templates").insert({
                 stage_template_id: data[0],
-                group_id: substage_templates[j].group_id,
+                group_id: null,
+                supervisor_id: substage_templates.supervisor_id,
               });
+            } else {
+              for (let j = 0; j < substage_templates.length; j++) {
+                await knex("substage_templates").insert({
+                  stage_template_id: data[0],
+                  group_id: substage_templates[j].group_id,
+                });
+              }
             }
           });
       }
@@ -85,6 +93,7 @@ router.patch("/patch", async (req, res) => {
                 .where({ id: substage_templates[j].substage_id })
                 .update({
                   group_id: substage_templates[j].group_id,
+                  supervisor_id: substage_templates[j].supervisor_id || null,
                 });
             }
           });
@@ -196,6 +205,7 @@ router.get("/get/all/details", async (req, res) => {
                     results[i].stages[j].substages.push({
                       substage_id: rows[k].id,
                       group_id: rows[k].group_id,
+                      supervisor_id: rows[k].supervisor_id,
                     });
                   }
                 });
@@ -245,6 +255,7 @@ router.get("/get/all/details/:route_id", async (req, res) => {
                     results[i].stages[j].substages.push({
                       substage_id: rows[k].id,
                       group_id: rows[k].group_id,
+                      supervisor_id: rows[k].supervisor_id,
                     });
                   }
                 });
