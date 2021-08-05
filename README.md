@@ -15,7 +15,7 @@
 
 The Rapid Routing and Decision-making Dashboard (R2/D2) is a unit-centric task-flow management system that enables accountable and informed decision-making at all levels in the CoC.
 
-Most of today's task-flows involve one of the following:
+Most of today's task-flows usually involve one of the following:
 
 1.  Disaggregated, unintuitive, and/or expensive enterprise work flows (e.g. Sharepoint, TMT, TopVue, LeaveWeb), or
 2.  Hundreds of thousands of long email chains of questionable standardization and accountability, or
@@ -107,12 +107,11 @@ port for the UI is accessed in the code by referencing
 | Module/Library | Environment | Description                                        |
 | :------------- | :---------- | :------------------------------------------------- |
 | material-ui    | Development | Component library                                  |
-| uuid      | Development     | UUID generator                                     |
+| uuid           | Development | UUID generator                                     |
 | react          | Runtime     | Framework, JS library                              |
 | react-dom      | Runtime     | DOM renderer for React                             |
 | react-scripts  | Runtime     | Scripts and configuration used by Create React App |
 | js-cookie      | Runtime     | Cookie library                                     |
-
 
 ### API
 
@@ -127,10 +126,14 @@ port for the UI is accessed in the code by referencing
 
 ## Team
 
-- Andrew Pham: Frontend
-- Justin Law: Integration
-- Mark Terry: Backend
-- Noah Loy: Frontend
+- Andrew Pham
+  - UI/UX designer, UI-API integration, Miro Board expert
+- Justin Law
+  - API architect, UI/UX designer, UI-API integration, database architect, PlatformONE deployment
+- Mark Terry
+  - API architect, UI-API integration, and database architect
+- Noah Loy
+  - UI/UX
 
 ## License
 

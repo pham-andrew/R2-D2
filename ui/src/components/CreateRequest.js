@@ -1,7 +1,8 @@
 //create request
 
 // Dependencies
-import React, { useMemo } from "react";
+import React from "react";
+import AppContext from "../contexts/AppContext";
 
 // Components
 import {
@@ -26,12 +27,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Divider,
 } from "@material-ui/core";
+import AlertDialog from "./helpers/AlertDialog";
 
 //icons
-import CheckIcon from "@material-ui/icons/Check";
-import CloseIcon from "@material-ui/icons/Close";
+// import CheckIcon from "@material-ui/icons/Check";
+// import CloseIcon from "@material-ui/icons/Close";
+import AttachmentIcon from "@material-ui/icons/Attachment";
+
 // import "../styles/loading.css";
 import { v4 as uuidv4 } from "uuid";
 
@@ -45,9 +48,10 @@ const baseURL =
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
+    marginLeft: -5,
   },
   formControl: {
-    minWidth: 200,
+    maxWidth: 300,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -68,12 +72,23 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     flexDirection: "column",
   },
+  attachments: {
+    display: "flex",
+    justifyContent: "start",
+    alignContent: "center",
+    cursor: "pointer",
+    marginBottom: 5,
+    marginLeft: 10,
+    width: "90%",
+  },
 }));
 
 //2nd CreateRequest location
 const CreateRequest = () => {
   const classes = useStyles();
   // const templates = getTemplates();
+  const { currentUserDetails, alert, setAlert, setOpenAlert } =
+    React.useContext(AppContext);
   const [activeStep, setActiveStep] = React.useState(0);
   const [supervisor, setSupervisor] = React.useState([]);
   const [allGroups, setAllGroups] = React.useState(null);
@@ -82,7 +97,7 @@ const CreateRequest = () => {
   const [template, setTemplate] = React.useState(0);
   const [templates, setTemplates] = React.useState(null);
   const [selectedGroup, setSelectedGroup] = React.useState(0);
-  const [reload, setReload] = React.useState(false);
+  // const [reload, setReload] = React.useState(false);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -153,7 +168,6 @@ const CreateRequest = () => {
         });
       });
       setTemplateGroups(tmpArray);
-      console.log("set template groups", templateGroups);
     }
     setTimeout(() => {}, 1000);
   }, [templates, template, allGroups]);
@@ -274,31 +288,18 @@ const CreateRequest = () => {
     // console.log("getStageContent", step);
     let stageGroups = null;
 
-    console.log("getStageContent", stage);
-
     if (stage.substages[0].supervisor_id) {
       fetch(`${baseURL}/users/${stage.substages[0].supervisor_id}`)
         .then((res) => res.json())
         .then((data) =>
           setSupervisor(`${data.fname} ${data.lname} (${data.rank})`)
         );
-      console.log("I FIRED SUPERVISOR");
     }
 
     if (stage.substages[selectedGroup]) {
       if (templateGroups) {
         if (templateGroups[stage.stage_id]) {
           stageGroups = templateGroups[stage.stage_id];
-          console.log(
-            "stageGroups",
-            stageGroups,
-            "current stage in stageGroups",
-            stageGroups[selectedGroup],
-            "templateGroups",
-            templateGroups,
-            "stageId",
-            stage.stage_id
-          );
         }
       }
 
@@ -382,8 +383,8 @@ const CreateRequest = () => {
               }}
               value={stage.stage_name}
               style={{
-                marginBottom: 15,
-                marginTop: 22.5,
+                marginBottom: 30,
+                marginTop: 40,
                 cursor: "not-allowed",
               }}
             />
@@ -410,7 +411,7 @@ const CreateRequest = () => {
               InputLabelProps={{
                 shrink: true,
               }}
-              style={{ marginBottom: 15 }}
+              style={{ marginBottom: 30 }}
               id="suspense_integer"
             />
             <TextField
@@ -432,14 +433,59 @@ const CreateRequest = () => {
                 shrink: true,
               }}
               defaultValue=""
-              style={{ marginBottom: 15 }}
+              style={{ marginBottom: 30 }}
             >
               <MenuItem value="" disabled>
                 <em>Measure of Time</em>
               </MenuItem>
-              <MenuItem value={"Hours"}>Hours</MenuItem>
-              <MenuItem value={"Days"}>Days</MenuItem>
-              <MenuItem value={"Weeks"}>Weeks</MenuItem>
+              <MenuItem
+                value={"Hours"}
+                disabled={
+                  (stage.suspense_hours > 24 &&
+                  !(stage.suspense_hours / 24).toString().includes(".")
+                    ? stage.suspense_hours > 168 &&
+                      !(stage.suspense_hours / 168).toString().includes(".")
+                      ? "Weeks"
+                      : "Days"
+                    : "Hours") !== "Hours"
+                    ? true
+                    : false
+                }
+              >
+                Hours
+              </MenuItem>
+              <MenuItem
+                value={"Days"}
+                disabled={
+                  (stage.suspense_hours > 24 &&
+                  !(stage.suspense_hours / 24).toString().includes(".")
+                    ? stage.suspense_hours > 168 &&
+                      !(stage.suspense_hours / 168).toString().includes(".")
+                      ? "Weeks"
+                      : "Days"
+                    : "Hours") !== "Days"
+                    ? true
+                    : false
+                }
+              >
+                Days
+              </MenuItem>
+              <MenuItem
+                value={"Weeks"}
+                disabled={
+                  (stage.suspense_hours > 24 &&
+                  !(stage.suspense_hours / 24).toString().includes(".")
+                    ? stage.suspense_hours > 168 &&
+                      !(stage.suspense_hours / 168).toString().includes(".")
+                      ? "Weeks"
+                      : "Days"
+                    : "Hours") !== "Weeks"
+                    ? true
+                    : false
+                }
+              >
+                Weeks
+              </MenuItem>
             </TextField>
           </Grid>
           <Grid xs={12}>
@@ -449,7 +495,7 @@ const CreateRequest = () => {
               rows={10}
               variant="outlined"
               value={stage.stage_instructions}
-              style={{ marginTop: 10, marginLeft: 50, width: 440 }}
+              style={{ marginTop: 10, marginLeft: 45, width: "22.65vw" }}
               required
             />
           </Grid>
@@ -465,16 +511,6 @@ const CreateRequest = () => {
       if (templateGroups) {
         if (templateGroups[stage.stage_id]) {
           stageGroups2 = templateGroups[stage.stage_id];
-          console.log(
-            "stageGroups",
-            stageGroups2,
-            "current stage in stageGroups",
-            stageGroups2[0],
-            "templateGroups",
-            templateGroups,
-            "stageId",
-            stage.stage_id
-          );
         }
       }
 
@@ -539,18 +575,32 @@ const CreateRequest = () => {
             </Grid>
           </Grid>
           <Grid item xs={4}>
-            <TextField label="Stage Name" disabled label={stage.stage_name} />
+            <TextField disabled label={stage.stage_name} />
           </Grid>
         </Grid>
       );
     }
   }
-
   // previous createRequest function
 
   if (templates) {
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      console.log(templates[template].route_id);
+      await handleClose();
+      await setAlert({
+        title: "Initiate Request Successful",
+        text: `Your request, ${
+          document.getElementById("subject").value
+        }, was successfully submitted.`,
+        closeAction: "Okay",
+      });
+      await setOpenAlert(true);
+    };
+
     return (
       <div>
+        <AlertDialog bodyAlert={alert} />
         <Grid container className={classes.root}>
           <Grid item xs={3}>
             <Grid
@@ -559,15 +609,23 @@ const CreateRequest = () => {
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginBottom: 50,
+                marginBottom: 10,
+                marginTop: 40,
               }}
             >
               <FormControl className={classes.formControl}>
-                <InputLabel>Template</InputLabel>
-                <Select value={template} onChange={handleChange}>
+                <InputLabel variant="outlined">Chosen Template</InputLabel>
+                <Select
+                  variant="outlined"
+                  value={template}
+                  onChange={handleChange}
+                  label="Chosen Template"
+                >
                   {templates.map((template, index) => {
                     return (
-                      <MenuItem value={index}>{template.route_name}</MenuItem>
+                      <MenuItem key={uuidv4()} value={index}>
+                        {template.route_name}
+                      </MenuItem>
                     );
                   })}
                 </Select>
@@ -576,17 +634,26 @@ const CreateRequest = () => {
             <Grid item xs={12} style={{ margin: "15px" }}>
               <Paper className={classes.paperSecond}>
                 <Typography
-                  style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
+                  style={{
+                    fontWeight: 600,
+                    marginTop: 5,
+                    marginLeft: 5,
+                    overflowX: "auto",
+                  }}
+                  noWrap
                 >
                   Template Title
                 </Typography>
-                <Typography style={{ margin: "15px" }}>
+                <Typography style={{ margin: "15px" }} noWrap>
                   {templates[template].route_name}
                 </Typography>
               </Paper>
             </Grid>
             <Grid item xs={12} style={{ margin: "15px" }}>
-              <Paper className={classes.paperSecond} style={{ maxHeight: "34.5vh" }}>
+              <Paper
+                className={classes.paperSecond}
+                style={{ maxHeight: "34vh" }}
+              >
                 <Typography
                   style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
                 >
@@ -601,10 +668,28 @@ const CreateRequest = () => {
               <Paper className={classes.paperSecond}>
                 <Typography
                   style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
+                  noWrap
                 >
                   Template Documents
                 </Typography>
-                <Typography style={{ margin: "15px" }}>N/A</Typography>
+                <div style={{ maxHeight: "8.75vh", overflow: "auto" }}>
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography variant="body2">N/A</Typography>
+                  </ListItem>
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography variant="body2">N/A</Typography>
+                  </ListItem>
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography variant="body2">N/A</Typography>
+                  </ListItem>
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography variant="body2">N/A</Typography>
+                  </ListItem>
+                </div>
               </Paper>
             </Grid>
           </Grid>
@@ -614,13 +699,13 @@ const CreateRequest = () => {
                 <Stepper activeStep={activeStep}>
                   {templates[template].stages.map((stage) => {
                     return (
-                      <Step>
+                      <Step key={uuidv4()}>
                         <StepLabel>{stage.stage_name}</StepLabel>
                       </Step>
                     );
                   })}
                 </Stepper>
-                <Paper style={{ padding: "30px" }}>
+                <Paper style={{ padding: "30px", height: "58.2vh" }}>
                   <div>
                     <Typography className={classes.instructions}>
                       {getStageContent(
@@ -630,18 +715,13 @@ const CreateRequest = () => {
                     </Typography>
                     <Grid container>
                       <Grid item xs={8} />
-                      <Grid item xs={4} style={{ marginTop: 10 }}>
+                      <Grid item xs={4} style={{ marginTop: "6vh" }}>
                         <Button
                           disabled={activeStep === 0}
                           onClick={handleBack}
-                          className={classes.button}
                           color="primary"
-                          style={{
-                            marginRight: "6.8vw",
-                            position: "relative",
-                            left: "5.8vw",
-                          }}
                           variant="outlined"
+                          style={{ marginLeft: "6vw" }}
                         >
                           Back
                         </Button>
@@ -649,10 +729,10 @@ const CreateRequest = () => {
                           variant="outlined"
                           color="primary"
                           onClick={handleNext}
-                          className={classes.button}
                           disabled={
                             activeStep === templates[template].stages.length - 1
                           }
+                          style={{ marginLeft: "1vw" }}
                         >
                           Next
                         </Button>
@@ -664,7 +744,7 @@ const CreateRequest = () => {
             </Grid>
           </Grid>
           <Grid item xs={10} />
-          <Grid item xs={2} style={{ marginTop: "20px" }}>
+          <Grid item xs={2} style={{ marginTop: "10px" }}>
             <Button
               variant="contained"
               component="label"
@@ -682,36 +762,103 @@ const CreateRequest = () => {
         >
           <DialogTitle>Initiate Request</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Selected Route Template: {templates[template].name}
-            </DialogContentText>
+            <div style={{ display: "flex" }}>
+              <DialogContentText style={{ marginRight: 5 }}>
+                Selected Route Template:
+              </DialogContentText>
+              <Typography style={{ fontWeight: 600 }}>
+                {templates[template].route_name}
+              </Typography>
+            </div>
             <TextField
               autoFocus
               margin="dense"
-              id="name"
+              id="subject"
               label="Subject"
               fullWidth
+              variant="outlined"
+              helperText={`E.g. ${new Date()
+                .toString()
+                .substr(4, 11)
+                .replace(" ", "-")
+                .replace(" ", "-")} ${templates[template].route_name} – ${
+                currentUserDetails.lname
+              } `}
+              required
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
             <TextField
+              style={{ marginTop: 20 }}
               multiline
               rows={4}
               autoFocus
               margin="dense"
               label="Comments"
+              id="comments"
               fullWidth
               variant="outlined"
+              required
+              helperText={`Any extra comments that would assist the approvers in their decision`}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
-            <Divider style={{ margin: "10px" }} />
-            <Button variant="contained" component="label" color="primary">
-              Upload Supporting Documents
-              <input type="file" hidden />
-            </Button>
+            <div
+              style={{
+                border: "1px solid lightgray",
+                borderRadius: 5,
+                marginTop: 30,
+              }}
+            >
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  color="default"
+                  size="small"
+                  style={{
+                    marginBottom: 15,
+                    marginTop: -20,
+                    marginLeft: 10,
+                  }}
+                >
+                  Upload Document
+                  <input type="file" hidden />
+                </Button>
+              </Grid>
+              <div style={{ maxHeight: 134, overflow: "auto" }}>
+                <ListItem className={classes.attachments} button>
+                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                  <Typography variant="body2">N/A</Typography>
+                </ListItem>
+                <ListItem className={classes.attachments} button>
+                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                  <Typography variant="body2">N/A</Typography>
+                </ListItem>
+                <ListItem className={classes.attachments} button>
+                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                  <Typography variant="body2">N/A</Typography>
+                </ListItem>
+                <ListItem className={classes.attachments} button>
+                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                  <Typography variant="body2">N/A</Typography>
+                </ListItem>
+              </div>
+            </div>
+            <Typography
+              variant="caption"
+              style={{ color: "#9E9C9C", marginLeft: 15 }}
+            >
+              Documents to be sent for review by approvers
+            </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="primary">
+            <Button onClick={handleClose} color="secondary" variant="contained">
               Cancel
             </Button>
-            <Button onClick={handleClose} color="primary">
+            <Button onClick={handleSubmit} color="primary" variant="contained">
               Send
             </Button>
           </DialogActions>

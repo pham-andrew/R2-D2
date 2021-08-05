@@ -16,31 +16,35 @@ import Admin from "./components/Admin";
 import Archive from "./components/Archive";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
-import Request from "./components/Request"
+import Request from "./components/Request";
 
-// material-ui
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ListItem from "@material-ui/core/ListItem";
+import {
+  Drawer,
+  List,
+  Divider,
+  ListItem,
+  AppBar,
+  Typography,
+  Toolbar,
+  Container,
+  Paper,
+  Badge,
+  Tooltip,
+} from "@material-ui/core";
+
+// icons
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import AppBar from "@material-ui/core/AppBar";
 import MenuIcon from "@material-ui/icons/Menu";
-import Typography from "@material-ui/core/Typography";
-import Toolbar from "@material-ui/core/Toolbar";
-import NoteIcon from "@material-ui/icons/Note";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import AssignmentIcon from "@material-ui/icons/Assignment";
+import IconButton from "@material-ui/core/IconButton";
+import NoteIcon from "@material-ui/icons/Note";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import { Icon as JediIcon } from "@iconify/react";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
-import Container from "@material-ui/core/Container";
-import Paper from "@material-ui/core/Paper";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import Badge from "@material-ui/core/Badge";
 import CollectionsBookmarkIcon from "@material-ui/icons/CollectionsBookmark";
 
 const drawerWidth = 240;
@@ -197,18 +201,22 @@ const App = () => {
             ""
           )}
           <Link exact to="/dashboard" className={classes.link}>
-            <img
-              src="https://raw.githubusercontent.com/pham-andrew/SDI-Capstone-Group-5/main/ui/public/favicon.png"
-              style={{
-                position: "flex",
-                marginTop: 2.5,
-                marginRight: 5,
-                height: 50,
-                paddingRight: 10,
-                filter: "drop-shadow(1px 1px 1px #2E2E2E)",
-              }}
-            />
+            <Tooltip title="To Dashboard">
+              <img
+                src={process.env.PUBLIC_URL + "/favicon.png"}
+                style={{
+                  position: "flex",
+                  marginTop: 2.5,
+                  marginRight: 5,
+                  height: 50,
+                  paddingRight: 10,
+                  filter: "drop-shadow(1px 1px 1px #2E2E2E)",
+                  cursor: "pointer",
+                }}
+              />
+            </Tooltip>
           </Link>
+
           <Typography
             component="h1"
             variant="h5"
@@ -218,6 +226,7 @@ const App = () => {
           >
             R2/D2
           </Typography>
+
           {shift ? (
             <IconButton
               color="inherit"
@@ -264,61 +273,82 @@ const App = () => {
           <List>
             <div>
               <Link exact to="/dashboard" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <DashboardIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Routing Dashboard" />
-                </ListItem>
+                <Tooltip title="Dashboard" placement="right">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <DashboardIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Routing Dashboard" />
+                  </ListItem>
+                </Tooltip>
               </Link>
+              <Divider style={{ margin: 7.5 }} />
               <Link exact to="/template" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <NoteIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Create Template" />
-                </ListItem>
-              </Link>
-              <Link exact to="/template/manage" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <CollectionsBookmarkIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Manage Templates" />
-                </ListItem>
+                <Tooltip title="Create Template" placement="right">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <NoteIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Create Template" />
+                  </ListItem>
+                </Tooltip>
               </Link>
               <Link exact to="/request" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <AssignmentIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Create Request" />
-                </ListItem>
+                <Tooltip title="Create Request" placement="right">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <AssignmentIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Create Request" />
+                  </ListItem>
+                </Tooltip>
+              </Link>
+              <Divider style={{ margin: 7.5 }} />
+              <Link exact to="/template/manage" className={classes.link}>
+                <Tooltip title="Manage Templates" placement="right">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <CollectionsBookmarkIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Manage Templates" />
+                  </ListItem>
+                </Tooltip>
               </Link>
               <Link exact to="/archive" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <ArchiveIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Request Archive" />
-                </ListItem>
+                <Tooltip title="Request Archive" placement="right">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <ArchiveIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Request Archive" />
+                  </ListItem>
+                </Tooltip>
               </Link>
               <Divider style={{ margin: 7.5 }} />
               <Link exact to="/profile" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <AccountBoxIcon />
-                  </ListItemIcon>
-                  <ListItemText disabled={true} primary="Profile" />
-                </ListItem>
+                <Tooltip title="Profile" placement="right">
+                  <ListItem button>
+                    <ListItemIcon>
+                      <AccountBoxIcon />
+                    </ListItemIcon>
+                    <ListItemText disabled={true} primary="Profile" />
+                  </ListItem>
+                </Tooltip>
               </Link>
               <Link exact to="/jedi-only" className={classes.link}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <SupervisorAccountIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Admin" />
-                </ListItem>
+                <Tooltip title="Jedi Only" placement="right">
+                  <ListItem button>
+                    <ListItemIcon
+                      style={{ display: "flex", justifyContent: "start" }}
+                    >
+                      <JediIcon
+                        icon="fa-solid:jedi"
+                        style={{ fontSize: 21.5 }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText primary="Admin" />
+                  </ListItem>
+                </Tooltip>
               </Link>
             </div>
           </List>
@@ -391,7 +421,10 @@ const App = () => {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
               <Container maxWidth="lg" className={classes.container}>
-                <Paper className={classes.paper}>
+                <Paper
+                  className={classes.paper}
+                  style={{ maxHeight: 900, overflow: "auto" }}
+                >
                   <ProtectedRoute component={CreateRequest} />
                 </Paper>
               </Container>
@@ -419,7 +452,9 @@ const App = () => {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
               <Container maxWidth="lg" className={classes.container}>
-                <ProtectedRoute component={Archive} />
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={Archive} />
+                </Paper>
               </Container>
             </main>
           </div>
@@ -443,7 +478,9 @@ const App = () => {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
               <Container maxWidth="lg" className={classes.container}>
-                <ProtectedRoute component={Admin} />
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={Admin} />
+                </Paper>
               </Container>
             </main>
           </div>
@@ -456,7 +493,9 @@ const App = () => {
             <main className={classes.content}>
               <div className={classes.appBarSpacer} />
               <Container maxWidth="lg" className={classes.container}>
-                <ProtectedRoute component={Request} />
+                <Paper className={classes.paper}>
+                  <ProtectedRoute component={Request} />
+                </Paper>
               </Container>
             </main>
           </div>
