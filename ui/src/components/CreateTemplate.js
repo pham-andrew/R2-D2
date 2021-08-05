@@ -301,25 +301,31 @@ const CreateTemplate = () => {
                       <AttachmentIcon
                         style={{ fontSize: 20, marginRight: 5 }}
                       />
-                      <Typography variant="body2">N/A</Typography>
+                      <Typography style={{ margin: "15px" }}>
+                        <a href="/documents/SacredJedi.txt" download>
+                          The Sacred Jedi Texts Volume 1
+                        </a>
+                      </Typography>
                     </ListItem>
                     <ListItem className={classes.attachments} button>
                       <AttachmentIcon
                         style={{ fontSize: 20, marginRight: 5 }}
                       />
-                      <Typography variant="body2">N/A</Typography>
+                      <Typography style={{ margin: "15px" }}>
+                        <a href="/documents/HitchhikersGuide.txt" download>
+                          Hitchhiker's Guide to the Galaxy
+                        </a>
+                      </Typography>
                     </ListItem>
                     <ListItem className={classes.attachments} button>
                       <AttachmentIcon
                         style={{ fontSize: 20, marginRight: 5 }}
                       />
-                      <Typography variant="body2">N/A</Typography>
-                    </ListItem>
-                    <ListItem className={classes.attachments} button>
-                      <AttachmentIcon
-                        style={{ fontSize: 20, marginRight: 5 }}
-                      />
-                      <Typography variant="body2">N/A</Typography>
+                      <Typography style={{ margin: "15px" }}>
+                        <a href="/documents/ZappBrannigan.txt" download>
+                          Zapp Brannigan Quotes
+                        </a>
+                      </Typography>
                     </ListItem>
                   </div>
                 </div>

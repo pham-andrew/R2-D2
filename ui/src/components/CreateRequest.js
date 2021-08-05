@@ -2,6 +2,7 @@
 
 // Dependencies
 import React from "react";
+import { useHistory } from "react-router-dom";
 import AppContext from "../contexts/AppContext";
 
 // Components
@@ -48,7 +49,12 @@ const baseURL =
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
+    marginTop: -10,
     marginLeft: -5,
+    maxHeight: "75vh",
+    maxWidth: "90vw",
+    overflowY: "auto",
+    overflowX: "none",
   },
   formControl: {
     maxWidth: 300,
@@ -83,21 +89,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//2nd CreateRequest location
 const CreateRequest = () => {
   const classes = useStyles();
-  // const templates = getTemplates();
   const { currentUserDetails, alert, setAlert, setOpenAlert } =
     React.useContext(AppContext);
   const [activeStep, setActiveStep] = React.useState(0);
   const [supervisor, setSupervisor] = React.useState([]);
   const [allGroups, setAllGroups] = React.useState(null);
   const [templateGroups, setTemplateGroups] = React.useState(null);
-  // const stages = getStages();
   const [template, setTemplate] = React.useState(0);
   const [templates, setTemplates] = React.useState(null);
   const [selectedGroup, setSelectedGroup] = React.useState(0);
-  // const [reload, setReload] = React.useState(false);
+
+  const history = useHistory();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -172,120 +176,7 @@ const CreateRequest = () => {
     setTimeout(() => {}, 1000);
   }, [templates, template, allGroups]);
 
-  //hookup backend here in these functions!
-  // function getStages() {
-  //   Already part of /get/all/details
-  //   return [
-  //     {
-  //       label: "Stage 1",
-  //       groups: ["Group 1"],
-  //       done: ["Group 1"],
-  //       suspense: "2014-08-18T21:11:54",
-  //       instructions: "dew it",
-  //     },
-  //     {
-  //       label: "Stage 2",
-  //       groups: ["Group 2", "Group 3"],
-  //       done: ["Group 2"],
-  //       suspense: "2014-08-18T21:11:54",
-  //       instructions: "execute order 66",
-  //     },
-  //     {
-  //       label: "Stage 3",
-  //       groups: ["Group 4"],
-  //       done: [],
-  //       suspense: "2014-08-18T21:11:54",
-  //       instructions: "dew it",
-  //     },
-  //   ];
-  // }
-
-  // function getGroupMembers(group) {
-  //   // GET group w/ members
-  //   if (group.name === "loading")
-  //     return ["palpatine", "darth vader", "storm trooper"];
-  //   if (group === "Group 2") return ["andrew", "jack", "brandon"];
-  //   if (group === "Group 3") return ["kirk", "data"];
-  //   if (group === "Group 4") return ["baby yoda", "admiral ackbar"];
-  // }
-
-  //returns if member has completed their submission
-  // function memberDone(member){
-  //   if(member==="palpatine"||member==="darth vader"||member==="storm trooper")
-  //     return true
-  //   if(member==="andrew"||member==="jack"||member==="brandon")
-  //     return true
-  //   if(member==="kirk")
-  //     return true
-  //   return false
-  // }
-
-  // async function getTemplates() {
-  //   //GET /get/all/details
-  //   let response = await fetch(
-  //     `${baseURL}/routes/templates/get/all/details`
-  //   );
-  //   if (response.status === 200) {
-  //     let data = await response.json();
-  //     console.log(data);
-  //     return data;
-  //   } else {
-  //     let err = await response.json();
-  //     return console.log(err);
-  //   }
-  // }
-
-  // return [
-  //   {
-  //     name: "eSSS",
-  //     instructions: "dew it",
-  //     documents: "iono how this will work...",
-  //   },
-  //   {
-  //     name: "Engineering Change Request",
-  //     instructions: "execute order 66",
-  //     documents: "like literally however you pull documents",
-  //   },
-  //   {
-  //     name: "Award Package",
-  //     instructions: "dew it",
-  //     documents: "like some kind of link probably?",
-  //   },
-  // ];
-  // }
-
-  //Previous useStyles location
-
-  // function completed(stages){
-
-  //   var i;
-  //   for (i = 0; i < stages.length; i++)
-  //     if (stages[i].groups.length != stages[i].done.length) break;
-  //   return i;
-  // }
-
-  // function groupColor(group, stage){
-  //   if(stage.done.includes(group))
-  //     return "lightGreen"
-  //   return "yellow"
-  // }
-
-  // function memberColor(member){
-  //   if(memberDone(member)===true)
-  //     return "lightGreen"
-  //   return "yellow"
-  // }
-
-  // function getStageIcon(stage){
-  //   if(stage.groups.length===stage.done.length)
-  //     return <CheckIcon />
-  //   return <CloseIcon />
-  // }
-
   function getStageContent(step, stage) {
-    // const classes = useStyles(); at top level
-    // const [selectedGroup, setSelectedGroup] = React.useState(0);
-    // console.log("getStageContent", step);
     let stageGroups = null;
 
     if (stage.substages[0].supervisor_id) {
@@ -502,10 +393,6 @@ const CreateRequest = () => {
         </Grid>
       );
     } else {
-      //default render in case of stale state. defaults selected group to 0
-      //janky fix. here's how to recreate the bug if you want to refactor into better fix
-      //delete below return, select a new group, then click next stage
-      //the selected group doesnt go back to 0, thus asking for name of group # something which is undef
       let stageGroups2 = null;
 
       if (templateGroups) {
@@ -586,16 +473,76 @@ const CreateRequest = () => {
   if (templates) {
     const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log(templates[template].route_id);
-      await handleClose();
-      await setAlert({
-        title: "Initiate Request Successful",
-        text: `Your request, ${
-          document.getElementById("subject").value
-        }, was successfully submitted.`,
-        closeAction: "Okay",
-      });
-      await setOpenAlert(true);
+      if (
+        document.getElementById("subject").value.length < 1 ||
+        document.getElementById("comments").value.length < 1
+      ) {
+        await setAlert({
+          title: "Request Error",
+          text: "Please fill out all the required fields before submitting the request",
+          closeAction: "Okay",
+        });
+        await setOpenAlert(true);
+      } else {
+        // console.log({
+        //   subject: document.getElementById("subject").value,
+        //   initiator_id: currentUserDetails.user_id,
+        //   rank: currentUserDetails.rank,
+        //   lname: currentUserDetails.lname,
+        //   route_template_id: templates[template].route_id,
+        //   comments: document.getElementById("comments").value,
+        //   route_template: templates[template],
+        // });
+        let response = await fetch(`${baseURL}/routes/requests/post`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            subject: document.getElementById("subject").value,
+            initiator_id: currentUserDetails.user_id,
+            rank: currentUserDetails.rank,
+            lname: currentUserDetails.lname,
+            route_template_id: templates[template].route_id,
+            comments: document.getElementById("comments").value,
+            route_template: templates[template],
+          }),
+        })
+          .then((resp) => resp)
+          .catch((err) => err);
+        if (response.status === 200) {
+          await handleClose();
+          await setAlert({
+            title: "Initiate Request Successful",
+            text: `Your request, ${
+              document.getElementById("subject").value
+            }, was successfully submitted.`,
+            closeAction: "Okay",
+          });
+          await setOpenAlert(true);
+          history.push("/dashboard");
+        } else {
+          let message = await response.json();
+          await setAlert({
+            title: "Submission Error",
+            text: message.message,
+            closeAction: "Roger Roger",
+          });
+          await setOpenAlert(true);
+        }
+      }
+    };
+
+    const handlePaste = async (e) => {
+      e.preventDefault();
+      let suggestion = `${new Date()
+        .toString()
+        .substr(4, 11)
+        .replace(" ", "-")
+        .replace(" ", "-")} ${templates[template].route_name} – ${
+        currentUserDetails.lname
+      } `;
+      document.getElementById("subject").value = suggestion;
     };
 
     return (
@@ -675,19 +622,27 @@ const CreateRequest = () => {
                 <div style={{ maxHeight: "8.75vh", overflow: "auto" }}>
                   <ListItem className={classes.attachments} button>
                     <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    <Typography variant="body2">N/A</Typography>
+                    <Typography style={{ margin: "15px" }}>
+                      <a href="/documents/SacredJedi.txt" download>
+                        The Sacred Jedi Texts Volume 1
+                      </a>
+                    </Typography>
                   </ListItem>
                   <ListItem className={classes.attachments} button>
                     <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    <Typography variant="body2">N/A</Typography>
+                    <Typography style={{ margin: "15px" }}>
+                      <a href="/documents/HitchhikersGuide.txt" download>
+                        Hitchhiker's Guide to the Galaxy
+                      </a>
+                    </Typography>
                   </ListItem>
                   <ListItem className={classes.attachments} button>
                     <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    <Typography variant="body2">N/A</Typography>
-                  </ListItem>
-                  <ListItem className={classes.attachments} button>
-                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                    <Typography variant="body2">N/A</Typography>
+                    <Typography style={{ margin: "15px" }}>
+                      <a href="/documents/ZappBrannigan.txt" download>
+                        Zapp Brannigan Quotes
+                      </a>
+                    </Typography>
                   </ListItem>
                 </div>
               </Paper>
@@ -695,7 +650,7 @@ const CreateRequest = () => {
           </Grid>
           <Grid item xs={9}>
             <Grid item xs={12} className={classes.tabs}>
-              <div className={classes.root}>
+              <div className={classes.root} style={{ maxHeight: 900 }}>
                 <Stepper activeStep={activeStep}>
                   {templates[template].stages.map((stage) => {
                     return (
@@ -705,7 +660,7 @@ const CreateRequest = () => {
                     );
                   })}
                 </Stepper>
-                <Paper style={{ padding: "30px", height: "58.2vh" }}>
+                <Paper style={{ padding: "30px" }}>
                   <div>
                     <Typography className={classes.instructions}>
                       {getStageContent(
@@ -715,13 +670,13 @@ const CreateRequest = () => {
                     </Typography>
                     <Grid container>
                       <Grid item xs={8} />
-                      <Grid item xs={4} style={{ marginTop: "6vh" }}>
+                      <Grid item xs={4} style={{ marginTop: -30 }}>
                         <Button
                           disabled={activeStep === 0}
                           onClick={handleBack}
                           color="primary"
                           variant="outlined"
-                          style={{ marginLeft: "6vw" }}
+                          style={{ marginLeft: 115 }}
                         >
                           Back
                         </Button>
@@ -732,7 +687,7 @@ const CreateRequest = () => {
                           disabled={
                             activeStep === templates[template].stages.length - 1
                           }
-                          style={{ marginLeft: "1vw" }}
+                          style={{ marginLeft: 15 }}
                         >
                           Next
                         </Button>
@@ -744,12 +699,13 @@ const CreateRequest = () => {
             </Grid>
           </Grid>
           <Grid item xs={10} />
-          <Grid item xs={2} style={{ marginTop: "10px" }}>
+          <Grid item xs={2}>
             <Button
               variant="contained"
               component="label"
               color="secondary"
               onClick={handleClickOpen}
+              style={{ marginTop: "-5vh", marginBottom: 0 }}
             >
               Initiate Request
             </Button>
@@ -770,30 +726,49 @@ const CreateRequest = () => {
                 {templates[template].route_name}
               </Typography>
             </div>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="subject"
-              label="Subject"
-              fullWidth
-              variant="outlined"
-              helperText={`E.g. ${new Date()
-                .toString()
-                .substr(4, 11)
-                .replace(" ", "-")
-                .replace(" ", "-")} ${templates[template].route_name} – ${
-                currentUserDetails.lname
-              } `}
-              required
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="subject"
+                label="Subject"
+                fullWidth
+                variant="outlined"
+                helperText={`E.g. ${new Date()
+                  .toString()
+                  .substr(4, 11)
+                  .replace(" ", "-")
+                  .replace(" ", "-")} ${templates[template].route_name} – ${
+                  currentUserDetails.lname
+                }`}
+                required
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <Button
+                size="small"
+                variant="outlined"
+                color="default"
+                style={{
+                  marginLeft: 5,
+                  marginTop: -18.7,
+                  fontSize: 10,
+                  padding: 1,
+                  maxWidth: 80,
+                  maxHeight: 40,
+                  minWidth: 80,
+                  minHeight: 40,
+                }}
+                onClick={handlePaste}
+              >
+                Paste Suggested
+              </Button>
+            </div>
             <TextField
               style={{ marginTop: 20 }}
               multiline
               rows={4}
-              autoFocus
               margin="dense"
               label="Comments"
               id="comments"
