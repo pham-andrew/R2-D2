@@ -114,7 +114,7 @@ const CreateRequest = () => {
       return console.log(err);
     }
 
-    await fetch(`${baseURL}/groups//?include_users=true`)
+    await fetch(`${baseURL}/groups/?include_users=true`)
       .then((res) => res.json())
       .then((data) => {
         setAllGroups(data);
