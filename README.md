@@ -126,10 +126,14 @@ port for the UI is accessed in the code by referencing
 
 ## Team
 
-- Andrew Pham: Frontend
-- Justin Law: Integration
-- Mark Terry: Backend
-- Noah Loy: Frontend
+- Andrew Pham
+  - UI/UX designer, UI-API integration, Miro Board expert
+- Justin Law
+  - API architect, UI/UX designer, UI-API integration, database architect, PlatformONE deployment
+- Mark Terry
+  - API architect, UI-API integration, and database architect
+- Noah Loy
+  - UI/UX
 
 ## License
 

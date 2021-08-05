@@ -331,18 +331,18 @@
 }
 @keyframes mountainAnimation {
   0% {
-    left: -30%;
+    left: -15%;
   }
   100% {
-    left: 100%;
+    left: 110%;
   }
 }
 @-webkit-keyframes mountainAnimation {
   0% {
-    left: -30%;
+    left: -15%;
   }
   100% {
-    left: 100%;
+    left: 110%;
   }
 }
 .mountains {
@@ -352,8 +352,8 @@
   bottom: 30px;
   left: 0;
   z-index: -1;
-  animation: mountainAnimation 60s infinite;
-  -webkit-animation: mountainAnimation 60s infinite; /* Safari and Chrome */
+  animation: mountainAnimation 90s infinite;
+  -webkit-animation: mountainAnimation 90s infinite; /* Safari and Chrome */
 }
 
 .firstMountain {
