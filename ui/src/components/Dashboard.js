@@ -109,13 +109,35 @@ export default function Dashboard() {
           } else {
             for (let i = 0; i < groups.length; i++) {
               if (substage.group_id === groups[i].group_id) {
-                request.substage_id = substage.substage_id;
                 return (substage.group_name = groups[i].group_name);
               }
             }
           }
         });
       });
+    });
+
+    requestArray.forEach((request) => {
+      if (request.current_stage === -1) {
+        return;
+      } else {
+        let currStage = request.current_stage;
+        request.substage = request.stages[currStage].substages.filter(
+          (substage) => {
+            if (substage.supervisor_id) {
+              return true;
+            } else {
+              for (let i = 0; i < currentUserDetails.groups.length; i++) {
+                if (
+                  substage.group_id === currentUserDetails.groups[i].group_id
+                ) {
+                  return true;
+                }
+              }
+            }
+          }
+        );
+      }
     });
 
     let user_id = currentUserDetails.user_id;
@@ -134,8 +156,8 @@ export default function Dashboard() {
       } else {
         if (currStage === -1 && request.initiator_id === user_id) {
           // request.ao = `${currentUserDetails.fname} ${currentUserDetails.lname} (${currentUserDetails.rank})`;
-          return enRoute.push(request);
-        } else if (request.initiator_id !== user_id) {
+          return pending.push(request);
+        } else if (request.initiator_id !== user_id && currStage !== -1) {
           console.log(currStage);
           let currSubstages = request.stages[currStage].substages;
           for (let i = 0; i < userGroups.length; i++) {
@@ -149,7 +171,7 @@ export default function Dashboard() {
               }
             }
           }
-        } else {
+        } else if (currStage !== -1) {
           return enRoute.push(request);
         }
       }
@@ -258,7 +280,8 @@ export default function Dashboard() {
                         }}
                         variant="caption"
                       >
-                        Requires Action From: {request.ao.group_name}
+                        Requires Action From:{" "}
+                        {request.ao ? request.ao.group_name : "Initiator"}
                       </Typography>
                     </Tooltip>
                   </Grid>
@@ -286,7 +309,17 @@ export default function Dashboard() {
                                 variant="body2"
                               >
                                 {group.supervisor_id
-                                  ? group.supervisor_id
+                                  ? `${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).rank
+                                    } ${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).lname
+                                    }`
                                   : group.group_name}
                               </Typography>
                             ))}
@@ -297,7 +330,7 @@ export default function Dashboard() {
                   </Grid>
                   <Grid item xs={1} className={classes.button}>
                     <Button
-                      color="primary"
+                      color="secondary"
                       variant="contained"
                       onClick={async () => {
                         await setAlert({
@@ -314,7 +347,7 @@ export default function Dashboard() {
                         await setOpenAlert(true);
                       }}
                     >
-                      Review
+                      Take Action
                     </Button>
                   </Grid>
                 </Grid>
@@ -400,7 +433,17 @@ export default function Dashboard() {
                                 variant="body2"
                               >
                                 {group.supervisor_id
-                                  ? group.supervisor_id
+                                  ? `${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).rank
+                                    } ${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).lname
+                                    }`
                                   : group.group_name}
                               </Typography>
                             ))}
@@ -513,7 +556,17 @@ export default function Dashboard() {
                                 variant="body2"
                               >
                                 {group.supervisor_id
-                                  ? group.supervisor_id
+                                  ? `${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).rank
+                                    } ${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).lname
+                                    }`
                                   : group.group_name}
                               </Typography>
                             ))}
@@ -626,7 +679,17 @@ export default function Dashboard() {
                                 variant="body2"
                               >
                                 {group.supervisor_id
-                                  ? group.supervisor_id
+                                  ? `${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).rank
+                                    } ${
+                                      allUsers.find(
+                                        (user) =>
+                                          group.supervisor_id === user.id
+                                      ).lname
+                                    }`
                                   : group.group_name}
                               </Typography>
                             ))}
