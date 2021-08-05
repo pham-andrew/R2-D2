@@ -16,7 +16,7 @@ import Admin from "./components/Admin";
 import Archive from "./components/Archive";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
-import Request from "./components/Request";
+// import Request from "./components/Request";
 
 import {
   Drawer,
@@ -237,9 +237,11 @@ const App = () => {
               }
             >
               <Badge color="secondary">
-                <Link exact to="/" style={{ color: "white" }}>
-                  <ExitToAppIcon />
-                </Link>
+                <Tooltip title="Logout">
+                  <Link exact to="/" style={{ color: "white" }}>
+                    <ExitToAppIcon />
+                  </Link>
+                </Tooltip>
               </Badge>
             </IconButton>
           ) : (
@@ -480,21 +482,6 @@ const App = () => {
               <Container maxWidth="lg" className={classes.container}>
                 <Paper className={classes.paper}>
                   <ProtectedRoute component={Admin} />
-                </Paper>
-              </Container>
-            </main>
-          </div>
-        </Route>
-
-        {/* for testing */}
-        <Route exact path="/r">
-          <div className={classes.root}>
-            {nav}
-            <main className={classes.content}>
-              <div className={classes.appBarSpacer} />
-              <Container maxWidth="lg" className={classes.container}>
-                <Paper className={classes.paper}>
-                  <ProtectedRoute component={Request} />
                 </Paper>
               </Container>
             </main>

@@ -126,7 +126,6 @@ exports.up = function (knex) {
         table.text("status").defaultTo("En Route");
         table.timestamps(true, true); //created_at and updated_at
         table.date("completed_at");
-        table.unique(["subject"]);
       });
     })
 

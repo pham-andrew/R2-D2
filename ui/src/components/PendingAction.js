@@ -1,7 +1,7 @@
 //create request
 
 // Dependencies
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 
 // Components
 import {
@@ -9,31 +9,18 @@ import {
   Typography,
   Grid,
   Button,
-  Stepper,
-  Step,
-  StepLabel,
   TextField,
-  Paper,
-  FormControl,
   MenuItem,
-  Select,
-  InputLabel,
-  List,
   ListItem,
-  ListItemText,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
-  Divider,
 } from "@material-ui/core";
 
 //icons
-import CheckIcon from "@material-ui/icons/Check";
-import CloseIcon from "@material-ui/icons/Close";
-// import "../styles/loading.css";
-import { v4 as uuidv4 } from "uuid";
+import AttachmentIcon from "@material-ui/icons/Attachment";
 
 //BaseUrl
 const baseURL =
@@ -75,169 +62,248 @@ const PendingAction = (props) => {
   const classes = useStyles();
   const { request, handleClose, currentUserDetails } = props;
   let currStage = request.current_stage;
-  // const templates = getTemplates();
-  const [supervisor, setSupervisor] = React.useState([]);
   const [reload, setReload] = React.useState(false);
+  const [comments, setComments] = useState("");
 
-  const handleChange = (event) => {
-    setTemplate(event.target.value);
+  const handleDeny = async () => {
+    let data = {};
+    let response = await fetch(
+      `${baseURL}/routes/requests/patch/substage/deny`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (response.status === 200) {
+      setReload(!reload);
+      return handleClose(false);
+    } else {
+      let err = await response.json();
+      return console.log(err);
+    }
   };
 
-  const handleDeny = () => {
-    return;
-  };
+  const handleApprove = async () => {
+    let final_stage = currStage === request.stages.length - 1 ? true : false;
+    let next_stage_id = !final_stage
+      ? request.stages[currStage + 1].stage_id
+      : null;
 
-  const handleApprove = () => {
-    return;
+    console.log(
+      "final stage",
+      final_stage,
+      "next_stage_id",
+      next_stage_id,
+      "substage_id",
+      request.substage_id
+    );
+
+    let data = {
+      rank: currentUserDetails.rank,
+      lname: currentUserDetails.lname,
+      user_id: currentUserDetails.user_id,
+      notes: comments,
+      substage_id: request.substage_id,
+      request_stage_id: request.stages[currStage].stage_id,
+      request_id: request.request_id,
+      change_log: request.change_log,
+      final_stage: final_stage,
+      current_stage: request.current_stage,
+      next_stage_id: next_stage_id,
+    };
+
+    console.log(data);
+
+    // let response = await fetch(
+    //   `${baseURL}/routes/requests/patch/substage/approve`,
+    //   {
+    //     method: "PATCH",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(data),
+    //   }
+    // );
+    // if (response.status === 200) {
+    //   setReload(!reload);
+    //   return handleClose(false);
+    // } else {
+    //   let err = await response.json();
+    //   return console.log(err);
+    // }
   };
 
   return (
     <div>
-      <Grid container className={classes.root}>
-        <Grid item xs={3}>
-          <Grid
-            item
-            xs={12}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: 50,
-            }}
-          ></Grid>
-          <Grid item xs={12} style={{ margin: "15px" }}>
-            <Paper className={classes.paperSecond}>
-              <Typography
-                style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
-              >
-                Request Subject
-              </Typography>
-              <Typography style={{ margin: "15px" }}>
-                {request.request_subject}
-              </Typography>
-            </Paper>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle>Pending Action Dialog</DialogTitle>
+        <DialogContent>
+          <div style={{ display: "flex", marginLeft: 5 }}>
+            <DialogContentText style={{ marginRight: 5 }}>
+              Request Subject:
+            </DialogContentText>
+            <Typography style={{ fontWeight: 600 }}>
+              {request.request_subject}
+            </Typography>
+          </div>
+          <Grid direction="row" xs={6}>
+            <TextField
+              variant="outlined"
+              id="request_name"
+              label="Stage Name"
+              required
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={request.stages[currStage].stage_name}
+              style={{
+                marginTop: 20,
+                marginBottom: 15,
+              }}
+            />
+            <TextField
+              variant="outlined"
+              id="request_name"
+              label="Stage status"
+              required
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={request.stages[currStage].status}
+              style={{
+                marginBottom: 15,
+              }}
+            />
           </Grid>
-          <Grid item xs={12} style={{ margin: "15px" }}>
-            <Paper
-              className={classes.paperSecond}
-              style={{ maxHeight: "34.5vh" }}
-            >
-              <Typography
-                style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
-              >
-                Request Change Log
-              </Typography>
-              <Typography style={{ margin: "15px" }}>
-                {request.change_log}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} style={{ margin: "15px" }}>
-            <Paper className={classes.paperSecond}>
-              <Typography
-                style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
-              >
-                Request Documents
-              </Typography>
-              <Typography style={{ margin: "15px" }}>N/A</Typography>
-            </Paper>
-          </Grid>
-        </Grid>
-        <Grid item xs={4}>
-          <h3>{request.stages[currStage].stage_name}</h3>
-          <TextField
-            variant="outlined"
-            id="request_name"
-            label="Stage Name"
-            // onChange={handleChange}
-            required
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={request.stages[currStage].stage_name}
-            style={{
-              marginBottom: 15,
-              marginTop: 22.5,
-              cursor: "not-allowed",
-            }}
-          />
-          <TextField
-            value={
-              request.stages[currStage].suspense_hours > 24 &&
-              !(request.stages[currStage].suspense_hours / 24)
-                .toString()
-                .includes(".")
-                ? request.stages[currStage].suspense_hours > 168 &&
-                  !(request.stages[currStage].suspense_hours / 168)
-                    .toString()
-                    .includes(".")
-                  ? request.stages[currStage].suspense_hours / 168
-                  : request.stages[currStage].suspense_hours / 24
-                : request.stages[currStage].suspense_hours
-            }
-            label="Suspense"
-            required={true}
-            variant="outlined"
-            type="number"
-            min={1}
-            onInput={(e) => {
-              if (e.target.value < 1) {
-                e.target.value = 1;
+          <Grid item xs={6}>
+            <TextField
+              value={
+                request.stages[currStage].suspense_hours > 24 &&
+                !(request.stages[currStage].suspense_hours / 24)
+                  .toString()
+                  .includes(".")
+                  ? request.stages[currStage].suspense_hours > 168 &&
+                    !(request.stages[currStage].suspense_hours / 168)
+                      .toString()
+                      .includes(".")
+                    ? request.stages[currStage].suspense_hours / 168
+                    : request.stages[currStage].suspense_hours / 24
+                  : request.stages[currStage].suspense_hours
               }
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            style={{ marginBottom: 15 }}
-            id="suspense_integer"
-          />
-          <TextField
-            value={
-              request.stages[currStage].suspense_hours > 24 &&
-              !(request.stages[currStage].suspense_hours / 24)
-                .toString()
-                .includes(".")
-                ? request.stages[currStage].suspense_hours > 168 &&
-                  !(request.stages[currStage].suspense_hours / 168)
+              label="Suspense"
+              required={true}
+              variant="outlined"
+              type="number"
+              min={1}
+              onInput={(e) => {
+                if (e.target.value < 1) {
+                  e.target.value = 1;
+                }
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              style={{ marginBottom: 15 }}
+              id="suspense_integer"
+            />
+            <TextField
+              value={
+                request.stages[currStage].suspense_hours > 24 &&
+                !(request.stages[currStage].suspense_hours / 24)
+                  .toString()
+                  .includes(".")
+                  ? request.stages[currStage].suspense_hours > 168 &&
+                    !(request.stages[currStage].suspense_hours / 168)
+                      .toString()
+                      .includes(".")
+                    ? "Weeks"
+                    : "Days"
+                  : "Hours"
+              }
+              select
+              label="Time"
+              required={true}
+              id="time"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              defaultValue=""
+              style={{ marginBottom: 15 }}
+            >
+              <MenuItem value="" disabled>
+                <em>Measure of Time</em>
+              </MenuItem>
+              <MenuItem
+                value={"Hours"}
+                disabled={
+                  (request.stages[currStage].suspense_hours > 24 &&
+                  !(request.stages[currStage].suspense_hours / 24)
                     .toString()
                     .includes(".")
-                  ? "Weeks"
-                  : "Days"
-                : "Hours"
-            }
-            select
-            label="Time"
-            required={true}
-            id="time"
-            variant="outlined"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            defaultValue=""
-            style={{ marginBottom: 15 }}
-          >
-            <MenuItem value="" disabled>
-              <em>Measure of Time</em>
-            </MenuItem>
-            <MenuItem value={"Hours"}>Hours</MenuItem>
-            <MenuItem value={"Days"}>Days</MenuItem>
-            <MenuItem value={"Weeks"}>Weeks</MenuItem>
-          </TextField>
-          <TextField
-            variant="outlined"
-            id="request_name"
-            label="Stage status"
-            // onChange={handleChange}
-            required
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={request.stages[currStage].status}
-            style={{
-              marginBottom: 15,
-              marginTop: 22.5,
-              cursor: "not-allowed",
-            }}
-          />
+                    ? request.stages[currStage].suspense_hours > 168 &&
+                      !(request.stages[currStage].suspense_hours / 168)
+                        .toString()
+                        .includes(".")
+                      ? "Weeks"
+                      : "Days"
+                    : "Hours") !== "Hours"
+                    ? true
+                    : false
+                }
+              >
+                Hours
+              </MenuItem>
+              <MenuItem
+                value={"Days"}
+                disabled={
+                  (request.stages[currStage].suspense_hours > 24 &&
+                  !(request.stages[currStage].suspense_hours / 24)
+                    .toString()
+                    .includes(".")
+                    ? request.stages[currStage].suspense_hours > 168 &&
+                      !(request.stages[currStage].suspense_hours / 168)
+                        .toString()
+                        .includes(".")
+                      ? "Weeks"
+                      : "Days"
+                    : "Hours") !== "Days"
+                    ? true
+                    : false
+                }
+              >
+                Days
+              </MenuItem>
+              <MenuItem
+                value={"Weeks"}
+                disabled={
+                  (request.stages[currStage].suspense_hours > 24 &&
+                  !(request.stages[currStage].suspense_hours / 24)
+                    .toString()
+                    .includes(".")
+                    ? request.stages[currStage].suspense_hours > 168 &&
+                      !(request.stages[currStage].suspense_hours / 168)
+                        .toString()
+                        .includes(".")
+                      ? "Weeks"
+                      : "Days"
+                    : "Hours") !== "Weeks"
+                    ? true
+                    : false
+                }
+              >
+                Weeks
+              </MenuItem>
+            </TextField>
+            {/* </span> */}
+          </Grid>
           <Grid xs={12}>
             <TextField
               label="Stage Instructions"
@@ -249,79 +315,112 @@ const PendingAction = (props) => {
               required
             />
           </Grid>
-        </Grid>
-        <Grid item xs={9}>
-          <Grid item xs={12} className={classes.tabs}>
-            <div className={classes.root}>
-              <Paper style={{ padding: "30px" }}>
-                <div>
-                  <Typography className={classes.instructions}>
-                    <TextField
-                      label="Substage Notes"
-                      multiline
-                      rows={5}
-                      variant="outlined"
-                      style={{
-                        marginTop: 10,
-                        marginRight: 10,
-                        width: 250,
-                      }}
-                      required
-                    />
-                    <TextField
-                      label="Substage Documents"
-                      multiline
-                      rows={5}
-                      variant="outlined"
-                      style={{
-                        marginBottom: 15,
-                        marginTop: 10,
-                        marginRight: 10,
-                      }}
-                      required
-                    />
-                  </Typography>
-                  <Grid container>
-                    <Grid item xs={4} style={{ marginTop: 10 }}>
-                      <Button
-                        onClick={handleDeny}
-                        className={classes.button}
-                        color="primary"
-                        style={{
-                          marginRight: "6.8vw",
-                          position: "relative",
-                          left: "5.8vw",
-                        }}
-                        variant="outlined"
-                      >
-                        Deny
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={handleApprove}
-                        className={classes.button}
-                      >
-                        Approve
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </div>
-              </Paper>
-            </div>
-          </Grid>
-        </Grid>
-        <Grid item xs={2} style={{ marginTop: "20px" }}>
-          <Button
-            variant="contained"
-            component="label"
-            color="secondary"
-            onClick={handleClose}
+
+          <div
+            style={{
+              border: "1px solid lightgray",
+              borderRadius: 5,
+              marginTop: 30,
+            }}
           >
-            Close Request
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                component="label"
+                color="default"
+                size="small"
+                style={{
+                  marginBottom: 15,
+                  marginTop: -20,
+                  marginLeft: 10,
+                }}
+              >
+                Download All
+                <input type="file" hidden />
+              </Button>
+              <Button
+                variant="contained"
+                component="label"
+                color="default"
+                size="small"
+                style={{
+                  marginBottom: 15,
+                  marginTop: -20,
+                  marginLeft: 10,
+                }}
+              >
+                Upload Document
+                <input type="file" hidden />
+              </Button>
+            </Grid>
+            <div style={{ maxHeight: 134, overflow: "auto" }}>
+              <ListItem className={classes.attachments} button>
+                <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                <Typography style={{ margin: "15px" }}>
+                  <a href="/documents/SacredJedi.txt" download>
+                    The Sacred Jedi Texts Volume 1
+                  </a>
+                </Typography>
+              </ListItem>
+              <ListItem className={classes.attachments} button>
+                <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                <Typography style={{ margin: "15px" }}>
+                  <a href="/documents/HitchhikersGuide.txt" download>
+                    Hitchhiker's Guide to the Galaxy
+                  </a>
+                </Typography>
+              </ListItem>
+              <ListItem className={classes.attachments} button>
+                <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                <Typography style={{ margin: "15px" }}>
+                  <a href="/documents/ZappBrannigan.txt" download>
+                    Zapp Brannigan Quotes
+                  </a>
+                </Typography>
+              </ListItem>
+            </div>
+          </div>
+          <Typography
+            variant="caption"
+            style={{ color: "#9E9C9C", marginLeft: 15 }}
+          >
+            Download documents to review them, and upload them back here
+          </Typography>
+          <TextField
+            style={{ marginTop: 20, marginBottom: 10 }}
+            multiline
+            rows={4}
+            autoFocus
+            margin="dense"
+            label="Comments"
+            id="comments"
+            fullWidth
+            variant="outlined"
+            required
+            helperText={`Comments for the reviewers that are earlier or later in the chain`}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeny} color="secondary" variant="contained">
+            Deny
           </Button>
-        </Grid>
-      </Grid>
+          <Button onClick={handleApprove} color="primary" variant="contained">
+            Approve
+          </Button>
+          <Button
+            onClick={() => {
+              handleClose();
+            }}
+            color="default"
+            variant="contained"
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
