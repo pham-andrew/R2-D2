@@ -86,8 +86,8 @@ export default function Profile() {
         </Grid>
         <Grid item xs={12}>
           <FormControlLabel
-            control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-            label="Use this address for payment details"
+            control={<Checkbox color="secondary" name="saveEmailAddress" value="yes" />}
+            label="Use this address"
           />
         </Grid>
       </Grid>
