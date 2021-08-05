@@ -26,7 +26,7 @@ router.post("/post", async (req, res) => {
       comments: req.body.comments,
       change_log: `Name: ${req.body.rank} ${
         req.body.lname
-      }, Date: ${Date.now()},
+      }, Date: ${Date.now().toGMTString()},
       Comments: ${req.body.comments}\n`,
     })
     .returning("id")
@@ -78,7 +78,7 @@ router.patch("/patch", async (req, res) => {
       updated_at: new Date(),
       change_log: `Name: ${req.body.rank} ${
         req.body.lname
-      }, Date: ${Date.now()},
+      }, Date: ${Date.now().toGMTString()},
       Comments: ${req.body.comments}\n`,
       status: req.body.status,
     })
@@ -116,7 +116,7 @@ router.patch("/resubmit", async (req, res) => {
       current_stage: current_stage + 1,
       change_log:
         change_log +
-        `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+        `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
     })
     .then(async () => {
       await knex("request_stages")
@@ -231,7 +231,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
             completed_at: new Date(),
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
           });
       } else if (proceed) {
         await knex("requests")
@@ -242,7 +242,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
             current_stage: current_stage + 1,
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
           });
       } else {
         await knex("requests")
@@ -252,7 +252,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
           .update({
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now()},
+              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()},
             Comments: ${notes}\n`,
           });
       }
@@ -326,7 +326,7 @@ router.patch("/patch/substage/deny", async (req, res) => {
             current_stage: current_stage - 1,
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now()}, Comments: ${notes}\n`,
+              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
           });
       } else {
         await knex("requests")
@@ -336,7 +336,7 @@ router.patch("/patch/substage/deny", async (req, res) => {
           .update({
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now()},
+              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()},
             Comments: ${notes}\n`,
           });
       }

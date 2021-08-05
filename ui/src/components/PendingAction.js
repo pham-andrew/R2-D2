@@ -61,12 +61,35 @@ const useStyles = makeStyles((theme) => ({
 const PendingAction = (props) => {
   const classes = useStyles();
   const { request, handleClose, currentUserDetails } = props;
-  let currStage = request.current_stage;
+  const [currStage, setCurrentStage] = useState(0);
   const [reload, setReload] = React.useState(false);
   const [comments, setComments] = useState("");
 
+  React.useEffect(() => {
+    if (request.current_stage !== -1) {
+      setCurrentStage(request.current_stage);
+    }
+  });
+
+  const handleChange = (e) => {
+    setComments(e.target.value);
+  };
+
   const handleDeny = async () => {
-    let data = {};
+    let data = {
+      rank: currentUserDetails.rank,
+      lname: currentUserDetails.lname,
+      user_id: currentUserDetails.user_id,
+      notes: comments,
+      request_stage_id: request.stages[currStage].stage_id,
+      request_id: request.request_id,
+      change_log: request.change_log,
+      current_stage: request.current_stage,
+      substage_id: request.substage[0].substage_id,
+    };
+    console.log(request.substage);
+    console.log(data);
+
     let response = await fetch(
       `${baseURL}/routes/requests/patch/substage/deny`,
       {
@@ -87,53 +110,82 @@ const PendingAction = (props) => {
   };
 
   const handleApprove = async () => {
-    let final_stage = currStage === request.stages.length - 1 ? true : false;
-    let next_stage_id = !final_stage
-      ? request.stages[currStage + 1].stage_id
-      : null;
+    if (request.current_stage === -1) {
+      let data = {
+        rank: currentUserDetails.rank,
+        lname: currentUserDetails.lname,
+        notes: comments,
+        request_stage_id: request.stages[currStage].stage_id,
+        request_id: request.request_id,
+        change_log: request.change_log,
+        current_stage: request.current_stage,
+      };
 
-    console.log(
-      "final stage",
-      final_stage,
-      "next_stage_id",
-      next_stage_id,
-      "substage_id",
-      request.substage_id
-    );
+      console.log(data);
 
-    let data = {
-      rank: currentUserDetails.rank,
-      lname: currentUserDetails.lname,
-      user_id: currentUserDetails.user_id,
-      notes: comments,
-      substage_id: request.substage_id,
-      request_stage_id: request.stages[currStage].stage_id,
-      request_id: request.request_id,
-      change_log: request.change_log,
-      final_stage: final_stage,
-      current_stage: request.current_stage,
-      next_stage_id: next_stage_id,
-    };
+      let response = await fetch(`${baseURL}/routes/requests/resubmit`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.status === 200) {
+        setReload(!reload);
+        return handleClose(false);
+      } else {
+        let err = await response.json();
+        return console.log(err);
+      }
+    } else {
+      let final_stage = currStage === request.stages.length - 1 ? true : false;
+      let next_stage_id = !final_stage
+        ? request.stages[currStage + 1].stage_id
+        : null;
 
-    console.log(data);
+      console.log(
+        "final stage",
+        final_stage,
+        "next_stage_id",
+        next_stage_id,
+        "substage_id",
+        request.substage[0].substage_id
+      );
 
-    // let response = await fetch(
-    //   `${baseURL}/routes/requests/patch/substage/approve`,
-    //   {
-    //     method: "PATCH",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(data),
-    //   }
-    // );
-    // if (response.status === 200) {
-    //   setReload(!reload);
-    //   return handleClose(false);
-    // } else {
-    //   let err = await response.json();
-    //   return console.log(err);
-    // }
+      let data = {
+        rank: currentUserDetails.rank,
+        lname: currentUserDetails.lname,
+        user_id: currentUserDetails.user_id,
+        notes: comments,
+        substage_id: request.substage[0].substage_id,
+        request_stage_id: request.stages[currStage].stage_id,
+        request_id: request.request_id,
+        change_log: request.change_log,
+        final_stage: final_stage,
+        current_stage: request.current_stage,
+        next_stage_id: next_stage_id,
+      };
+
+      console.log(data);
+
+      let response = await fetch(
+        `${baseURL}/routes/requests/patch/substage/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      if (response.status === 200) {
+        setReload(!reload);
+        return handleClose(false);
+      } else {
+        let err = await response.json();
+        return console.log(err);
+      }
+    }
   };
 
   return (
@@ -392,6 +444,7 @@ const PendingAction = (props) => {
             rows={4}
             autoFocus
             margin="dense"
+            onChange={handleChange}
             label="Comments"
             id="comments"
             fullWidth
@@ -404,12 +457,28 @@ const PendingAction = (props) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeny} color="secondary" variant="contained">
-            Deny
-          </Button>
-          <Button onClick={handleApprove} color="primary" variant="contained">
-            Approve
-          </Button>
+          {request.current_stage === -1 ? (
+            <Button onClick={handleApprove} color="primary" variant="contained">
+              Resubmit
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={handleDeny}
+                color="secondary"
+                variant="contained"
+              >
+                Deny
+              </Button>
+              <Button
+                onClick={handleApprove}
+                color="primary"
+                variant="contained"
+              >
+                Approve
+              </Button>
+            </>
+          )}
           <Button
             onClick={() => {
               handleClose();
