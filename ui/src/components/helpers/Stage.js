@@ -387,7 +387,7 @@ const Stage = ({ tabValue }) => {
           <Grid item>
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               type="submit"
               style={{ position: "relative", bottom: -25, left: 700 }}
             >

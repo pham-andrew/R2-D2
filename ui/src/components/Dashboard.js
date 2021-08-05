@@ -1,5 +1,8 @@
-//dashboard
 //bug: expanded accordions mess up the styling cause they're longer than the page
+// dependencies
+import React, { useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
+import AppContext from "../contexts/AppContext";
 
 import React from "react";
 import ViewRequest from "./ViewRequest";
@@ -411,6 +414,7 @@ export default function Dashboard() {
               className={classes.heading}
               style={{ paddingRight: "10px" }}
             >
+
               Cancelled
             </Typography>
           </Badge>
