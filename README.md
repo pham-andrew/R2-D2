@@ -57,7 +57,7 @@ Below is a list of applicable links:
 
 ### PlatformONE
 
-1. To use the application hosted on Heroku, please click or paste the following URL in your browser: https://sdi05-05.staging.dso.mil/.
+1. To use the application hosted on PlatformONE, please click or paste the following URL in your browser: https://sdi05-05.staging.dso.mil/.
 
 ### Source Code
 
@@ -133,7 +133,7 @@ port for the UI is accessed in the code by referencing
 - Mark Terry
   - API architect, UI-API integration, and database architect
 - Noah Loy
-  - UI/UX
+  - UI/UX designer
 
 ## License
 
