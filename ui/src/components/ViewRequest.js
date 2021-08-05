@@ -77,10 +77,6 @@ const ViewRequest = (props) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // const handleChange = (event) => {
-  //   setTemplate(event.target.value);
-  // };
-
   React.useEffect(async () => {
     await fetch(`${baseURL}/groups/?include_users=true`)
       .then((res) => res.json())
@@ -131,12 +127,6 @@ const ViewRequest = (props) => {
     if (group.status === "Denied") return "#FF6961";
     return "#FDFD96";
   }
-
-  // function getStageIcon(stage) {
-  //   if (stage.status === "Approved") return <CheckIcon />;
-  //   if (stage.status === "Denied") return <BlockIcon />;
-  //   return <CloseIcon />;
-  // }
 
   async function handleCancel(e) {
     e.preventDefault();
@@ -302,7 +292,6 @@ const ViewRequest = (props) => {
               variant="outlined"
               id="request_name"
               label="Stage Name"
-              // onChange={handleChange}
               required
               InputLabelProps={{
                 shrink: true,
@@ -372,7 +361,6 @@ const ViewRequest = (props) => {
               variant="outlined"
               id="request_name"
               label="Stage status"
-              // onChange={handleChange}
               required
               InputLabelProps={{
                 shrink: true,
@@ -411,7 +399,6 @@ const ViewRequest = (props) => {
       open={open}
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
-      // fullscreen="true"
       maxWidth="true"
     >
       <DialogContent>

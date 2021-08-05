@@ -189,7 +189,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
       rows.forEach((row) => {
         if (row.status !== "Approved") return (proceed = false);
       });
-      if (proceed) {
+      if (proceed && request_stage_id) {
         await knex("request_stages")
           .where({
             id: request_stage_id,
