@@ -15,7 +15,7 @@ exports.seed = function (knex) {
         },
         {
           subject: "Amn Whiffy's Quarterly Package",
-          initiator_id: 2,
+          initiator_id: 9,
           route_template_id: 3,
           comments: "Drafted package, ready for CSS!",
           current_stage: 1,

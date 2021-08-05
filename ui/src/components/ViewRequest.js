@@ -549,7 +549,7 @@ const ViewRequest = (props) => {
                   component="label"
                   color="secondary"
                   onClick={handleCancel}
-                  style={{ fontWeight: 600 }}
+                  style={{ marginRight: 15 }}
                 >
                   Cancel Request
                 </Button>
@@ -561,7 +561,6 @@ const ViewRequest = (props) => {
                 onClick={() => {
                   handleClose();
                 }}
-                style={{ fontWeight: 600 }}
               >
                 Close Review
               </Button>
