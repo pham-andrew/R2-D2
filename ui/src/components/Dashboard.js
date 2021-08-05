@@ -3,6 +3,7 @@
 
 import React from "react";
 import ViewRequest from "./ViewRequest";
+import PendingAction from "./PendingAction";
 import AppContext from "../contexts/AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
@@ -20,7 +21,7 @@ import Paper from "@material-ui/core/Paper";
 import CloseIcon from "@material-ui/icons/Close";
 import CheckIcon from "@material-ui/icons/Check";
 import BlockIcon from "@material-ui/icons/Block";
-import Popover from '@material-ui/core/Popover';
+import Popover from "@material-ui/core/Popover";
 
 export default function Dashboard() {
   const useStyles = makeStyles((theme) => ({
@@ -35,8 +36,8 @@ export default function Dashboard() {
       background: "black",
     },
     typography: {
-    padding: theme.spacing(2),
-  },
+      padding: theme.spacing(2),
+    },
   }));
 
   const {
@@ -52,7 +53,7 @@ export default function Dashboard() {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const id = open ? "simple-popover" : undefined;
   const [pending, setPending] = React.useState([]);
   const [enRoute, setEnRoute] = React.useState([]);
   const [completed, setCompleted] = React.useState([]);
@@ -76,7 +77,7 @@ export default function Dashboard() {
     }
   }, []);
 
-    const handleClick = (event) => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -89,7 +90,7 @@ export default function Dashboard() {
       request.stages.forEach((stage) => {
         stage.substages.forEach((substage) => {
           if (substage.supervisor_id) {
-            return;
+            return; //need to find a way to populate user with GET
           } else {
             for (let i = 0; i < groups.length; i++) {
               if (substage.group_id === groups[i].group_id) {
@@ -156,7 +157,7 @@ export default function Dashboard() {
 
   function groupColor(group) {
     if (group.status === "Approved") return "lightGreen";
-    if (group.status === "Denied") return "lightred";
+    if (group.status === "Denied") return "lightRed";
     return "yellow";
   }
 
@@ -219,11 +220,33 @@ export default function Dashboard() {
                       })}
                     </Stepper>
                   </Grid>
-                  <Grid item xs={1}></Grid>
                   <Grid item xs={1}>
-                    <Button color="primary" variant="contained">
-                      Open
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      onClick={handleClick}
+                    >
+                      Take Action
                     </Button>
+                    <Popover
+                      id={id}
+                      open={open}
+                      anchorEl={anchorEl}
+                      onClose={handleClose}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                    >
+                      <PendingAction
+                        request={request}
+                        handleClose={handleClose}
+                      />
+                    </Popover>
                   </Grid>
                 </Grid>
               </AccordionDetails>
@@ -281,16 +304,15 @@ export default function Dashboard() {
                       })}
                     </Stepper>
                   </Grid>
-                  <Grid item xs={1}></Grid>
                   <Grid item xs={1}>
                     <Button
                       color="primary"
                       variant="contained"
                       onClick={handleClick}
                     >
-                      Open
+                      Review
                     </Button>
-                    <Popover
+                    {/* <Popover
                       id={id}
                       open={open}
                       anchorEl={anchorEl}
@@ -304,8 +326,11 @@ export default function Dashboard() {
                         horizontal: "center",
                       }}
                     >
-                      <ViewRequest request={request} handleClose={handleClose}/>
-                    </Popover>
+                      <ViewRequest
+                        request={request}
+                        handleClose={handleClose}
+                      />
+                    </Popover> */}
                   </Grid>
                 </Grid>
               </AccordionDetails>
