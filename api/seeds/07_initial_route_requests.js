@@ -10,7 +10,7 @@ exports.seed = function (knex) {
           comments: "Drafted package, ready for CSS!",
           current_stage: 0,
           status: "En route",
-          change_log: `Name: SSgt Banks, Date: ${Date.now()},
+          change_log: `Name: E-6 Banks, Date: ${Date.now()},
           Comments: Drafted package, ready for CSS!\n`,
         },
         {
@@ -20,8 +20,8 @@ exports.seed = function (knex) {
           comments: "Drafted package, ready for CSS!",
           current_stage: 1,
           status: "En route",
-          change_log: `Name: SSgt Banks, Date: ${Date.now()},
-          Comments: Drafted package, ready for CSS!\nName: SSgt Banks, Date: ${Date.now()},
+          change_log: `Name: E-6 Banks, Date: ${Date.now()},
+          Comments: Drafted package, ready for CSS!\nName: E-6 Banks, Date: ${Date.now()},
           Comments: CSS Approved!\n`,
         },
       ]);

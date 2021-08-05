@@ -56,11 +56,11 @@ router.post("/post", async (req, res) => {
     .then((data) =>
       res.status(200).json({ message: `Success`, data: data }).end()
     )
-    .catch(() =>
+    .catch((err) =>
       res
         .status(404)
         .json({
-          message: `Error, you must use the force.`,
+          message: `Encountered ${err}`,
         })
         .end()
     );
@@ -80,6 +80,7 @@ router.patch("/patch", async (req, res) => {
         req.body.lname
       }, Date: ${Date.now()},
       Comments: ${req.body.comments}\n`,
+      status: req.body.status,
     })
     .returning("id")
     .then((data) =>
