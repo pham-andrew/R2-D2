@@ -260,7 +260,10 @@ export default function Dashboard() {
                       {request.stages.map((stage) => {
                         return (
                           <Step>
-                            <StepLabel>{stage.stage_name}</StepLabel>
+                            <StepLabel>
+                              {stage.stage_name}
+                              {getStageIcon(stage)}
+                            </StepLabel>
                             {stage.substages.map((group) => (
                               <Typography
                                 style={{
@@ -339,7 +342,10 @@ export default function Dashboard() {
                       {request.stages.map((stage) => {
                         return (
                           <Step>
-                            <StepLabel>{stage.stage_name}</StepLabel>
+                            <StepLabel>
+                              {stage.stage_name}
+                              {getStageIcon(stage)}
+                            </StepLabel>
                             {stage.substages.map((group) => (
                               <Typography
                                 style={{
@@ -398,7 +404,10 @@ export default function Dashboard() {
                       {request.stages.map((stage) => {
                         return (
                           <Step>
-                            <StepLabel>{stage.stage_name}</StepLabel>
+                            <StepLabel>
+                              {stage.stage_name}
+                              {getStageIcon(stage)}
+                            </StepLabel>
                             {stage.substages.map((group) => (
                               <Typography
                                 style={{

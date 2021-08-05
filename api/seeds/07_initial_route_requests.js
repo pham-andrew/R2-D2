@@ -18,10 +18,11 @@ exports.seed = function (knex) {
           initiator_id: 2,
           route_template_id: 3,
           comments: "Drafted package, ready for CSS!",
-          current_stage: 0,
+          current_stage: 1,
           status: "En route",
           change_log: `Name: SSgt Banks, Date: ${Date.now()},
-          Comments: Drafted package, ready for CSS!\n`,
+          Comments: Drafted package, ready for CSS!\nName: SSgt Banks, Date: ${Date.now()},
+          Comments: CSS Approved!\n`,
         },
       ]);
     })
@@ -30,7 +31,8 @@ exports.seed = function (knex) {
         {
           name: "Supervisor Rewrite",
           suspense_hours: 72, // 3 days
-          instructions: "Please review the attached rewards package, and approve the package for submittal to the CC.",
+          instructions:
+            "Please review the attached rewards package, and approve the package for submittal to the CC.",
           status: "Pending Action",
           request_id: 1,
         },
@@ -46,7 +48,7 @@ exports.seed = function (knex) {
           name: "Supervisor Rewrite",
           suspense_hours: 72, // 3 days
           instructions: "Please rewrite everthing.",
-          status: "Pending Action",
+          status: "Approved",
           request_id: 2,
         },
         {
@@ -65,9 +67,6 @@ exports.seed = function (knex) {
           group_id: 2, // CSS
           request_stage_id: 1,
           status: "Pending Action",
-          notes:
-            "Made edits and attached, think we got a group winner over here.",
-          completed_at: new Date(),
         },
         {
           group_id: 1, // CC
@@ -77,7 +76,7 @@ exports.seed = function (knex) {
         {
           supervisor_id: 2, // CSS
           request_stage_id: 3,
-          status: "Pending Action",
+          status: "Approved",
           notes:
             "Made edits and attached, think we got a group winner over here.",
           completed_at: new Date(),
