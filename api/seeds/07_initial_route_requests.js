@@ -8,23 +8,30 @@ exports.seed = function (knex) {
           initiator_id: 4,
           route_template_id: 3,
           comments: "Drafted package, ready for CSS!",
-          current_stage: 2,
+          current_stage: 0,
           status: "En route",
           change_log: `Name: SSgt Banks, Date: ${Date.now()},
-          Comments: Drafted package, ready for CSS!\n
-          Name: TSgt Terry, Date: ${Date.now()},
-          Comments: Made edits and attached, think we got a group winner over here.\n`,
+          Comments: Drafted package, ready for CSS!\n`,
+        },
+        {
+          subject: "Amn Whiffy's Quarterly Package",
+          initiator_id: 2,
+          route_template_id: 3,
+          comments: "Drafted package, ready for CSS!",
+          current_stage: 0,
+          status: "En route",
+          change_log: `Name: SSgt Banks, Date: ${Date.now()},
+          Comments: Drafted package, ready for CSS!\n`,
         },
       ]);
     })
     .then(function () {
       return knex("request_stages").insert([
         {
-          name: "CSS Review",
+          name: "Supervisor Rewrite",
           suspense_hours: 72, // 3 days
-          instructions:
-            "Please review the attached rewards package, and approve the package for submittal to the CC.",
-          status: "Approved",
+          instructions: "Please review the attached rewards package, and approve the package for submittal to the CC.",
+          status: "Pending Action",
           request_id: 1,
         },
         {
@@ -35,6 +42,21 @@ exports.seed = function (knex) {
           status: "Pending Action",
           request_id: 1,
         },
+        {
+          name: "Supervisor Rewrite",
+          suspense_hours: 72, // 3 days
+          instructions: "Please rewrite everthing.",
+          status: "Pending Action",
+          request_id: 2,
+        },
+        {
+          name: "CC Approval",
+          suspense_hours: 72, // 3 days
+          instructions:
+            "Please review the attached rewards package, and approve the package for submittal to the Group.",
+          status: "Pending Action",
+          request_id: 2,
+        },
       ]);
     })
     .then(function () {
@@ -42,15 +64,27 @@ exports.seed = function (knex) {
         {
           group_id: 2, // CSS
           request_stage_id: 1,
-          status: "Approved",
+          status: "Pending Action",
           notes:
             "Made edits and attached, think we got a group winner over here.",
-          user_id: 2,
           completed_at: new Date(),
         },
         {
           group_id: 1, // CC
           request_stage_id: 2,
+          status: "Pending Action",
+        },
+        {
+          supervisor_id: 2, // CSS
+          request_stage_id: 3,
+          status: "Pending Action",
+          notes:
+            "Made edits and attached, think we got a group winner over here.",
+          completed_at: new Date(),
+        },
+        {
+          group_id: 1, // CC
+          request_stage_id: 4,
           status: "Pending Action",
         },
       ]);
