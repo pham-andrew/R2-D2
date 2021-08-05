@@ -25,6 +25,10 @@ import SnackBar from "./helpers/SnackBar";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    minHeight: "80vh",
+    maxHeight: "80vh",
+    overflowX: "hidden",
+    overflowY: "auto",
   },
   paper: {
     padding: theme.spacing(3),
@@ -247,6 +251,16 @@ export default function Login() {
   const editEmailHandler = async (e) => {
     e.preventDefault();
     let email = document.getElementById("newEmail").value;
+    let indexOfDot = email.indexOf(".");
+    let indexOfAt = email.indexOf("@");
+    let fname =
+      email.substr(0, 1).toUpperCase() + email.substr(1, indexOfDot - 1);
+    let lname =
+      email.substr(indexOfDot + 1, 1).toUpperCase() +
+      email
+        .substr(indexOfDot + 2, indexOfAt - indexOfDot - 2)
+        .replace(".", "")
+        .replace(/[0-9]/g, "");
     await fetch(`${baseURL}/users/patch`, {
       method: "PATCH",
       headers: {
@@ -256,8 +270,8 @@ export default function Login() {
         email: email,
         user_id: currentUser.user_id,
         rank: currentUser.rank,
-        fname: currentUser.fname,
-        lname: currentUser.lname,
+        fname: fname,
+        lname: lname,
         password: currentUser.password,
         role: currentUser.role,
         supervisor_id: currentUser.supervisor_id,
@@ -276,8 +290,8 @@ export default function Login() {
             email: email,
             user_id: currentUser.user_id,
             rank: currentUser.rank,
-            fname: currentUser.fname,
-            lname: currentUser.lname,
+            fname: fname,
+            lname: lname,
             password: currentUser.password,
             role: currentUser.role,
             supervisor_id: currentUser.supervisor_id,
@@ -359,7 +373,7 @@ export default function Login() {
         fname: currentUser.fname,
         lname: currentUser.lname,
         role: currentUser.role,
-        supervisor_id: supervisor,
+        supervisor_id: supervisor === "N/A" ? null : supervisor,
         password: currentUser.password,
       }),
     })
@@ -824,7 +838,7 @@ export default function Login() {
                               id="newSupervisor"
                               variant="outlined"
                               select
-                              defaultValue={currentUser.supervisor_id || ""}
+                              defaultValue={currentUser.supervisor_id || "N/A"}
                               size="small"
                               className={classes.input}
                               autoFocus={true}
@@ -836,12 +850,15 @@ export default function Login() {
                               <MenuItem value="" disabled>
                                 <em>Available Supervisors</em>
                               </MenuItem>
-
+                              <MenuItem value="N/A">N/A</MenuItem>
                               {allUsers.map((user) => {
                                 return (
                                   <MenuItem
                                     key={uuidv4()}
                                     value={user.id}
+                                    disabled={
+                                      user.id === currentUserDetails.user_id
+                                    }
                                   >{`${user.fname} ${user.lname} (${user.rank})`}</MenuItem>
                                 );
                               })}

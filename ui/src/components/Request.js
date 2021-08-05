@@ -20,7 +20,7 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from "@material-ui/core";
 
 import { v4 as uuidv4 } from "uuid";
@@ -28,39 +28,68 @@ import { v4 as uuidv4 } from "uuid";
 //hookup backend here in these functions!
 function getStages() {
   return [
-    { label: "Stage 1", groups: ["Group 1"], done: ["Group 1"], suspense: "2014-08-18T21:11:54", instructions: "dew it"},
-    { label: "Stage 2", groups: ["Group 2", "Group 3"], done: ["Group 2"], suspense: "2014-08-18T21:11:54", instructions: "execute order 66" },
-    { label: "Stage 3", groups: ["Group 4"], done: [], suspense: "2014-08-18T21:11:54", instructions: "dew it" },
+    {
+      label: "Stage 1",
+      groups: ["Group 1"],
+      done: ["Group 1"],
+      suspense: "2014-08-18T21:11:54",
+      instructions: "dew it",
+    },
+    {
+      label: "Stage 2",
+      groups: ["Group 2", "Group 3"],
+      done: ["Group 2"],
+      suspense: "2014-08-18T21:11:54",
+      instructions: "execute order 66",
+    },
+    {
+      label: "Stage 3",
+      groups: ["Group 4"],
+      done: [],
+      suspense: "2014-08-18T21:11:54",
+      instructions: "dew it",
+    },
   ];
 }
-function getGroupMembers(group){
-  if(group==="Group 1")
-    return ["palpatine", "darth vader", "storm trooper"]
-  if(group==="Group 2")
-    return ["andrew", "jack", "brandon"]
-  if(group==="Group 3")
-    return ["kirk", "data"]
-  if(group==="Group 4")
-    return ["baby yoda", "admiral ackbar"]
+function getGroupMembers(group) {
+  if (group === "Group 1") return ["palpatine", "darth vader", "storm trooper"];
+  if (group === "Group 2") return ["andrew", "jack", "brandon"];
+  if (group === "Group 3") return ["kirk", "data"];
+  if (group === "Group 4") return ["baby yoda", "admiral ackbar"];
 }
 
 //returns if member has completed their submission
-function memberDone(member){
-  if(member==="palpatine"||member==="darth vader"||member==="storm trooper")
-    return true
-  if(member==="andrew"||member==="jack"||member==="brandon")
-    return true
-  if(member==="kirk")
-    return true
-  return false
+function memberDone(member) {
+  if (
+    member === "palpatine" ||
+    member === "darth vader" ||
+    member === "storm trooper"
+  )
+    return true;
+  if (member === "andrew" || member === "jack" || member === "brandon")
+    return true;
+  if (member === "kirk") return true;
+  return false;
 }
 
-function getTemplates(){
+function getTemplates() {
   return [
-    {name: "eSSS", instructions: "dew it", documents: "iono how this will work..."},
-    {name: "Engineering Change Request", instructions: "execute order 66", documents: "like literally however you pull documents"},
-    {name: "Award Package", instructions: "dew it", documents: "like some kind of link probably?"}
-  ]
+    {
+      name: "eSSS",
+      instructions: "dew it",
+      documents: "iono how this will work...",
+    },
+    {
+      name: "Engineering Change Request",
+      instructions: "execute order 66",
+      documents: "like literally however you pull documents",
+    },
+    {
+      name: "Award Package",
+      instructions: "dew it",
+      documents: "like some kind of link probably?",
+    },
+  ];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -84,38 +113,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function completed(stages){
+function completed(stages) {
   var i;
   for (i = 0; i < stages.length; i++)
     if (stages[i].groups.length != stages[i].done.length) break;
   return i;
 }
 
-function groupColor(group, stage){
-  if(stage.done.includes(group))
-    return "lightGreen"
-  return "yellow"
+function groupColor(group, stage) {
+  if (stage.done.includes(group)) return "#77DD77";
+  return "#FDFD96";
 }
 
-function memberColor(member){
-  if(memberDone(member)===true)
-    return "lightGreen"
-  return "yellow"
+function memberColor(member) {
+  if (memberDone(member) === true) return "#77DD77";
+  return "#FDFD96";
 }
 
-function getStageIcon(stage){
-  if(stage.groups.length===stage.done.length)
-    return <CheckIcon />
-  return <CloseIcon />
+function getStageIcon(stage) {
+  if (stage.groups.length === stage.done.length) return <CheckIcon />;
+  return <CloseIcon />;
 }
 
 function getStageContent(step, stage) {
-
   const classes = useStyles();
-  const [selectedGroup, setSelectedGroup] = React.useState(0)
+  const [selectedGroup, setSelectedGroup] = React.useState(0);
 
-  if(stage.groups[selectedGroup])
-    return <Grid container>
+  if (stage.groups[selectedGroup])
+    return (
+      <Grid container>
         <Grid item xs={8}>
           {stage.label}
           <Grid
@@ -130,16 +156,16 @@ function getStageContent(step, stage) {
               <Paper className={classes.paper}>
                 <List dense component="div" role="list">
                   {stage.groups.map((group, index) => {
-                    return(
+                    return (
                       <ListItem
                         key={uuidv4()}
                         role="listitem"
                         button
-                        onClick={()=>setSelectedGroup(index)}
+                        onClick={() => setSelectedGroup(index)}
                       >
                         <ListItemText primary={group} />
                       </ListItem>
-                    )
+                    );
                   })}
                 </List>
               </Paper>
@@ -148,12 +174,9 @@ function getStageContent(step, stage) {
               Members of {stage.groups[selectedGroup]}
               <Paper className={classes.paper}>
                 <List dense component="div" role="list">
-                  {getGroupMembers(stage.groups[selectedGroup]).map((member) => (
-                      <ListItem
-                        key={uuidv4()}
-                        role="listitem"
-                        button
-                      >
+                  {getGroupMembers(stage.groups[selectedGroup]).map(
+                    (member) => (
+                      <ListItem key={uuidv4()} role="listitem" button>
                         <ListItemText primary={member} />
                       </ListItem>
                     )
@@ -165,11 +188,7 @@ function getStageContent(step, stage) {
           </Grid>
         </Grid>
         <Grid item xs={4}>
-          <TextField 
-          label="Stage Name" 
-          disabled
-          label={stage.label}
-          />
+          <TextField label="Stage Name" disabled label={stage.label} />
           <form noValidate style={{ marginBottom: "20px" }}>
             <TextField
               disabled
@@ -191,90 +210,87 @@ function getStageContent(step, stage) {
           />
         </Grid>
       </Grid>
+    );
 
   //default render in case of stale state
   //janky fix here's how to recreate the bug if you want to refactor into better fix
   //delete below return, select a new group, then click next stage
   //the selected group doesnt go back to 0, thus asking for name of group # something which is undef
-  return <Grid container>
-    <Grid item xs={8}>
-      {stage.label}
-      <Grid
-        container
-        spacing={2}
-        justifyContent="center"
-        alignItems="center"
-        className={classes.root}
-      >
-        <Grid item>
-          Groups
-          <Paper className={classes.paper}>
-            <List dense component="div" role="list">
-              {stage.groups.map((group, index) => {
-                return(
+  return (
+    <Grid container>
+      <Grid item xs={8}>
+        {stage.label}
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+          className={classes.root}
+        >
+          <Grid item>
+            Groups
+            <Paper className={classes.paper}>
+              <List dense component="div" role="list">
+                {stage.groups.map((group, index) => {
+                  return (
+                    <ListItem
+                      key={uuidv4()}
+                      role="listitem"
+                      button
+                      onClick={() => setSelectedGroup(index)}
+                      style={{ backgroundColor: groupColor(group, stage) }}
+                    >
+                      <ListItemText primary={group} />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Paper>
+          </Grid>
+          <Grid item>
+            Members of {stage.groups[0]}
+            <Paper className={classes.paper}>
+              <List dense component="div" role="list">
+                {getGroupMembers(stage.groups[0]).map((member) => (
                   <ListItem
                     key={uuidv4()}
                     role="listitem"
                     button
-                    onClick={()=>setSelectedGroup(index)}
-                    style={{backgroundColor: groupColor(group, stage)}}
-                  >
-                    <ListItemText primary={group} />
-                  </ListItem>
-                )
-              })}
-            </List>
-          </Paper>
-        </Grid>
-        <Grid item>
-          Members of {stage.groups[0]}
-          <Paper className={classes.paper}>
-            <List dense component="div" role="list">
-              {getGroupMembers(stage.groups[0]).map((member) => (
-                  <ListItem
-                    key={uuidv4()}
-                    role="listitem"
-                    button
-                    style={{backgroundColor: memberColor(member)}}
+                    style={{ backgroundColor: memberColor(member) }}
                   >
                     <ListItemText primary={member} />
                   </ListItem>
-                )
-              )}
-              <ListItem />
-            </List>
-          </Paper>
+                ))}
+                <ListItem />
+              </List>
+            </Paper>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
-    <Grid item xs={4}>
-      <TextField 
-      label="Stage Name" 
-      disabled
-      label={stage.label}
-      />
-      <form noValidate style={{ marginBottom: "20px" }}>
+      <Grid item xs={4}>
+        <TextField label="Stage Name" disabled label={stage.label} />
+        <form noValidate style={{ marginBottom: "20px" }}>
+          <TextField
+            disabled
+            label="Suspense"
+            type="datetime-local"
+            value={stage.suspense}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </form>
         <TextField
+          label="Stage Instructions"
+          multiline
+          rows={4}
+          variant="outlined"
           disabled
-          label="Suspense"
-          type="datetime-local"
-          value={stage.suspense}
-          InputLabelProps={{
-            shrink: true,
-          }}
+          value={stage.instructions}
         />
-      </form>
-      <TextField
-        label="Stage Instructions"
-        multiline
-        rows={4}
-        variant="outlined"
-        disabled
-        value={stage.instructions}
-      />
+      </Grid>
     </Grid>
-  </Grid>
-
+  );
 }
 
 const Request = () => {
@@ -306,44 +322,49 @@ const Request = () => {
     <div>
       <Grid container className={classes.root}>
         <Grid item xs={3}>
-          <Grid item xs={12} style={{marginBottom: "50px"}}>
+          <Grid item xs={12} style={{ marginBottom: "50px" }}>
             <FormControl className={classes.formControl}>
               <InputLabel>Template</InputLabel>
-              <Select
-                value={template}
-                onChange={handleChange}
-              >
+              <Select value={template} onChange={handleChange}>
                 {getTemplates().map((template, index) => {
-                  return (
-                    <MenuItem value={index}>{template.name}</MenuItem>
-                  )
+                  return <MenuItem value={index}>{template.name}</MenuItem>;
                 })}
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} style={{ margin: "15px"}}>
+          <Grid item xs={12} style={{ margin: "15px" }}>
             <Paper>
-              <Typography style={{margin: "15px"}}>Title: {getTemplates()[template].name}</Typography>
+              <Typography style={{ margin: "15px" }}>
+                Title: {getTemplates()[template].name}
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} style={{ margin: "15px" }}>
             <Paper>
-              <Typography style={{margin: "15px"}}>Instructions: {getTemplates()[template].instructions}</Typography>
+              <Typography style={{ margin: "15px" }}>
+                Instructions: {getTemplates()[template].instructions}
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} style={{ margin: "15px" }}>
             <Paper>
-              <Typography style={{margin: "15px"}}>Documents: {getTemplates()[template].documents}</Typography>
+              <Typography style={{ margin: "15px" }}>
+                Documents: {getTemplates()[template].documents}
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} style={{ margin: "15px" }}>
             <Paper>
-              <Typography style={{margin: "15px"}}>Initiator Comments: TODO COMMENTS HERE</Typography>
+              <Typography style={{ margin: "15px" }}>
+                Initiator Comments: TODO COMMENTS HERE
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} style={{ margin: "15px" }}>
             <Paper>
-              <Typography style={{margin: "15px"}}>Changelog: TODO CHANGELOG HERE</Typography>
+              <Typography style={{ margin: "15px" }}>
+                Changelog: TODO CHANGELOG HERE
+              </Typography>
             </Paper>
           </Grid>
         </Grid>
@@ -353,11 +374,10 @@ const Request = () => {
               <Stepper activeStep={activeStep}>
                 {stages.map((stage) => {
                   return (
-
-                    <Step >
+                    <Step>
                       <StepLabel>{stage.label}</StepLabel>
                       {stage.groups.map((group) => (
-                        <Typography style={{ marginLeft: "32px"}}>
+                        <Typography style={{ marginLeft: "32px" }}>
                           {group}
                         </Typography>
                       ))}
@@ -365,19 +385,15 @@ const Request = () => {
                   );
                 })}
               </Stepper>
-              <Paper style={{padding: "30px"}}>
+              <Paper style={{ padding: "30px" }}>
                 <div>
                   <Typography className={classes.instructions}>
                     {getStageContent(activeStep, getStages()[activeStep])}
                   </Typography>
                   <Grid container>
                     <Grid item xs={9} />
-                    <Grid item xs={3}> 
-                      <Button
-                          className={classes.button}
-                        >
-                          Edit
-                      </Button>
+                    <Grid item xs={3}>
+                      <Button className={classes.button}>Edit</Button>
                       <Button
                         disabled={activeStep === 0}
                         onClick={handleBack}
@@ -403,7 +419,7 @@ const Request = () => {
         </Grid>
         <Grid item xs={10} />
         <Grid item xs={2} style={{ marginTop: "20px" }}>
-          <Button  component="label" onClick={handleClickOpen}>
+          <Button component="label" onClick={handleClickOpen}>
             Reject
           </Button>
           <Button variant="contained" component="label">
