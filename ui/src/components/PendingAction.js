@@ -114,6 +114,8 @@ const PendingAction = (props) => {
       );
       if (response.status === 200) {
         setReload(!reload);
+        history.push("/profile");
+        history.push("/dashboard");
         return handleClose(false);
       } else {
         let err = await response.json();
