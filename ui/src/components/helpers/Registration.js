@@ -200,15 +200,15 @@ export default function Registration() {
             <MenuItem value="" disabled>
               <em>Civilian</em>
             </MenuItem>
-            <MenuItem value={"GS-1"}>GS-1</MenuItem>
-            <MenuItem value={"GS-2"}>GS-2</MenuItem>
-            <MenuItem value={"GS-3"}>GS-3</MenuItem>
-            <MenuItem value={"GS-4"}>GS-4</MenuItem>
-            <MenuItem value={"GS-5"}>GS-5</MenuItem>
-            <MenuItem value={"GS-6"}>GS-6</MenuItem>
-            <MenuItem value={"GS-7"}>GS-7</MenuItem>
-            <MenuItem value={"GS-8"}>GS-8</MenuItem>
-            <MenuItem value={"GS-9"}>GS-9</MenuItem>
+            <MenuItem value={"GS-01"}>GS-01</MenuItem>
+            <MenuItem value={"GS-02"}>GS-02</MenuItem>
+            <MenuItem value={"GS-03"}>GS-03</MenuItem>
+            <MenuItem value={"GS-04"}>GS-04</MenuItem>
+            <MenuItem value={"GS-05"}>GS-05</MenuItem>
+            <MenuItem value={"GS-06"}>GS-06</MenuItem>
+            <MenuItem value={"GS-07"}>GS-07</MenuItem>
+            <MenuItem value={"GS-08"}>GS-08</MenuItem>
+            <MenuItem value={"GS-09"}>GS-09</MenuItem>
             <MenuItem value={"GS-10"}>GS-10</MenuItem>
             <MenuItem value={"GS-11"}>GS-11</MenuItem>
             <MenuItem value={"GS-12"}>GS-12</MenuItem>

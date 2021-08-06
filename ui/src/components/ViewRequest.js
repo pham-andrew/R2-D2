@@ -1,5 +1,7 @@
 // Dependencies
 import React from "react";
+import { useHistory } from "react-router-dom";
+import AppContext from "../contexts/AppContext";
 
 // Components
 import {
@@ -18,8 +20,10 @@ import {
   ListItemText,
   Dialog,
   DialogContent,
+  Divider,
 } from "@material-ui/core";
 import AttachmentIcon from "@material-ui/icons/Attachment";
+import PromptDialog from "./helpers/PromptDialog";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -68,6 +72,9 @@ const ViewRequest = (props) => {
   const [requestGroups, setRequestGroups] = React.useState(null);
   const [selectedGroup, setSelectedGroup] = React.useState(0);
   const [reload, setReload] = React.useState(false);
+  const { setPrompt, prompt, setOpenPrompt } = React.useContext(AppContext);
+
+  const history = useHistory();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -117,7 +124,6 @@ const ViewRequest = (props) => {
         });
       });
       setRequestGroups(tmpArray);
-      console.log("set template groups", requestGroups);
     }
     setTimeout(() => {}, 1000);
   }, [allGroups]);
@@ -130,29 +136,60 @@ const ViewRequest = (props) => {
 
   async function handleCancel(e) {
     e.preventDefault();
-    let response = await fetch(`${baseURL}/routes/requests/patch`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status: "Cancelled",
-        request_id: request.request_id,
-      }),
+
+    await setPrompt({
+      title: `Delete Request`,
+      text: `Are you sure you want to delete this request?`,
+      actions: (
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
+          style={{ marginBottom: -5, marginRight: 5 }}
+          onClick={async () => {
+            let response = await fetch(`${baseURL}/routes/requests/patch`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                status: "Cancelled",
+                request_id: request.request_id,
+              }),
+            })
+              .then((resp) => resp)
+              .catch((err) => err);
+            if (response.status === 200) {
+              await handleClose(false);
+              await setPrompt({
+                title: "Cancel Request Successful",
+                text: `The request was successfully deleted.`,
+                closeAction: "Okay",
+              });
+              await setOpenPrompt(true);
+              await setReload(!reload);
+              history.push("/profile");
+              history.push("/dashboard");
+            } else {
+              let message = await response.json();
+              await setPrompt({
+                title: "Cancellation Error",
+                text: message.message,
+                closeAction: "Roger Roger",
+              });
+              await setOpenPrompt(true);
+            }
+          }}
+        >
+          Confirm
+        </Button>
+      ),
     });
-    if (response.status === 200) {
-      setReload(!reload);
-      handleClose(false);
-    } else {
-      let err = await response.json();
-      return console.log(err);
-    }
+    await setOpenPrompt(true);
   }
 
   function getStageContent(stage) {
     let stageGroups = null;
-
-    console.log("getStageContent", stage);
 
     if (stage.substages[0].supervisor_id) {
       fetch(`${baseURL}/users/${stage.substages[0].supervisor_id}`)
@@ -236,9 +273,14 @@ const ViewRequest = (props) => {
                 </Paper>
               </Grid>
             </Grid>
-            <Grid xs={12}>
+            <Divider style={{ margin: 30 }} />
+            <Grid xs={12} style={{ marginLeft: 80 }}>
               <Grid xs={12}>
-                <h3>Selected Substage Information:</h3>
+                <Typography
+                  style={{ fontWeight: 600, marginTop: 30, marginBottom: 15 }}
+                >
+                  Selected Stage Information
+                </Typography>
               </Grid>
               <TextField
                 label="Substage Status"
@@ -299,7 +341,7 @@ const ViewRequest = (props) => {
               value={stage.stage_name}
               style={{
                 marginBottom: 15,
-                marginTop: 22.5,
+                marginTop: 28,
                 cursor: "not-allowed",
               }}
             />
@@ -376,10 +418,14 @@ const ViewRequest = (props) => {
               <TextField
                 label="Stage Instructions"
                 multiline
-                rows={10}
+                rows={11}
                 variant="outlined"
                 value={stage.stage_instructions}
-                style={{ marginTop: 10, width: 300 }}
+                style={{
+                  marginTop: 10,
+                  width: 300,
+                  whiteSpace: "pre-line",
+                }}
                 required
                 InputLabelProps={{
                   shrink: true,
@@ -401,6 +447,7 @@ const ViewRequest = (props) => {
       aria-labelledby="form-dialog-title"
       maxWidth="true"
     >
+      <PromptDialog bodyPrompt={prompt} />
       <DialogContent>
         <Grid container className={classes.root}>
           <Grid item xs={3}>
@@ -440,14 +487,21 @@ const ViewRequest = (props) => {
             <Grid item xs={12} style={{ margin: "15px" }}>
               <Paper
                 className={classes.paperSecond}
-                style={{ maxHeight: "34.5vh" }}
+                style={{ maxHeight: "34.5vh", overflow: "auto" }}
               >
                 <Typography
                   style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
                 >
                   Request Change Log
                 </Typography>
-                <Typography style={{ margin: "15px" }}>
+                <Typography
+                  style={{
+                    margin: "15px",
+                    whiteSpace: "pre-line",
+                    maxHeight: 168,
+                    overflow: "auto",
+                  }}
+                >
                   {request.change_log}
                 </Typography>
               </Paper>
@@ -455,35 +509,43 @@ const ViewRequest = (props) => {
             <Grid item xs={12} style={{ margin: "15px" }}>
               <Paper className={classes.paperSecond}>
                 <Typography
-                  style={{ fontWeight: 600, marginTop: 5, marginLeft: 5 }}
+                  style={{
+                    fontWeight: 600,
+                    marginTop: 5,
+                    marginLeft: 5,
+                  }}
                   noWrap
                 >
                   Request Documents
                 </Typography>
-                <ListItem className={classes.attachments} button>
-                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography style={{ margin: "15px" }}>
-                    <a href="/documents/SacredJedi.txt" download>
-                      The Sacred Jedi Texts Volume 1
-                    </a>
-                  </Typography>
-                </ListItem>
-                <ListItem className={classes.attachments} button>
-                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography style={{ margin: "15px" }}>
-                    <a href="/documents/HitchhikersGuide.txt" download>
-                      Hitchhiker's Guide to the Galaxy
-                    </a>
-                  </Typography>
-                </ListItem>
-                <ListItem className={classes.attachments} button>
-                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography style={{ margin: "15px" }}>
-                    <a href="/documents/ZappBrannigan.txt" download>
-                      Zapp Brannigan Quotes
-                    </a>
-                  </Typography>
-                </ListItem>
+                <div
+                  style={{ minHeight: 203, maxHeight: 203, overflow: "auto" }}
+                >
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography style={{ margin: "15px" }}>
+                      <a href="/documents/SacredJedi.txt" download>
+                        The Sacred Jedi Texts Volume 1
+                      </a>
+                    </Typography>
+                  </ListItem>
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography style={{ margin: "15px" }}>
+                      <a href="/documents/HitchhikersGuide.txt" download>
+                        Hitchhiker's Guide to the Galaxy
+                      </a>
+                    </Typography>
+                  </ListItem>
+                  <ListItem className={classes.attachments} button>
+                    <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
+                    <Typography style={{ margin: "15px" }}>
+                      <a href="/documents/ZappBrannigan.txt" download>
+                        Zapp Brannigan Quotes
+                      </a>
+                    </Typography>
+                  </ListItem>
+                </div>
               </Paper>
             </Grid>
           </Grid>
@@ -499,72 +561,84 @@ const ViewRequest = (props) => {
                     );
                   })}
                 </Stepper>
+                <Grid container>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 30,
+                      marginTop: 15,
+                    }}
+                  >
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      color="primary"
+                      variant="outlined"
+                      style={{ marginLeft: 0 }}
+                    >
+                      Back
+                    </Button>
+                    <Typography style={{ margin: 10 }}>
+                      Stage Controls
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleNext}
+                      disabled={activeStep === request.stages.length - 1}
+                    >
+                      Next
+                    </Button>
+                  </Grid>
+                </Grid>
+
                 <Paper style={{ padding: "30px" }}>
                   <div>
                     <Typography className={classes.instructions}>
                       {getStageContent(request.stages[activeStep])}
                     </Typography>
-                    <Grid container>
-                      <Grid item xs={8} />
-                      <Grid item xs={4} style={{ marginTop: 10 }}>
-                        <Button
-                          disabled={activeStep === 0}
-                          onClick={handleBack}
-                          className={classes.button}
-                          color="primary"
-                          style={{
-                            marginRight: "6.8vw",
-                            position: "relative",
-                            left: "5.8vw",
-                          }}
-                          variant="outlined"
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={handleNext}
-                          className={classes.button}
-                          disabled={activeStep === request.stages.length - 1}
-                        >
-                          Next
-                        </Button>
-                      </Grid>
-                    </Grid>
                   </div>
                 </Paper>
               </div>
             </Grid>
           </Grid>
-          <Grid item xs={10} />
-          <Grid item xs={2} style={{ marginTop: "20px", marginRight: "10" }}>
-            <span style={{ display: "flex" }}>
-              {request.status === "Cancelled" ||
-              request.status === "Completed" ? (
-                <></>
-              ) : (
-                <Button
-                  variant="contained"
-                  component="label"
-                  color="secondary"
-                  onClick={handleCancel}
-                  style={{ marginRight: 15 }}
-                >
-                  Cancel Request
-                </Button>
-              )}
+          <Grid
+            item
+            xs={12}
+            style={{
+              display: "flex",
+            }}
+          >
+            {request.status === "Cancelled" ||
+            request.status === "Completed" ? (
+              <></>
+            ) : (
               <Button
                 variant="contained"
                 component="label"
-                color="primary"
-                onClick={() => {
-                  handleClose();
-                }}
+                color="secondary"
+                style={{ marginLeft: "76vw", textAlign: "center" }}
+                onClick={handleCancel}
               >
-                Close Review
+                Cancel Request
               </Button>
-            </span>
+            )}
+            <Button
+              variant="contained"
+              component="label"
+              color="primary"
+              size="large"
+              style={{ marginLeft: 15, textAlign: "center" }}
+              onClick={() => {
+                handleClose();
+              }}
+            >
+              Close Review
+            </Button>
           </Grid>
         </Grid>
       </DialogContent>

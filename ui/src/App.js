@@ -337,21 +337,26 @@ const App = () => {
                   </ListItem>
                 </Tooltip>
               </Link>
-              <Link exact to="/jedi-only" className={classes.link}>
-                <Tooltip title="Jedi Only" placement="right">
-                  <ListItem button>
-                    <ListItemIcon
-                      style={{ display: "flex", justifyContent: "start" }}
-                    >
-                      <JediIcon
-                        icon="fa-solid:jedi"
-                        style={{ fontSize: 21.5 }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText primary="Admin" />
-                  </ListItem>
-                </Tooltip>
-              </Link>
+              {currentUser.role === "Jedi Master" ||
+              currentUser.role === "Jedi Knight" ? (
+                <Link exact to="/jedi-only" className={classes.link}>
+                  <Tooltip title="Jedi Only" placement="right">
+                    <ListItem button>
+                      <ListItemIcon
+                        style={{ display: "flex", justifyContent: "start" }}
+                      >
+                        <JediIcon
+                          icon="fa-solid:jedi"
+                          style={{ fontSize: 21.5 }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary="Admin" />
+                    </ListItem>
+                  </Tooltip>
+                </Link>
+              ) : (
+                ""
+              )}
             </div>
           </List>
           <Divider />
@@ -474,19 +479,24 @@ const App = () => {
           </div>
         </Route>
 
-        <Route exact path="/jedi-only">
-          <div className={classes.root}>
-            {nav}
-            <main className={classes.content}>
-              <div className={classes.appBarSpacer} />
-              <Container maxWidth="lg" className={classes.container}>
-                <Paper className={classes.paper}>
-                  <ProtectedRoute component={Admin} />
-                </Paper>
-              </Container>
-            </main>
-          </div>
-        </Route>
+        {currentUser.role === "Jedi Master" ||
+        currentUser.role === "Jedi Knight" ? (
+          <Route exact path="/jedi-only">
+            <div className={classes.root}>
+              {nav}
+              <main className={classes.content}>
+                <div className={classes.appBarSpacer} />
+                <Container maxWidth="lg" className={classes.container}>
+                  <Paper className={classes.paper}>
+                    <ProtectedRoute component={Admin} />
+                  </Paper>
+                </Container>
+              </main>
+            </div>
+          </Route>
+        ) : (
+          ""
+        )}
 
         <Route path="*">
           {bar(false)}

@@ -10,7 +10,7 @@ exports.seed = function (knex) {
           comments: "Drafted package, ready for CSS!",
           current_stage: 0,
           status: "En route",
-          change_log: `Name: E-6 Banks, Date: ${Date.now()},
+          change_log: `Name: E-6 Banks, Date: ${new Date().toGMTString()},
           Comments: Drafted package, ready for CSS!\n`,
         },
         {
@@ -20,8 +20,8 @@ exports.seed = function (knex) {
           comments: "Drafted package, ready for CSS!",
           current_stage: 1,
           status: "En route",
-          change_log: `Name: E-6 Banks, Date: ${Date.now()},
-          Comments: Drafted package, ready for CSS!\nName: E-6 Banks, Date: ${Date.now()},
+          change_log: `Name: E-6 Banks, Date: ${new Date().toGMTString()},
+          Comments: Drafted package, ready for CSS!\nName: E-6 Banks, Date: ${new Date().toGMTString()},
           Comments: CSS Approved!\n`,
         },
       ]);
@@ -47,7 +47,8 @@ exports.seed = function (knex) {
         {
           name: "Supervisor Rewrite",
           suspense_hours: 72, // 3 days
-          instructions: "Please rewrite everthing.",
+          instructions:
+            "Please review the attached rewards package, and approve the package for submittal to the CC.",
           status: "Approved",
           request_id: 2,
         },
@@ -79,7 +80,7 @@ exports.seed = function (knex) {
           status: "Approved",
           notes:
             "Made edits and attached, think we got a group winner over here.",
-          completed_at: new Date(),
+          completed_at: new Date().toGMTString(),
         },
         {
           group_id: 1, // CC

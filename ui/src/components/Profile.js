@@ -81,6 +81,7 @@ export default function Login() {
   const { alert, setAlert } = useContext(AppContext);
 
   const [editEmail, setEditEmail] = useState(false);
+  const [editRank, setEditRank] = useState(false);
   const [supervisor, setSupervisor] = useState(false);
   const [editPass, setEditPass] = useState(false);
   const [editSupervisor, setEditSupervisor] = useState(false);
@@ -94,6 +95,7 @@ export default function Login() {
   const [newPHelper, setNewPHelper] = useState("");
   const [confirmPHelper, setConfirmPHelper] = useState("");
   const [seePass, setSeePass] = useState(false);
+  const [newRank, setNewRank] = useState("");
 
   const classes = useStyles();
 
@@ -101,7 +103,17 @@ export default function Login() {
     fetch(`${baseURL}/users`)
       .then((res) => res.json())
       .then((data) => setAllUsers(data));
-  }, []);
+  }, [editRank]);
+
+  useEffect(() => {
+    fetch(`${baseURL}/users`)
+      .then((res) => res.json())
+      .then((data) => setAllUsers(data));
+  }, [editEmail]);
+
+  const handleChange = (e) => {
+    setNewRank(e.target.value);
+  };
 
   const handleEmailCheck = () => {
     let email = document.getElementById("newEmail").value;
@@ -167,6 +179,9 @@ export default function Login() {
       case "email":
         setEditEmail(true);
         break;
+      case "rank":
+        setEditRank(true);
+        break;
       case "password":
         setEditPass(true);
         break;
@@ -184,6 +199,10 @@ export default function Login() {
       case "email":
         await editEmailHandler(e);
         await setEditEmail(false);
+        break;
+      case "rank":
+        await editRankHandler(e);
+        await setEditRank(false);
         break;
       case "password":
         await editPassHandler(e);
@@ -203,6 +222,9 @@ export default function Login() {
     switch (e.target.querySelector("p").innerText) {
       case "email":
         setEditEmail(false);
+        break;
+      case "rank":
+        setEditRank(false);
         break;
       case "password":
         setEditPass(false);
@@ -261,6 +283,7 @@ export default function Login() {
         .substr(indexOfDot + 2, indexOfAt - indexOfDot - 2)
         .replace(".", "")
         .replace(/[0-9]/g, "");
+    console.log(fname, lname);
     await fetch(`${baseURL}/users/patch`, {
       method: "PATCH",
       headers: {
@@ -292,6 +315,56 @@ export default function Login() {
             rank: currentUser.rank,
             fname: fname,
             lname: lname,
+            password: currentUser.password,
+            role: currentUser.role,
+            supervisor_id: currentUser.supervisor_id,
+          });
+        } else {
+          await setAlert({
+            title: "Edit Error",
+            text: data.message,
+            actions: "",
+          });
+          await setOpenAlert(true);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const editRankHandler = async (e) => {
+    e.preventDefault();
+
+    await fetch(`${baseURL}/users/patch`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: currentUser.email,
+        user_id: currentUser.user_id,
+        rank: newRank,
+        fname: currentUser.fname,
+        lname: currentUser.lname,
+        password: currentUser.password,
+        role: currentUser.role,
+        supervisor_id: currentUser.supervisor_id,
+      }),
+    })
+      .then((res) => res.json())
+      .then(async (data) => {
+        if (data.message === "Success") {
+          await setAlert({
+            title: "Success!",
+            text: `Your rank was changed to ${newRank}!`,
+            actions: "",
+          });
+          await setOpenAlert(true);
+          await setCurrentUser({
+            email: currentUser.email,
+            user_id: currentUser.user_id,
+            rank: newRank,
+            fname: currentUser.fname,
+            lname: currentUser.lname,
             password: currentUser.password,
             role: currentUser.role,
             supervisor_id: currentUser.supervisor_id,
@@ -518,29 +591,156 @@ export default function Login() {
                         </Typography>
                       </Paper>
                     </Grid>
+                  </Grid>
+
+                  <Grid container spacing={2}>
                     <Grid item>
-                      <Paper
-                        className={classes.paperText}
-                        style={{ paddingRight: 81, paddingLeft: 81 }}
-                      >
-                        <Tooltip title="Feature not available - name is extracted from government email addresses">
-                          <Button
-                            onClick={() =>
-                              console.log(
-                                "Feature not available - name is extracted from government email addresses"
-                              )
-                            }
-                            variant="contained"
-                            color="primary"
-                            className={classes.buttonEdit}
-                          >
-                            Edit
-                            <p style={{ display: "none" }}>name</p>
-                          </Button>
-                        </Tooltip>
+                      <Paper className={classes.paperHead}>
+                        <Typography
+                          style={{ paddingRight: 34, paddingLeft: 34 }}
+                          className={classes.type}
+                        >
+                          Rank
+                        </Typography>
                       </Paper>
                     </Grid>
+
+                    <Grid item xs style={{ overflow: "hidden" }}>
+                      <Paper
+                        className={classes.paperText}
+                        style={{ overflow: "hidden" }}
+                      >
+                        {editRank ? (
+                          <TextField
+                            style={{ padding: 0, width: 200 }}
+                            size="small"
+                            select
+                            className={classes.input}
+                            label="Rank"
+                            required={true}
+                            id="newRank"
+                            defaultValue={`${currentUser.rank}`}
+                            onChange={handleChange}
+                            variant="outlined"
+                          >
+                            <MenuItem value="" disabled>
+                              <em>Enlisted</em>
+                            </MenuItem>
+                            <MenuItem value={"E-1"}>E-1</MenuItem>
+                            <MenuItem value={"E-2"}>E-2</MenuItem>
+                            <MenuItem value={"E-3"}>E-3</MenuItem>
+                            <MenuItem value={"E-4"}>E-4</MenuItem>
+                            <MenuItem value={"E-5"}>E-5</MenuItem>
+                            <MenuItem value={"E-6"}>E-6</MenuItem>
+                            <MenuItem value={"E-7"}>E-7</MenuItem>
+                            <MenuItem value={"E-8"}>E-8</MenuItem>
+                            <MenuItem value={"E-9"}>E-9</MenuItem>
+                            <MenuItem value="" disabled>
+                              <em>Officer</em>
+                            </MenuItem>
+                            <MenuItem value={"O-1"}>O-1</MenuItem>
+                            <MenuItem value={"O-2"}>O-2</MenuItem>
+                            <MenuItem value={"O-3"}>O-3</MenuItem>
+                            <MenuItem value={"O-4"}>O-4</MenuItem>
+                            <MenuItem value={"O-5"}>O-5</MenuItem>
+                            <MenuItem value={"O-6"}>O-6</MenuItem>
+                            <MenuItem value={"O-7"}>O-7</MenuItem>
+                            <MenuItem value={"O-8"}>O-8</MenuItem>
+                            <MenuItem value={"O-9"}>O-9</MenuItem>
+                            <MenuItem value={"O-10"}>O-10</MenuItem>
+                            <MenuItem value="" disabled>
+                              <em>Civilian</em>
+                            </MenuItem>
+                            <MenuItem value={"GS-01"}>GS-01</MenuItem>
+                            <MenuItem value={"GS-02"}>GS-02</MenuItem>
+                            <MenuItem value={"GS-03"}>GS-03</MenuItem>
+                            <MenuItem value={"GS-04"}>GS-04</MenuItem>
+                            <MenuItem value={"GS-05"}>GS-05</MenuItem>
+                            <MenuItem value={"GS-06"}>GS-06</MenuItem>
+                            <MenuItem value={"GS-07"}>GS-07</MenuItem>
+                            <MenuItem value={"GS-08"}>GS-08</MenuItem>
+                            <MenuItem value={"GS-09"}>GS-09</MenuItem>
+                            <MenuItem value={"GS-10"}>GS-10</MenuItem>
+                            <MenuItem value={"GS-11"}>GS-11</MenuItem>
+                            <MenuItem value={"GS-12"}>GS-12</MenuItem>
+                            <MenuItem value={"GS-13"}>GS-13</MenuItem>
+                            <MenuItem value={"GS-14"}>GS-14</MenuItem>
+                            <MenuItem value={"GS-15"}>GS-15</MenuItem>
+                            <MenuItem value={"SES-V"}>SES-V</MenuItem>
+                            <MenuItem value={"SES-IV"}>SES-IV</MenuItem>
+                            <MenuItem value={"SES-III"}>SES-III</MenuItem>
+                            <MenuItem value={"SES-II"}>SES-II</MenuItem>
+                            <MenuItem value={"SES-I"}>SES-I</MenuItem>
+                            <MenuItem value="" disabled>
+                              <em>Contractor</em>
+                            </MenuItem>
+                            <MenuItem value={"CTR"}>CTR</MenuItem>
+                          </TextField>
+                        ) : (
+                          <Typography id="email" style={{ marginRight: -25 }}>
+                            {currentUser.rank}
+                          </Typography>
+                        )}
+                      </Paper>
+                    </Grid>
+
+                    <Grid item>
+                      {editRank ? (
+                        <>
+                          <Paper className={classes.paperText}>
+                            <Tooltip title="Submit New Email">
+                              <span>
+                                <Button
+                                  onClick={handleSubmit}
+                                  variant="contained"
+                                  color="secondary"
+                                  className={classes.buttonEdit}
+                                  style={{ marginRight: 10 }}
+                                >
+                                  Submit
+                                  <p style={{ display: "none" }}>rank</p>
+                                </Button>
+                              </span>
+                            </Tooltip>
+                            <Tooltip title="Cancel Changes">
+                              <Button
+                                onClick={(e) => {
+                                  handleCancel(e);
+                                }}
+                                variant="contained"
+                                color="default"
+                                className={classes.buttonEdit}
+                              >
+                                Cancel
+                                <p style={{ display: "none" }}>rank</p>
+                              </Button>
+                            </Tooltip>
+                          </Paper>
+                        </>
+                      ) : (
+                        <Paper
+                          className={classes.paperText}
+                          style={{
+                            paddingRight: 81,
+                            paddingLeft: 81,
+                          }}
+                        >
+                          <Tooltip title="Edit Rank">
+                            <Button
+                              onClick={handleEdit}
+                              variant="contained"
+                              color="primary"
+                              className={classes.buttonEdit}
+                            >
+                              Edit
+                              <p style={{ display: "none" }}>rank</p>
+                            </Button>
+                          </Tooltip>
+                        </Paper>
+                      )}
+                    </Grid>
                   </Grid>
+
                   <Grid container spacing={2}>
                     <Grid item>
                       <Paper
@@ -937,8 +1137,8 @@ export default function Login() {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} style={{ marginTop: 20 }}>
-                    <Grid item style={{ width: 167.5 }}>
+                  <Grid container spacing={2} style={{ marginTop: 10 }}>
+                    <Grid item style={{ width: 167, marginLeft: 1 }}>
                       <Paper className={classes.paper}>
                         <Typography className={classes.type}>
                           Subordinates
@@ -946,7 +1146,10 @@ export default function Login() {
                       </Paper>
                     </Grid>
                     <Grid item xs>
-                      <Paper className={classes.paper}>
+                      <Paper
+                        className={classes.paper}
+                        style={{ maxHeight: 65, overflow: "auto" }}
+                      >
                         {allUsers.map((user) => {
                           if (user.supervisor_id === currentUser.user_id) {
                             return (
@@ -961,7 +1164,6 @@ export default function Login() {
                                   key={uuidv4()}
                                   style={{
                                     cursor: "pointer",
-                                    padding: 2.5,
                                     marginRight: 20,
                                   }}
                                 >
@@ -978,6 +1180,7 @@ export default function Login() {
                                   id={`${user.email}`}
                                 >
                                   <Button
+                                    style={{ marginTop: -2, marginBottom: 8 }}
                                     size="small"
                                     variant="outlined"
                                     onClick={() => {

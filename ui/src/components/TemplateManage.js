@@ -22,12 +22,8 @@ import {
   InputLabel,
   List,
   ListItem,
-  ListItemText,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
+  Tooltip,
+  Divider,
 } from "@material-ui/core";
 import AlertDialog from "./helpers/AlertDialog";
 
@@ -51,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     marginTop: -10,
     marginLeft: -5,
-    maxHeight: "75vh",
+    maxHeight: "77vh",
     maxWidth: "90vw",
     overflowY: "auto",
     overflowX: "none",
@@ -91,8 +87,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TemplateManage = () => {
   const classes = useStyles();
-  const { currentUserDetails, alert, setAlert, setOpenAlert } =
-    React.useContext(AppContext);
+  const { alert, setAlert, setOpenAlert } = React.useContext(AppContext);
   const [activeStep, setActiveStep] = React.useState(0);
   const [supervisor, setSupervisor] = React.useState([]);
   const [allGroups, setAllGroups] = React.useState(null);
@@ -100,27 +95,30 @@ const TemplateManage = () => {
   const [template, setTemplate] = React.useState(0);
   const [templates, setTemplates] = React.useState(null);
   const [selectedGroup, setSelectedGroup] = React.useState(0);
+  const [edit, setEdit] = React.useState(0);
 
   const history = useHistory();
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleNext = async () => {
+    await setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  const handleBack = async () => {
+    await setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleChange = (event) => {
-    setTemplate(event.target.value);
+  const handleChange = async (event) => {
+    await setTemplate(event.target.value);
   };
 
   const [open, setOpen] = React.useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    setEdit(true);
   };
 
   const handleDelete = async (e) => {
@@ -229,6 +227,11 @@ const TemplateManage = () => {
   function getStageContent(step, stage) {
     let stageGroups = null;
 
+    if (!stage || templates[template].stages.length < setActiveStep + 1) {
+      setActiveStep(0);
+      stage = templates[template].stages[0];
+    }
+
     if (stage.substages[0].supervisor_id) {
       fetch(`${baseURL}/users/${stage.substages[0].supervisor_id}`)
         .then((res) => res.json())
@@ -245,350 +248,222 @@ const TemplateManage = () => {
       }
 
       return (
-        <Grid container>
-          <Grid item xs={8}>
-            {stage.label}
-            <Grid
-              container
-              spacing={2}
-              justifyContent="center"
-              alignItems="center"
-              className={classes.root}
-            >
-              <Grid item style={{ marginLeft: -40 }}>
-                <Typography style={{ fontWeight: 600 }}>Substages</Typography>
-                <Paper className={classes.paper}>
-                  <List dense component="div" role="list">
-                    {stage.substages.map((group, index) => {
-                      return (
-                        <ListItem
-                          key={uuidv4()}
-                          role="listitem"
-                          button
-                          onClick={() => setSelectedGroup(index)}
-                        >
-                          {stage.substages[0].supervisor_id ? (
-                            `Supervisor`
-                          ) : (
-                            <>
-                              {" "}
-                              {stageGroups
-                                ? stageGroups[index].group_name
-                                : `${group.group_id}`}{" "}
-                            </>
-                          )}
+        <>
+          <Grid container>
+            <Grid item xs={8}>
+              {stage.label}
+              <Grid
+                container
+                spacing={2}
+                justifyContent="center"
+                alignItems="center"
+                className={classes.root}
+              >
+                <Grid item style={{ marginLeft: -40 }}>
+                  <Typography style={{ fontWeight: 600 }}>Substages</Typography>
+                  <Paper className={classes.paper}>
+                    <List dense component="div" role="list">
+                      {stage.substages.map((group, index) => {
+                        return (
+                          <ListItem
+                            key={uuidv4()}
+                            role="listitem"
+                            button
+                            onClick={() => setSelectedGroup(index)}
+                            style={
+                              selectedGroup === index
+                                ? { backgroundColor: "#FDFD96" }
+                                : { backgroundColor: "none" }
+                            }
+                          >
+                            {stage.substages[0].supervisor_id ? (
+                              `Supervisor`
+                            ) : (
+                              <>
+                                {" "}
+                                {stageGroups
+                                  ? stageGroups[index].group_name
+                                  : `${group.group_id}`}{" "}
+                              </>
+                            )}
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+                  </Paper>
+                </Grid>
+                <Grid item style={{ marginLeft: 20 }}>
+                  <Typography style={{ fontWeight: 600 }}>
+                    Member List
+                  </Typography>
+                  <Paper className={classes.paper}>
+                    <List dense component="div" role="list">
+                      {stage.substages[0].supervisor_id ? (
+                        <ListItem key={uuidv4()} role="listitem">
+                          {supervisor}
                         </ListItem>
-                      );
-                    })}
-                  </List>
-                </Paper>
-              </Grid>
-              <Grid item style={{ marginLeft: 20 }}>
-                <Typography style={{ fontWeight: 600 }}>Member List</Typography>
-                <Paper className={classes.paper}>
-                  <List dense component="div" role="list">
-                    {stage.substages[0].supervisor_id ? (
-                      <ListItem key={uuidv4()} role="listitem">
-                        {supervisor}
-                      </ListItem>
-                    ) : (
-                      <>
-                        {stageGroups ? (
-                          stageGroups[selectedGroup].users.map((member) => (
-                            <ListItem key={uuidv4()} role="listitem" button>
-                              <ListItemText
-                                primary={`${member.fname} ${member.lname} (${member.rank})`}
-                              />
-                            </ListItem>
-                          ))
-                        ) : (
-                          <></>
-                        )}
-                      </>
-                    )}
-                    <ListItem />
-                  </List>
-                </Paper>
+                      ) : (
+                        <>
+                          {stageGroups ? (
+                            stageGroups[selectedGroup].users.map((member) => (
+                              <ListItem key={uuidv4()} role="listitem" button>
+                                {`${member.fname} ${member.lname} (${member.rank})`}
+                              </ListItem>
+                            ))
+                          ) : (
+                            <></>
+                          )}
+                        </>
+                      )}
+                      <ListItem />
+                    </List>
+                  </Paper>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              variant="outlined"
-              id="template_name"
-              label="Stage Name"
-              // onChange={handleChange}
-              required
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={stage.stage_name}
-              style={{
-                marginBottom: 30,
-                marginTop: 40,
-                cursor: "not-allowed",
-              }}
-            />
-            <TextField
-              value={
-                stage.suspense_hours > 24 &&
-                !(stage.suspense_hours / 24).toString().includes(".")
-                  ? stage.suspense_hours > 168 &&
-                    !(stage.suspense_hours / 168).toString().includes(".")
-                    ? stage.suspense_hours / 168
-                    : stage.suspense_hours / 24
-                  : stage.suspense_hours
-              }
-              label="Suspense"
-              required={true}
-              variant="outlined"
-              type="number"
-              min={1}
-              onInput={(e) => {
-                if (e.target.value < 1) {
-                  e.target.value = 1;
+            <Grid item xs={4}>
+              <TextField
+                variant="outlined"
+                id="template_name"
+                label="Stage Name"
+                required
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={stage.stage_name}
+                style={{
+                  marginBottom: 30,
+                  marginTop: 25,
+                  cursor: "not-allowed",
+                }}
+              />
+              <TextField
+                value={
+                  stage.suspense_hours > 24 &&
+                  !(stage.suspense_hours / 24).toString().includes(".")
+                    ? stage.suspense_hours > 168 &&
+                      !(stage.suspense_hours / 168).toString().includes(".")
+                      ? stage.suspense_hours / 168
+                      : stage.suspense_hours / 24
+                    : stage.suspense_hours
                 }
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              style={{ marginBottom: 30 }}
-              id="suspense_integer"
-            />
-            <TextField
-              value={
-                stage.suspense_hours > 24 &&
-                !(stage.suspense_hours / 24).toString().includes(".")
-                  ? stage.suspense_hours > 168 &&
-                    !(stage.suspense_hours / 168).toString().includes(".")
-                    ? "Weeks"
-                    : "Days"
-                  : "Hours"
-              }
-              select
-              label="Time"
-              required={true}
-              id="time"
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              defaultValue=""
-              style={{ marginBottom: 30 }}
-            >
-              <MenuItem value="" disabled>
-                <em>Measure of Time</em>
-              </MenuItem>
-              <MenuItem
-                value={"Hours"}
-                disabled={
-                  (stage.suspense_hours > 24 &&
+                label="Suspense"
+                required={true}
+                variant="outlined"
+                type="number"
+                min={1}
+                onInput={(e) => {
+                  if (e.target.value < 1) {
+                    e.target.value = 1;
+                  }
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                style={{ marginBottom: 30 }}
+                id="suspense_integer"
+              />
+              <TextField
+                value={
+                  stage.suspense_hours > 24 &&
                   !(stage.suspense_hours / 24).toString().includes(".")
                     ? stage.suspense_hours > 168 &&
                       !(stage.suspense_hours / 168).toString().includes(".")
                       ? "Weeks"
                       : "Days"
-                    : "Hours") !== "Hours"
-                    ? true
-                    : false
+                    : "Hours"
                 }
+                select
+                label="Time"
+                required={true}
+                id="time"
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                defaultValue=""
+                style={{ marginBottom: 30 }}
               >
-                Hours
-              </MenuItem>
-              <MenuItem
-                value={"Days"}
-                disabled={
-                  (stage.suspense_hours > 24 &&
-                  !(stage.suspense_hours / 24).toString().includes(".")
-                    ? stage.suspense_hours > 168 &&
-                      !(stage.suspense_hours / 168).toString().includes(".")
-                      ? "Weeks"
-                      : "Days"
-                    : "Hours") !== "Days"
-                    ? true
-                    : false
-                }
-              >
-                Days
-              </MenuItem>
-              <MenuItem
-                value={"Weeks"}
-                disabled={
-                  (stage.suspense_hours > 24 &&
-                  !(stage.suspense_hours / 24).toString().includes(".")
-                    ? stage.suspense_hours > 168 &&
-                      !(stage.suspense_hours / 168).toString().includes(".")
-                      ? "Weeks"
-                      : "Days"
-                    : "Hours") !== "Weeks"
-                    ? true
-                    : false
-                }
-              >
-                Weeks
-              </MenuItem>
-            </TextField>
-          </Grid>
-          <Grid xs={12}>
-            <TextField
-              label="Stage Instructions"
-              multiline
-              rows={10}
-              variant="outlined"
-              value={stage.stage_instructions}
-              style={{ marginTop: 10, marginLeft: 45, width: "22.65vw" }}
-              required
-            />
-          </Grid>
-        </Grid>
-      );
-    } else {
-      let stageGroups2 = null;
-
-      if (templateGroups) {
-        if (templateGroups[stage.stage_id]) {
-          stageGroups2 = templateGroups[stage.stage_id];
-        }
-      }
-
-      return (
-        <Grid container>
-          <Grid item xs={8}>
-            {stage.label}
-            <Grid
-              container
-              spacing={2}
-              justifyContent="center"
-              alignItems="center"
-              className={classes.root}
-            >
-              <Grid item>
-                Substages
-                <Paper className={classes.paper}>
-                  <List dense component="div" role="list">
-                    {stage.substages.map((group, index) => {
-                      return (
-                        <ListItem
-                          key={uuidv4()}
-                          role="listitem"
-                          button
-                          onClick={() => setSelectedGroup(index)}
-                        >
-                          {stage.substages[0].supervisor_id ? (
-                            `Supervisor`
-                          ) : (
-                            <>
-                              {" "}
-                              {stageGroups2
-                                ? stageGroups2[index].group_name
-                                : `${group.group_id}`}
-                            </>
-                          )}
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                </Paper>
-              </Grid>
-              <Grid item>
-                Member List
-                <Paper className={classes.paper}>
-                  <List dense component="div" role="list">
-                    {stageGroups2 ? (
-                      stageGroups2[0].users.map((member) => (
-                        <ListItem key={uuidv4()} role="listitem" button>
-                          <ListItemText
-                            primary={`${member.fname} ${member.lname} (${member.rank})`}
-                          />
-                        </ListItem>
-                      ))
-                    ) : (
-                      <></>
-                    )}
-                    <ListItem />
-                  </List>
-                </Paper>
-              </Grid>
+                <MenuItem value="" disabled>
+                  <em>Measure of Time</em>
+                </MenuItem>
+                <MenuItem
+                  value={"Hours"}
+                  disabled={
+                    (stage.suspense_hours > 24 &&
+                    !(stage.suspense_hours / 24).toString().includes(".")
+                      ? stage.suspense_hours > 168 &&
+                        !(stage.suspense_hours / 168).toString().includes(".")
+                        ? "Weeks"
+                        : "Days"
+                      : "Hours") !== "Hours"
+                      ? true
+                      : false
+                  }
+                >
+                  Hours
+                </MenuItem>
+                <MenuItem
+                  value={"Days"}
+                  disabled={
+                    (stage.suspense_hours > 24 &&
+                    !(stage.suspense_hours / 24).toString().includes(".")
+                      ? stage.suspense_hours > 168 &&
+                        !(stage.suspense_hours / 168).toString().includes(".")
+                        ? "Weeks"
+                        : "Days"
+                      : "Hours") !== "Days"
+                      ? true
+                      : false
+                  }
+                >
+                  Days
+                </MenuItem>
+                <MenuItem
+                  value={"Weeks"}
+                  disabled={
+                    (stage.suspense_hours > 24 &&
+                    !(stage.suspense_hours / 24).toString().includes(".")
+                      ? stage.suspense_hours > 168 &&
+                        !(stage.suspense_hours / 168).toString().includes(".")
+                        ? "Weeks"
+                        : "Days"
+                      : "Hours") !== "Weeks"
+                      ? true
+                      : false
+                  }
+                >
+                  Weeks
+                </MenuItem>
+              </TextField>
+            </Grid>
+            <Grid xs={12}>
+              <TextField
+                label="Stage Instructions"
+                multiline
+                rows={10}
+                variant="outlined"
+                value={stage.stage_instructions}
+                style={{
+                  marginTop: 10,
+                  marginLeft: 45,
+                  width: "22.65vw",
+                  whiteSpace: "pre-line",
+                }}
+                required
+              />
             </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <TextField disabled label={stage.stage_name} />
-          </Grid>
-        </Grid>
+        </>
       );
     }
   }
-  // previous createRequest function
 
   if (templates) {
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (
-        document.getElementById("subject").value.length < 1 ||
-        document.getElementById("comments").value.length < 1
-      ) {
-        await setAlert({
-          title: "Request Error",
-          text: "Please fill out all the required fields before submitting the request",
-          closeAction: "Okay",
-        });
-        await setOpenAlert(true);
-      } else {
-        let response = await fetch(`${baseURL}/routes/requests/post`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            subject: document.getElementById("subject").value,
-            initiator_id: currentUserDetails.user_id,
-            rank: currentUserDetails.rank,
-            lname: currentUserDetails.lname,
-            route_template_id: templates[template].route_id,
-            comments: document.getElementById("comments").value,
-            route_template: templates[template],
-          }),
-        })
-          .then((resp) => resp)
-          .catch((err) => err);
-        if (response.status === 200) {
-          await handleClose();
-          await setAlert({
-            title: "Initiate Request Successful",
-            text: `Your request, ${
-              document.getElementById("subject").value
-            }, was successfully submitted.`,
-            closeAction: "Okay",
-          });
-          await setOpenAlert(true);
-          history.push("/dashboard");
-        } else {
-          let message = await response.json();
-          await setAlert({
-            title: "Submission Error",
-            text: message.message,
-            closeAction: "Roger Roger",
-          });
-          await setOpenAlert(true);
-        }
-      }
-    };
-
-    const handlePaste = async (e) => {
-      e.preventDefault();
-      let suggestion = `${new Date()
-        .toString()
-        .substr(4, 11)
-        .replace(" ", "-")
-        .replace(" ", "-")} ${templates[template].route_name} – ${
-        currentUserDetails.lname
-      } `;
-      document.getElementById("subject").value = suggestion;
-    };
-
     return (
       <div>
         <AlertDialog bodyAlert={alert} />
+
         <Grid container className={classes.root}>
           <Grid item xs={3}>
             <Grid
@@ -619,6 +494,7 @@ const TemplateManage = () => {
                 </Select>
               </FormControl>
             </Grid>
+
             <Grid item xs={12} style={{ margin: "15px" }}>
               <Paper className={classes.paperSecond}>
                 <Typography
@@ -647,7 +523,7 @@ const TemplateManage = () => {
                 >
                   Template Instructions
                 </Typography>
-                <Typography style={{ margin: "15px" }}>
+                <Typography style={{ margin: "15px", whiteSpace: "pre-line" }}>
                   {templates[template].route_instructions}
                 </Typography>
               </Paper>
@@ -660,7 +536,7 @@ const TemplateManage = () => {
                 >
                   Template Documents
                 </Typography>
-                <div style={{ maxHeight: "8.75vh", overflow: "auto" }}>
+                <div style={{ maxHeight: 90, overflow: "auto" }}>
                   <ListItem className={classes.attachments} button>
                     <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
                     <Typography style={{ margin: "15px" }}>
@@ -701,6 +577,43 @@ const TemplateManage = () => {
                     );
                   })}
                 </Stepper>
+                <Grid container>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 30,
+                      marginTop: 15,
+                    }}
+                  >
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      color="primary"
+                      variant="outlined"
+                      style={{ marginLeft: 0 }}
+                    >
+                      Back
+                    </Button>
+                    <Typography style={{ margin: 10 }}>
+                      Stage Controls
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleNext}
+                      disabled={
+                        activeStep === templates[template].stages.length - 1
+                      }
+                    >
+                      Next
+                    </Button>
+                  </Grid>
+                </Grid>
+                <Divider style={{ marginLeft: 25, width: 850 }} />
                 <Paper style={{ padding: "30px" }}>
                   <div>
                     <Typography className={classes.instructions}>
@@ -709,51 +622,33 @@ const TemplateManage = () => {
                         templates[template].stages[activeStep]
                       )}
                     </Typography>
-                    <Grid container>
-                      <Grid item xs={8} />
-                      <Grid item xs={4} style={{ marginTop: -30 }}>
-                        <Button
-                          disabled={activeStep === 0}
-                          onClick={handleBack}
-                          color="primary"
-                          variant="outlined"
-                          style={{ marginLeft: 115 }}
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={handleNext}
-                          disabled={
-                            activeStep === templates[template].stages.length - 1
-                          }
-                          style={{ marginLeft: 15 }}
-                        >
-                          Next
-                        </Button>
-                      </Grid>
-                    </Grid>
                   </div>
                 </Paper>
               </div>
             </Grid>
           </Grid>
-          <Grid item xs={10} />
-          <Grid item xs={2}>
-            <Button
-              variant="contained"
-              component="label"
-              color="primary"
-              style={{ marginTop: "-5vh", marginBottom: 0, marginRight: 15 }}
-            >
-              Edit
-            </Button>
+          <Grid
+            item
+            xs={12}
+            style={{
+              display: "flex",
+            }}
+          >
+            <Tooltip title="Feature not yet available">
+              <Button
+                variant="contained"
+                component="label"
+                color="primary"
+                style={{ marginRight: 15, marginLeft: 1050 }}
+                onClick={handleEdit}
+              >
+                Edit
+              </Button>
+            </Tooltip>
             <Button
               variant="contained"
               component="label"
               color="secondary"
-              style={{ marginTop: "-5vh", marginBottom: 0 }}
               onClick={handleDelete}
             >
               Delete

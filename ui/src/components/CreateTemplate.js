@@ -148,7 +148,7 @@ const CreateTemplate = () => {
     setSubmitFlag(true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async () => {
     if (
       !routeTemplate.group_id ||
       !routeTemplate.name ||
