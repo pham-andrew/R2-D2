@@ -18,7 +18,8 @@ exports.up = function (knex) {
           .integer("supervisor_id")
           .references("id")
           .inTable("users")
-          .onUpdate("CASCADE");
+          .onUpdate("CASCADE")
+          .onDelete("SET NULL");
         table.string("role", [11]).defaultTo("Padawan").notNullable();
         table.string("password").notNullable();
         table.string("token");
@@ -34,7 +35,8 @@ exports.up = function (knex) {
           .notNullable()
           .references("id")
           .inTable("users")
-          .onUpdate("CASCADE");
+          .onUpdate("CASCADE")
+          .onDelete("CASCADE");
         table
           .integer("group_id")
           .notNullable()
@@ -93,6 +95,7 @@ exports.up = function (knex) {
           .references("id")
           .inTable("users")
           .onUpdate("CASCADE")
+          .onDelete("SET NULL")
           .defaultTo(null);
         table
           .integer("stage_template_id")
@@ -113,7 +116,8 @@ exports.up = function (knex) {
           .notNullable()
           .references("id")
           .inTable("users")
-          .onUpdate("CASCADE");
+          .onUpdate("CASCADE")
+          .onDelete("SET NULL");
         table.integer("current_stage").defaultTo(0);
         table
           .integer("route_template_id")
@@ -161,7 +165,9 @@ exports.up = function (knex) {
           .integer("supervisor_id")
           .references("id")
           .inTable("users")
-          .onUpdate("CASCADE");
+          .onUpdate("CASCADE")
+          .onDelete("SET NULL");
+
         table
           .integer("request_stage_id")
           .notNullable()
@@ -175,7 +181,8 @@ exports.up = function (knex) {
           .integer("user_id")
           .references("id")
           .inTable("users")
-          .onUpdate("CASCADE");
+          .onUpdate("CASCADE")
+          .onDelete("SET NULL");
         table.timestamps(true, false);
         table.date("completed_at");
       });

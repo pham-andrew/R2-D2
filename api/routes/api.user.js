@@ -146,6 +146,8 @@ router.patch("/patch", async (req, res) => {
     .update({
       rank: req.body.rank,
       email: req.body.email,
+      fname: req.body.fname,
+      lname: req.body.lname,
       password: password,
       supervisor_id: req.body.supervisor_id,
     })
@@ -169,8 +171,8 @@ router.delete("/delete", async (req, res) => {
     .where({
       id: req.body.user_id,
     })
-    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }))
-    .then(res.status(200).json({ message: `Success` }).end());
+    .then(() => res.status(200).json({ message: `Success` }).end())
+    .catch((err) => res.status(404).json({ message: `Encountered ${err}` }));
 });
 
 module.exports = router;

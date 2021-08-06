@@ -6,6 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import { v4 as uuidv4 } from "uuid";
 
 // styles
 import "../styles/loading.css";
@@ -24,7 +25,7 @@ export default function Admin() {
           Users
           {users.map((user) => {
             return (
-              <Paper style={{ margin: "5px", padding: "5px" }}>
+              <Paper style={{ margin: "5px", padding: "5px" }} key={uuidv4()}>
                 <Grid container>
                   <Grid xs={10}>{user}</Grid>
                   <Grid xs={2}>
@@ -53,7 +54,7 @@ export default function Admin() {
           Groups
           {groups.map((group) => {
             return (
-              <Paper style={{ margin: "5px", padding: "5px" }}>
+              <Paper key={uuidv4()} style={{ margin: "5px", padding: "5px" }}>
                 <Grid container>
                   <Grid xs={10}>{group}</Grid>
                   <Grid xs={2}>

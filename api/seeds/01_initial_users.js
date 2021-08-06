@@ -9,7 +9,7 @@ exports.seed = function (knex) {
           lname: "Law",
           email: "justin.law.1@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Jedi Master",
         },
@@ -19,86 +19,86 @@ exports.seed = function (knex) {
           lname: "Terry",
           email: "mark.terry.7@us.af.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Jedi Master",
           supervisor_id: 6,
         },
         {
-          rank: "O-1",
-          fname: "Alden",
-          lname: "Davidson",
-          email: "alden.davidson.9000@spaceforce.mil",
+          rank: "O-2",
+          fname: "Chief",
+          lname: "Engineer",
+          email: "chief.engineer.9000@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Jedi Knight",
           supervisor_id: 1,
         },
         {
           rank: "E-5",
-          fname: "Bob",
-          lname: "Banks",
-          email: "bob.banks.9000@spaceforce.mil",
+          fname: "Branch",
+          lname: "Lead",
+          email: "branch.lead.9000@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Padawan",
           supervisor_id: 3,
         },
         {
-          rank: "E-3",
-          fname: "Maynard",
-          lname: "Snuffy",
-          email: "maynard.snuffy.9000@spaceforce.mil",
+          rank: "E-4",
+          fname: "SEIT",
+          lname: "Segment",
+          email: "seit.segment.9000@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Padawan",
           supervisor_id: 4,
         },
         {
-          rank: "O-4",
-          fname: "Major",
-          lname: "Lazer",
-          email: "maj.lazer.9000@spaceforce.mil",
+          rank: "O-1",
+          fname: "Alden",
+          lname: "Davidson",
+          email: "alden.davidson.1@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Padawan",
         },
         {
-          rank: "E-6",
-          fname: "Joe",
-          lname: "Schmoe",
-          email: "joe.schmoe.9000@spaceforce.mil",
+          rank: "E-4",
+          fname: "Ground",
+          lname: "Segment",
+          email: "ground.segment.9000@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
           role: "Padawan",
           supervisor_id: 4,
         },
         {
-          rank: "GS-09",
-          fname: "Tanzia",
-          lname: "Eusufzai",
-          email: "tanzia.eusufzai.9000@spaceforce.mil",
+          rank: "E-4",
+          fname: "Noah",
+          lname: "Loy",
+          email: "noah.loy@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
-          role: "Padawan",
+          role: "Jedi Knight",
           supervisor_id: 7,
         },
         {
-          rank: "NH-03",
-          fname: "Rick",
-          lname: "Roll",
-          email: "rick.roll.9000@spaceforce.mil",
+          rank: "O-2",
+          fname: "Andrew",
+          lname: "Pham",
+          email: "andrew.pham.3@spaceforce.mil",
           password:
-            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u", // 12345678aA!
+            "$2b$12$yEg4Jg97h7gPxD0A5DYdnucUzx6Sojbuw.SqlB57uqrb.R7haHB1u",
           token: "",
-          role: "Padawan",
-          supervisor_id: 2,
+          role: "Jedi Knight",
+          supervisor_id: 3,
         },
       ]);
     });

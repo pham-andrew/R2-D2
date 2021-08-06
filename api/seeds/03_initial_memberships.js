@@ -4,44 +4,44 @@ exports.seed = function (knex) {
     .then(function () {
       return knex("memberships").insert([
         {
-          user_id: 6, // Maj Lazer
-          group_id: 1, // CC
+          user_id: 6,
+          group_id: 1,
         },
         {
-          user_id: 2, // Mark
-          group_id: 2, // CSS
+          user_id: 2,
+          group_id: 2,
         },
         {
-          user_id: 1, // Justin
-          group_id: 3, // Division
+          user_id: 1,
+          group_id: 3,
         },
         {
-          user_id: 3, // Alden
-          group_id: 4, // Chief Engineer
+          user_id: 3,
+          group_id: 4,
         },
         {
-          user_id: 4, // Bob
-          group_id: 5, // Branch
+          user_id: 4,
+          group_id: 5,
         },
         {
-          user_id: 5, // Maynard
-          group_id: 6, // SEIT Segment
+          user_id: 5,
+          group_id: 6,
         },
         {
-          user_id: 7, // Joe
-          group_id: 7, // Ground Segment
+          user_id: 7,
+          group_id: 7,
         },
         {
-          user_id: 8, // Tanzia
-          group_id: 8, // Engineer
+          user_id: 8,
+          group_id: 8,
         },
         {
-          user_id: 9, // Rick
-          group_id: 5, // Branch
+          user_id: 9,
+          group_id: 5,
         },
         {
-          user_id: 8, // Tanzia
-          group_id: 9, // Section
+          user_id: 8,
+          group_id: 9,
         },
       ]);
     });

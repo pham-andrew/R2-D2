@@ -28,6 +28,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Divider,
 } from "@material-ui/core";
 import AlertDialog from "./helpers/AlertDialog";
 
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     marginTop: -10,
     marginLeft: -5,
-    maxHeight: "75vh",
+    maxHeight: "77vh",
     maxWidth: "90vw",
     overflowY: "auto",
     overflowX: "none",
@@ -179,6 +180,11 @@ const CreateRequest = () => {
   function getStageContent(step, stage) {
     let stageGroups = null;
 
+    if (!stage || templates[template].stages.length < setActiveStep + 1) {
+      setActiveStep(0);
+      stage = templates[template].stages[0];
+    }
+
     if (stage.substages[0].supervisor_id) {
       fetch(`${baseURL}/users/${stage.substages[0].supervisor_id}`)
         .then((res) => res.json())
@@ -216,6 +222,11 @@ const CreateRequest = () => {
                           role="listitem"
                           button
                           onClick={() => setSelectedGroup(index)}
+                          style={
+                            selectedGroup === index
+                              ? { backgroundColor: "#FDFD96" }
+                              : { backgroundColor: "none" }
+                          }
                         >
                           {stage.substages[0].supervisor_id ? (
                             `Supervisor`
@@ -246,9 +257,7 @@ const CreateRequest = () => {
                         {stageGroups ? (
                           stageGroups[selectedGroup].users.map((member) => (
                             <ListItem key={uuidv4()} role="listitem" button>
-                              <ListItemText
-                                primary={`${member.fname} ${member.lname} (${member.rank})`}
-                              />
+                              {`${member.fname} ${member.lname} (${member.rank})`}
                             </ListItem>
                           ))
                         ) : (
@@ -275,7 +284,7 @@ const CreateRequest = () => {
               value={stage.stage_name}
               style={{
                 marginBottom: 30,
-                marginTop: 40,
+                marginTop: 25,
                 cursor: "not-allowed",
               }}
             />
@@ -386,7 +395,12 @@ const CreateRequest = () => {
               rows={10}
               variant="outlined"
               value={stage.stage_instructions}
-              style={{ marginTop: 10, marginLeft: 45, width: "22.65vw" }}
+              style={{
+                marginTop: 10,
+                marginLeft: 45,
+                width: "22.65vw",
+                whiteSpace: "pre-line",
+              }}
               required
             />
           </Grid>
@@ -578,6 +592,7 @@ const CreateRequest = () => {
                 </Select>
               </FormControl>
             </Grid>
+
             <Grid item xs={12} style={{ margin: "15px" }}>
               <Paper className={classes.paperSecond}>
                 <Typography
@@ -606,7 +621,7 @@ const CreateRequest = () => {
                 >
                   Template Instructions
                 </Typography>
-                <Typography style={{ margin: "15px" }}>
+                <Typography style={{ margin: "15px", whiteSpace: "pre-line" }}>
                   {templates[template].route_instructions}
                 </Typography>
               </Paper>
@@ -619,7 +634,7 @@ const CreateRequest = () => {
                 >
                   Template Documents
                 </Typography>
-                <div style={{ maxHeight: "8.75vh", overflow: "auto" }}>
+                <div style={{ maxHeight: 90, overflow: "auto" }}>
                   <ListItem className={classes.attachments} button>
                     <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
                     <Typography style={{ margin: "15px" }}>
@@ -660,6 +675,43 @@ const CreateRequest = () => {
                     );
                   })}
                 </Stepper>
+                <Grid container>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 30,
+                      marginTop: 15,
+                    }}
+                  >
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      color="primary"
+                      variant="outlined"
+                      style={{ marginLeft: 0 }}
+                    >
+                      Back
+                    </Button>
+                    <Typography style={{ margin: 10 }}>
+                      Stage Controls
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleNext}
+                      disabled={
+                        activeStep === templates[template].stages.length - 1
+                      }
+                    >
+                      Next
+                    </Button>
+                  </Grid>
+                </Grid>
+                <Divider style={{ marginLeft: 25, width: 850 }} />
                 <Paper style={{ padding: "30px" }}>
                   <div>
                     <Typography className={classes.instructions}>
@@ -668,44 +720,19 @@ const CreateRequest = () => {
                         templates[template].stages[activeStep]
                       )}
                     </Typography>
-                    <Grid container>
-                      <Grid item xs={8} />
-                      <Grid item xs={4} style={{ marginTop: -30 }}>
-                        <Button
-                          disabled={activeStep === 0}
-                          onClick={handleBack}
-                          color="primary"
-                          variant="outlined"
-                          style={{ marginLeft: 115 }}
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={handleNext}
-                          disabled={
-                            activeStep === templates[template].stages.length - 1
-                          }
-                          style={{ marginLeft: 15 }}
-                        >
-                          Next
-                        </Button>
-                      </Grid>
-                    </Grid>
                   </div>
                 </Paper>
               </div>
             </Grid>
           </Grid>
-          <Grid item xs={10} />
-          <Grid item xs={2}>
+
+          <Grid item xs={12}>
             <Button
               variant="contained"
               component="label"
               color="secondary"
               onClick={handleClickOpen}
-              style={{ marginTop: "-5vh", marginBottom: 0 }}
+              style={{ marginLeft: 1032 }}
             >
               Initiate Request
             </Button>
@@ -806,19 +833,27 @@ const CreateRequest = () => {
               <div style={{ maxHeight: 134, overflow: "auto" }}>
                 <ListItem className={classes.attachments} button>
                   <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography variant="body2">N/A</Typography>
+                  <Typography style={{ margin: "15px" }}>
+                    <a href="/documents/SacredJedi.txt" download>
+                      The Sacred Jedi Texts Volume 1
+                    </a>
+                  </Typography>
                 </ListItem>
                 <ListItem className={classes.attachments} button>
                   <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography variant="body2">N/A</Typography>
+                  <Typography style={{ margin: "15px" }}>
+                    <a href="/documents/HitchhikersGuide.txt" download>
+                      Hitchhiker's Guide to the Galaxy
+                    </a>
+                  </Typography>
                 </ListItem>
                 <ListItem className={classes.attachments} button>
                   <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography variant="body2">N/A</Typography>
-                </ListItem>
-                <ListItem className={classes.attachments} button>
-                  <AttachmentIcon style={{ fontSize: 20, marginRight: 5 }} />
-                  <Typography variant="body2">N/A</Typography>
+                  <Typography style={{ margin: "15px" }}>
+                    <a href="/documents/ZappBrannigan.txt" download>
+                      Zapp Brannigan Quotes
+                    </a>
+                  </Typography>
                 </ListItem>
               </div>
             </div>

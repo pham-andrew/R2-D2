@@ -26,7 +26,7 @@ router.post("/post", async (req, res) => {
       comments: req.body.comments,
       change_log: `Name: ${req.body.rank} ${
         req.body.lname
-      }, Date: ${Date.now().toGMTString()},
+      }, Date: ${new Date().toGMTString()},
       Comments: ${req.body.comments}\n`,
     })
     .returning("id")
@@ -75,10 +75,10 @@ router.patch("/patch", async (req, res) => {
       name: req.body.name,
       group_id: req.body.group_id,
       instructions: req.body.instructions,
-      updated_at: new Date(),
+      updated_at: `${new Date().toGMTString()}`,
       change_log: `Name: ${req.body.rank} ${
         req.body.lname
-      }, Date: ${Date.now().toGMTString()},
+      }, Date: ${new Date().toGMTString()},
       Comments: ${req.body.comments}\n`,
       status: req.body.status,
     })
@@ -116,7 +116,7 @@ router.patch("/resubmit", async (req, res) => {
       current_stage: current_stage + 1,
       change_log:
         change_log +
-        `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
+        `Name: ${rank} ${lname}, Date: ${new Date().toGMTString()}, Comments: ${notes}\n`,
     })
     .then(async () => {
       await knex("request_stages")
@@ -177,7 +177,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
       status: status,
       notes: notes,
       user_id: user_id,
-      completed_at: new Date(),
+      completed_at: `${new Date().toGMTString()}`,
     })
     .then(async () => {
       return knex("request_substages").select("status").where({
@@ -185,7 +185,6 @@ router.patch("/patch/substage/approve", async (req, res) => {
       });
     })
     .then(async (rows) => {
-      console.log(rows);
       rows.forEach((row) => {
         if (row.status !== "Approved") return (proceed = false);
       });
@@ -196,7 +195,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
           })
           .update({
             status: status,
-            completed_at: new Date(),
+            completed_at: `${new Date().toGMTString()}`,
           })
           .then(async () => {
             await knex("request_stages")
@@ -208,14 +207,12 @@ router.patch("/patch/substage/approve", async (req, res) => {
               });
           })
           .then(async () => {
-            await knex("request_substages")
+            await knex("request_stages")
               .where({
                 id: next_stage_id,
               })
               .update({
                 status: "Pending Action",
-                notes: null,
-                user_id: null,
               });
           });
       }
@@ -228,10 +225,10 @@ router.patch("/patch/substage/approve", async (req, res) => {
           })
           .update({
             status: "Completed",
-            completed_at: new Date(),
+            completed_at: `${new Date().toGMTString()}`,
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
+              `Name: ${rank} ${lname}, Date: ${new Date().toGMTString()}, Comments: ${notes}\n`,
           });
       } else if (proceed) {
         await knex("requests")
@@ -242,7 +239,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
             current_stage: current_stage + 1,
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
+              `Name: ${rank} ${lname}, Date: ${new Date().toGMTString()}, Comments: ${notes}\n`,
           });
       } else {
         await knex("requests")
@@ -252,7 +249,7 @@ router.patch("/patch/substage/approve", async (req, res) => {
           .update({
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()},
+              `Name: ${rank} ${lname}, Date: ${new Date().toGMTString()},
             Comments: ${notes}\n`,
           });
       }
@@ -301,7 +298,6 @@ router.patch("/patch/substage/deny", async (req, res) => {
       });
     })
     .then(async (rows) => {
-      console.log(rows);
       rows.forEach((row) => {
         if (row.status === "Approved" || row.status === "Pending Action")
           return (proceed = false);
@@ -326,7 +322,7 @@ router.patch("/patch/substage/deny", async (req, res) => {
             current_stage: current_stage - 1,
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()}, Comments: ${notes}\n`,
+              `Name: ${rank} ${lname}, Date: ${new Date().toGMTString()}, Comments: ${notes}\n`,
           });
       } else {
         await knex("requests")
@@ -336,7 +332,7 @@ router.patch("/patch/substage/deny", async (req, res) => {
           .update({
             change_log:
               change_log +
-              `Name: ${rank} ${lname}, Date: ${Date.now().toGMTString()},
+              `Name: ${rank} ${lname}, Date: ${new Date().toGMTString()},
             Comments: ${notes}\n`,
           });
       }
