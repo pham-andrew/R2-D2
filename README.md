@@ -1,6 +1,6 @@
 # R2/D2 - Rapid Routing & Decision-making Dashboard
 
-<img src="./ui/public/favicon.png" alt="R2D2" width="40%"/>
+<img src="./ui/public/favicon.png" alt="R2D2" width="40%"/> [![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com)
 
 ## Table of Contents
 
