@@ -258,9 +258,7 @@ const ViewRequest = (props) => {
                         {stageGroups ? (
                           stageGroups[selectedGroup].users.map((member) => (
                             <ListItem key={uuidv4()} role="listitem" button>
-                              <ListItemText
-                                primary={`${member.fname} ${member.lname} (${member.rank})`}
-                              />
+                              {`${member.fname} ${member.lname} (${member.rank})`}
                             </ListItem>
                           ))
                         ) : (
