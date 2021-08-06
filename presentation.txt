@@ -1,0 +1,23 @@
+(0 min)  JUSTIN:   Have Miro board in view
+
+(1 min)  ALL:      Introductions with name and current job title
+
+(1 min)  ANDREW:   Quickly describe a time (or times) the current systems have failed you
+
+(1 min)  JUSTIN:   Stories like Andrew's are why we decided to create R2/D2 (Rapid Routing and Decision-making Dashboard). Most of today's task-flows usually involve one of the following:
+  1. Disaggregated, unintuitive, and/or expensive enterprise work flows (e.g. Sharepoint, TMT, TopVue, LeaveWeb), or
+  2. Hundreds of thousands of long email chains of questionable standardization and accountability, or
+  3. Pen and paper processes
+  All of these methods significantly reduce both the velocity and efficacy of the decision-making loop and provide little to no interconnectivity or modularity for a digitally-oriented force. R2/D2 is the solution - a unit-centric task-flow management system that enables accountable and informed decision-making at all levels in the CoC. And now, to my teammates for a slightly deeper description of what we have built.
+
+(2 min)  MARK:     Database architecting and philosophy behind the backend we built (efficient data packaging for ease of frontend use, tree & graph data structures, secure login, etc.)
+
+(2 min)  ANDREW:   Client-side architecting and the philosophy behind the frontend we built (intuitive clickstreams, simple color schemes, modular/re-usable components, etc.)
+
+(0 min)  JUSTIN:   Switch to login screen
+
+(6 min)  JUSTIN:   Demo the application in the following order: Login, Registration, login, Profile, logout, Dashboard, Create Template, Manage Template, Create Request, Dashboard, logout, login to account who supervises previous account, run through request actions, logout
+
+(1 min)  NOAH:     Current missing features in the MVP that would require only a little bit more time to finish include - archiving of requests, more detailed admin page and privilages, route template editing
+
+(1 min)  MARK:   The value of our application lies in it's potential - features like active directory data-injection for efficient unit onboarding, inter-unit hooks for end-to-end routing, operational and efficiency metrics generation (to pinpoint process improvement opportunities), and others, put R2/D2 miles ahead of other currently available solutions and systems. This concludes our application presenation! We apprecate your time and would now like to open it up for questions.

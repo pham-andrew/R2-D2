@@ -1,7 +1,9 @@
 //create request
 
 // Dependencies
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import AppContext from "../contexts/AppContext";
 
 // Components
 import {
@@ -17,7 +19,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Paper,
 } from "@material-ui/core";
+import PromptDialog from "./helpers/PromptDialog";
 
 //icons
 import AttachmentIcon from "@material-ui/icons/Attachment";
@@ -50,7 +54,8 @@ const useStyles = makeStyles((theme) => ({
   },
   paperSecond: {
     padding: theme.spacing(1),
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(5),
+    marginTop: theme.spacing(3),
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
@@ -59,6 +64,8 @@ const useStyles = makeStyles((theme) => ({
 
 //2nd CreateRequest location
 const PendingAction = (props) => {
+  const { setPrompt, prompt, setOpenPrompt } = useContext(AppContext);
+  const history = useHistory();
   const classes = useStyles();
   const { request, handleClose, currentUserDetails } = props;
   const [currStage, setCurrentStage] = useState(0);
@@ -87,89 +94,16 @@ const PendingAction = (props) => {
       current_stage: request.current_stage,
       substage_id: request.substage[0].substage_id,
     };
-    console.log(request.substage);
-    console.log(data);
-
-    let response = await fetch(
-      `${baseURL}/routes/requests/patch/substage/deny`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (response.status === 200) {
-      setReload(!reload);
-      return handleClose(false);
-    } else {
-      let err = await response.json();
-      return console.log(err);
-    }
-  };
-
-  const handleApprove = async () => {
-    if (request.current_stage === -1) {
-      let data = {
-        rank: currentUserDetails.rank,
-        lname: currentUserDetails.lname,
-        notes: comments,
-        request_stage_id: request.stages[currStage].stage_id,
-        request_id: request.request_id,
-        change_log: request.change_log,
-        current_stage: request.current_stage,
-      };
-
-      console.log(data);
-
-      let response = await fetch(`${baseURL}/routes/requests/resubmit`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+    if (comments.length < 1) {
+      await setPrompt({
+        title: "Submission Error",
+        text: "Please provide comments before submitting your response",
+        closeAction: "Okay",
       });
-      if (response.status === 200) {
-        setReload(!reload);
-        return handleClose(false);
-      } else {
-        let err = await response.json();
-        return console.log(err);
-      }
+      await setOpenPrompt(true);
     } else {
-      let final_stage = currStage === request.stages.length - 1 ? true : false;
-      let next_stage_id = !final_stage
-        ? request.stages[currStage + 1].stage_id
-        : null;
-
-      console.log(
-        "final stage",
-        final_stage,
-        "next_stage_id",
-        next_stage_id,
-        "substage_id",
-        request.substage[0].substage_id
-      );
-
-      let data = {
-        rank: currentUserDetails.rank,
-        lname: currentUserDetails.lname,
-        user_id: currentUserDetails.user_id,
-        notes: comments,
-        substage_id: request.substage[0].substage_id,
-        request_stage_id: request.stages[currStage].stage_id,
-        request_id: request.request_id,
-        change_log: request.change_log,
-        final_stage: final_stage,
-        current_stage: request.current_stage,
-        next_stage_id: next_stage_id,
-      };
-
-      console.log(data);
-
       let response = await fetch(
-        `${baseURL}/routes/requests/patch/substage/approve`,
+        `${baseURL}/routes/requests/patch/substage/deny`,
         {
           method: "PATCH",
           headers: {
@@ -188,8 +122,92 @@ const PendingAction = (props) => {
     }
   };
 
+  const handleApprove = async () => {
+    if (comments.length < 1) {
+      await setPrompt({
+        title: "Submission Error",
+        text: "Please provide comments before submitting your response",
+        closeAction: "Okay",
+      });
+      await setOpenPrompt(true);
+    } else {
+      if (request.current_stage === -1) {
+        let data = {
+          rank: currentUserDetails.rank,
+          lname: currentUserDetails.lname,
+          notes: comments,
+          request_stage_id: request.stages[currStage].stage_id,
+          request_id: request.request_id,
+          change_log: request.change_log,
+          current_stage: request.current_stage,
+        };
+
+        console.log(data);
+
+        let response = await fetch(`${baseURL}/routes/requests/resubmit`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (response.status === 200) {
+          setReload(!reload);
+          history.push("/profile");
+          history.push("/dashboard");
+          return handleClose(false);
+        } else {
+          let err = await response.json();
+          return console.log(err);
+        }
+      } else {
+        let final_stage =
+          currStage === request.stages.length - 1 ? true : false;
+        let next_stage_id = !final_stage
+          ? request.stages[currStage + 1].stage_id
+          : null;
+
+        let data = {
+          rank: currentUserDetails.rank,
+          lname: currentUserDetails.lname,
+          user_id: currentUserDetails.user_id,
+          notes: comments,
+          substage_id: request.substage[0].substage_id,
+          request_stage_id: request.stages[currStage].stage_id,
+          request_id: request.request_id,
+          change_log: request.change_log,
+          final_stage: final_stage,
+          current_stage: request.current_stage,
+          next_stage_id: next_stage_id,
+        };
+        console.log(data);
+
+        let response = await fetch(
+          `${baseURL}/routes/requests/patch/substage/approve`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+        if (response.status === 200) {
+          setReload(!reload);
+          history.push("/profile");
+          history.push("/dashboard");
+          return handleClose(false);
+        } else {
+          let err = await response.json();
+          return console.log(err);
+        }
+      }
+    }
+  };
+
   return (
     <div>
+      <PromptDialog bodyPrompt={prompt} />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -234,7 +252,7 @@ const PendingAction = (props) => {
               }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} style={{ display: "flex" }}>
             <TextField
               value={
                 request.stages[currStage].suspense_hours > 24 &&
@@ -264,6 +282,7 @@ const PendingAction = (props) => {
               }}
               style={{ marginBottom: 15 }}
               id="suspense_integer"
+              fullWidth
             />
             <TextField
               value={
@@ -289,6 +308,7 @@ const PendingAction = (props) => {
               }}
               defaultValue=""
               style={{ marginBottom: 15 }}
+              fullWidth
             >
               <MenuItem value="" disabled>
                 <em>Measure of Time</em>
@@ -363,9 +383,31 @@ const PendingAction = (props) => {
               rows={10}
               variant="outlined"
               value={request.stages[currStage].stage_instructions}
-              style={{ marginTop: 10, width: 300 }}
+              style={{ marginTop: 10, width: 300, whiteSpace: "pre-line" }}
               required
             />
+            <Paper className={classes.paperSecond} style={{ overflow: "auto" }}>
+              <Typography
+                style={{
+                  fontWeight: 600,
+                  marginTop: 5,
+                  marginLeft: 7.5,
+                  overflow: "auto",
+                }}
+              >
+                Request Change Log
+              </Typography>
+              <Typography
+                style={{
+                  margin: "15px",
+                  whiteSpace: "pre-line",
+                  overflow: "auto",
+                  maxHeight: 150,
+                }}
+              >
+                {request.change_log}
+              </Typography>
+            </Paper>
           </Grid>
 
           <div

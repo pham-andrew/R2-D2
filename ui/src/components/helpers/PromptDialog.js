@@ -24,10 +24,10 @@ export default function PromptDialog({ bodyPrompt }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" style={{ marginTop: 5 }}>
+        <DialogTitle id="alert-dialog-title" style={{ marginTop: 0 }}>
           {bodyPrompt ? bodyPrompt.title : "empty title"}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent style={{ marginTop: -5, marginBottom: 5 }}>
           {bodyPrompt ? bodyPrompt.text : "empty text"}
         </DialogContent>
         <DialogActions>
@@ -35,11 +35,11 @@ export default function PromptDialog({ bodyPrompt }) {
           <Button
             variant="contained"
             color="default"
-            size="medium"
-            style={{ marginRight: 5, marginBottom: 5 }}
+            size="small"
+            style={{ marginRight: 5, marginBottom: -3 }}
             onClick={handleCancelAlert}
           >
-            {bodyPrompt.closeAction}
+            {bodyPrompt.closeAction || "Close"}
           </Button>
         </DialogActions>
       </Dialog>

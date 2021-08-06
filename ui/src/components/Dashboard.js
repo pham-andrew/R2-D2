@@ -36,7 +36,8 @@ export default function Dashboard() {
       width: "100%",
       maxHeight: "75vh",
       minWidth: 900,
-      overflow: "auto",
+      overflowY: "auto",
+      overflowX: "hidden",
     },
     heading: {
       fontSize: theme.typography.pxToRem(15),
@@ -60,7 +61,6 @@ export default function Dashboard() {
     setAllUsers,
     allUsers,
     reload,
-    setReload,
     currentUserDetails,
     baseURL,
     alert,
@@ -70,18 +70,16 @@ export default function Dashboard() {
   const classes = useStyles();
 
   const [dashReload, setDashReload] = React.useState(false);
-  const [pending, setPending] = React.useState([]);
-  const [enRoute, setEnRoute] = React.useState([]);
-  const [completed, setCompleted] = React.useState([]);
-  const [cancelled, setCancelled] = React.useState([]);
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [pending] = React.useState([]);
+  const [enRoute] = React.useState([]);
+  const [completed] = React.useState([]);
+  const [cancelled] = React.useState([]);
 
   React.useEffect(async () => {
     if (currentUserDetails) {
       let response = await fetch(`${baseURL}/routes/requests/get/all/details`);
       if (response.status === 200) {
         let data = await response.json();
-        console.log(data);
         let groups = await fetch(`${baseURL}/groups/?include_users=true`)
           .then((res) => res.json())
           .catch((err) => console.log(err));
@@ -142,9 +140,10 @@ export default function Dashboard() {
 
     let user_id = currentUserDetails.user_id;
     let userGroups = currentUserDetails.groups;
+
     requestArray.forEach((request) => {
       let currStage = request.current_stage;
-      console.log(request.status);
+
       if (request.status === "Completed" || request.status === "Cancelled") {
         if (request.initiator_id === user_id) {
           if (request.status === "Completed") {
@@ -155,14 +154,15 @@ export default function Dashboard() {
         }
       } else {
         if (currStage === -1 && request.initiator_id === user_id) {
-          // request.ao = `${currentUserDetails.fname} ${currentUserDetails.lname} (${currentUserDetails.rank})`;
           return pending.push(request);
         } else if (request.initiator_id !== user_id && currStage !== -1) {
-          console.log(currStage);
           let currSubstages = request.stages[currStage].substages;
           for (let i = 0; i < userGroups.length; i++) {
             for (let j = 0; j < currSubstages.length; j++) {
-              if (userGroups[i].group_id === currSubstages[j].group_id) {
+              if (
+                userGroups[i].group_id === currSubstages[j].group_id &&
+                currSubstages[j].status !== "Approved"
+              ) {
                 request.ao = userGroups[i];
                 return pending.push(request);
               }
@@ -176,13 +176,8 @@ export default function Dashboard() {
         }
       }
     });
-
-    console.log("Pending", pending);
-    console.log("EnRoute", enRoute);
-    console.log("Completed", completed);
-    console.log("Cancelled", cancelled);
-
     setDashReload(true);
+    setDashReload(!dashReload);
   }
 
   // function completedStages(stages) {
