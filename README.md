@@ -3,7 +3,7 @@
 <img src="./ui/public/favicon.png" alt="R2D2" width="40%"/> [![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com)
 
 ## Video Demo
-https://supracoders.us/projects/#supra-coders-cohort-2-projects @1:45:48
+http://supracoders.us/capstone-videos Capstone 2 @1:45:48
 
 ## Table of Contents
 
